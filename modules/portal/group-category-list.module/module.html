@@ -2,13 +2,37 @@
   { 
     "name": "Community Groups",
     "description": "Community Groups are where churche becomes FAMILY. Our Community Groups are where we connect with others who share common interests, dream, and life experiences to grow exponentially and share the journey together as ONE. Whether your group is watching the #OneExperience together on Sunday, unpacking a new Bible study, or hitting an hiking trail together while talking about this thing called life -- ONE thing's for sure, you are FAMILY. Groups meet all over the world, in person and online. If you need help with your community group experience, let us know by emailing us at connect@one.online!",
-    "children": [{},{},{}]
+    "children": [
+      {
+        "name": "Book Study: Promise Journey led by Jas (ATL)",
+        "feature_image": {
+          "alt": "",
+          "url": "https://groups-production.s3.amazonaws.com/uploads/group/header_image/1807564/thumbnail_Community-Groups_BOOK-STUDY.png",
+        }
+      },
+      {
+        "name": "Book Study: Promise Journey led by Jas (ATL)",
+        "feature_image": {
+          "alt": "",
+          "url": "https://groups-production.s3.amazonaws.com/uploads/group/header_image/1807564/thumbnail_Community-Groups_BOOK-STUDY.png",
+        }
+      },
+      {
+        "name": "Book Study: Promise Journey led by Jas (ATL)",
+        "feature_image": {
+          "alt": "",
+          "url": "https://groups-production.s3.amazonaws.com/uploads/group/header_image/1807564/thumbnail_Community-Groups_BOOK-STUDY.png",
+        }
+      }
+    ]
   },
   { 
-    "name": "Communities at ONE" 
+    "name": "Communities at ONE",
+    "description": "Find your community here at ONE. Unlike community groups, communities bring together large groups of members together in one place for specific gatherings. We encourage you to join one of our communities in addition to a group."
   },
   {
-    "name": "Wellness Groups"
+    "name": "Wellness Groups",
+    "description": "At ONE, we value a person's whole being, which consists of the mind, body, and spirit. Our Wellness offerings provide supportive community groups, resources, and referrals connecting you to the support you need. For questions, please contact our team at wellness@one.online."
   },
   {
     "name": "Unique Groups"
@@ -23,19 +47,21 @@
       <div class="group-category-item-inner">
         <div class="group-category-content">
           <div class="group-category-item-header">
-            <h3 class="group-category-item-name">{{ category.name }}</h3>
+            <h2 class="group-category-item-name">{{ category.name }}</h2>
             {% if category.children|length > 0 %}
-            <div class="group-category-item-groups">{{ category.children|length }} groups</div>
+            <div class="group-category-item-groups">{{ category.children|length }} open groups</div>
             {% endif %}
           </div>
           <div class="group-category-item-description">
             <p>{{ category.description }}</p>
           </div>
         </div>
-        <div class="group-category-item-icons">
+        <div class="group-category-item-children">
           {% if category.children|length > 0 %}
             {% for child in category.children %}
-            <img src="{{ image }}" alt="{{ name }}">
+            <div class="group-feature-image">
+              <img loading="lazy" src="{{ child.feature_image.url }}" alt="{{ child.feature_image.alt }}">
+            </div>
             {% endfor %}
           {% endif %}
         </div>

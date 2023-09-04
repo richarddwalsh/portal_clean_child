@@ -2,31 +2,31 @@
   {
     "name": "Book Study: Gutsy Midfulness Practices for Everyday Bravery (Flordia)",
     "status": "Open",
-    "image": "https://images.unsplash.com/photo-1517245386807-9b4d03a871c0?ixlib=r",
+    "image": "https://groups-production.s3.amazonaws.com/uploads/group/header_image/1807564/medium_Community-Groups_BOOK-STUDY.png",
     "schedule": "Bi-Weeky | Mondays 4pm PST | Online"
   },
   {
     "name": "Book Study: Gutsy Midfulness Practices for Everyday Bravery (Flordia)",
     "status": "Open",
-    "image": "https://images.unsplash.com/photo-1517245386807-9b4d03a871c0?ixlib=r",
+    "image": "https://groups-production.s3.amazonaws.com/uploads/group/header_image/1807564/medium_Community-Groups_BOOK-STUDY.png",
     "schedule": "Bi-Weeky | Mondays 4pm PST | Online"
   },
   {
     "name": "Book Study: Gutsy Midfulness Practices for Everyday Bravery (Flordia)",
     "status": "Open",
-    "image": "https://images.unsplash.com/photo-1517245386807-9b4d03a871c0?ixlib=r",
+    "image": "https://groups-production.s3.amazonaws.com/uploads/group/header_image/1807564/medium_Community-Groups_BOOK-STUDY.png",
     "schedule": "Bi-Weeky | Mondays 4pm PST | Online"
   },
   {
     "name": "Book Study: Gutsy Midfulness Practices for Everyday Bravery (Flordia)",
     "status": "Open",
-    "image": "https://images.unsplash.com/photo-1517245386807-9b4d03a871c0?ixlib=r",
+    "image": "https://groups-production.s3.amazonaws.com/uploads/group/header_image/1807564/medium_Community-Groups_BOOK-STUDY.png",
     "schedule": "Bi-Weeky | Mondays 4pm PST | Online"
   },
   {
     "name": "Book Study: Gutsy Midfulness Practices for Everyday Bravery (Flordia)",
     "status": "Open",
-    "image": "https://images.unsplash.com/photo-1517245386807-9b4d03a871c0?ixlib=r",
+    "image": "https://groups-production.s3.amazonaws.com/uploads/group/header_image/1807564/medium_Community-Groups_BOOK-STUDY.png",
     "schedule": "Bi-Weeky | Mondays 4pm PST | Online"
   }
 ] %}
@@ -34,22 +34,18 @@
 <div id="{{ name }}" class="group-card-list-wrapper">
   <div class="group-card-list-inner">
     {% for group in groups %}
-    <div class="group-card">
-      <div class="group-card-inner">
-        <div class="group-card-image">
-          <img src="{{ group.image }}" alt="{{ group.name }}">
+    <article class="group-card">
+      <a href="#" class="group-card-inner">
+        <div class="group-card-item__image">
+          <img loading="lazy" alt="Logo for {{ group.name }}" src="{{ group.image }}">
         </div>
-        <div class="group-card-header">
-          <h3>{{ group.name }}</h3>
-          <div class="group-card-status">
-            <p>{{ group.status }}</p>
-          </div>
+        <div class="group-card-item__heading">
+          <h3 class="grup-card-item__name">{{ group.name }}</h3>
+          <span class="group-card-item__status {{ group.status|lower }}">{{ group.status }}</span>
         </div>
-        <div class="group-card-schedule">
-          <p>{{ group.schedule }}</p>
-        </div>
-      </div>
-    </div>
+        <div class="group-card-item__meta">{{ group.schedule }}</div>
+      </a>
+    </article>
     {% endfor %}
   </div>
 </div>

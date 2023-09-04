@@ -5,19 +5,54 @@
 .group-card-list-wrapper .group-card-list-inner {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  grid-gap: 20px;
+  grid-gap: 2rem;
   margin: 0 auto;
   max-width: 1200px;
   padding: 20px;
 }
 
-.group-card {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  height: 100%;
-  padding: 20px;
+.group-card,
+.group-card-inner {
+  display: block;
+  color: #1f1f1f;
+}
+
+.group-card-item__image {
+  background: #F7F7F7;
+  margin-bottom: 12px;
+}
+
+.group-card-item__image img {
   border-radius: 4px;
-  background-color: #fff;
-  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+  display: block;
+  width: 100%;
+}
+
+.group-card-item__heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.group-card-item__name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f1f1f;
+}
+
+.group-card-item__status {
+  border-radius: 4px;
+  display: inline-block;
+  background: #f2f2f2;
+  color: #737373;
+  font-size: 12px;
+  line-height: 1.5rem;
+  padding: 0 6px;
+  white-space: nowrap;
+  margin-left: 1rem;
+}
+
+.group-card-item__status.open {
+  background: #F1F8F1;
+  color: #3A823E;
 }
