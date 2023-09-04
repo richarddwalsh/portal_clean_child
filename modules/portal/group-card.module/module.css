@@ -1,0 +1,23 @@
+.group-card-list-wrapper {
+  
+}
+
+.group-card-list-wrapper .group-card-list-inner {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-gap: 20px;
+  margin: 0 auto;
+  max-width: 1200px;
+  padding: 20px;
+}
+
+.group-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  padding: 20px;
+  border-radius: 4px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+}

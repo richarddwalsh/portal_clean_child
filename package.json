@@ -1,0 +1,39 @@
+{
+  "name": "portal_clean_child",
+  "version": "1.0.0",
+  "devDependencies": {
+    "@hubspot/cli": "^4.1.2",
+    "eslint": "^8.25.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "husky": "^8.0.1",
+    "js-yaml": "^3.13.1",
+    "lint-staged": "^13.0.3"
+  },
+  "scripts": {
+    "lint": "npx eslint . -c .eslintrc.js",
+    "lint-fix": "npx eslint --fix . -c .eslintrc.js",
+    "watch": "hs watch . PORTAL_Clean_Child --remove",
+    "watch-sandbox": "hs watch . PORTAL_Clean_Child --account=one_sandbox --remove",
+    "fetch": "hs fetch --account=one_production PORTAL_Clean_Child --overwrite"
+  },
+  "dependencies": {
+    "@hubspot/prettier-plugin-hubl": "^0.2.0",
+    "prettier": "^2.6.2",
+    "eslint-config-airbnb": "19.0.4"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    ".": [
+      "eslint --fix -c .eslintrc.js",
+      "git add"
+    ]
+  },
+  "author": "Blue Frog"
+}

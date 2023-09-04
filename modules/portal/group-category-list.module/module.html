@@ -1,0 +1,46 @@
+{% set group_categories = [
+  { 
+    "name": "Community Groups",
+    "description": "Community Groups are where churche becomes FAMILY. Our Community Groups are where we connect with others who share common interests, dream, and life experiences to grow exponentially and share the journey together as ONE. Whether your group is watching the #OneExperience together on Sunday, unpacking a new Bible study, or hitting an hiking trail together while talking about this thing called life -- ONE thing's for sure, you are FAMILY. Groups meet all over the world, in person and online. If you need help with your community group experience, let us know by emailing us at connect@one.online!",
+    "children": [{},{},{}]
+  },
+  { 
+    "name": "Communities at ONE" 
+  },
+  {
+    "name": "Wellness Groups"
+  },
+  {
+    "name": "Unique Groups"
+  }
+] %}
+
+
+<div id="{{ name }}" class="group-category-list-wrapper">
+  <div class="group-category-list-inner">
+    {% for category in group_categories %}
+    <div id="" class="group-category-item">
+      <div class="group-category-item-inner">
+        <div class="group-category-content">
+          <div class="group-category-item-header">
+            <h3 class="group-category-item-name">{{ category.name }}</h3>
+            {% if category.children|length > 0 %}
+            <div class="group-category-item-groups">{{ category.children|length }} groups</div>
+            {% endif %}
+          </div>
+          <div class="group-category-item-description">
+            <p>{{ category.description }}</p>
+          </div>
+        </div>
+        <div class="group-category-item-icons">
+          {% if category.children|length > 0 %}
+            {% for child in category.children %}
+            <img src="{{ image }}" alt="{{ name }}">
+            {% endfor %}
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>

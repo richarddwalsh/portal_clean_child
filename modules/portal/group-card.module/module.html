@@ -1,0 +1,55 @@
+{% set groups = [
+  {
+    "name": "Book Study: Gutsy Midfulness Practices for Everyday Bravery (Flordia)",
+    "status": "Open",
+    "image": "https://images.unsplash.com/photo-1517245386807-9b4d03a871c0?ixlib=r",
+    "schedule": "Bi-Weeky | Mondays 4pm PST | Online"
+  },
+  {
+    "name": "Book Study: Gutsy Midfulness Practices for Everyday Bravery (Flordia)",
+    "status": "Open",
+    "image": "https://images.unsplash.com/photo-1517245386807-9b4d03a871c0?ixlib=r",
+    "schedule": "Bi-Weeky | Mondays 4pm PST | Online"
+  },
+  {
+    "name": "Book Study: Gutsy Midfulness Practices for Everyday Bravery (Flordia)",
+    "status": "Open",
+    "image": "https://images.unsplash.com/photo-1517245386807-9b4d03a871c0?ixlib=r",
+    "schedule": "Bi-Weeky | Mondays 4pm PST | Online"
+  },
+  {
+    "name": "Book Study: Gutsy Midfulness Practices for Everyday Bravery (Flordia)",
+    "status": "Open",
+    "image": "https://images.unsplash.com/photo-1517245386807-9b4d03a871c0?ixlib=r",
+    "schedule": "Bi-Weeky | Mondays 4pm PST | Online"
+  },
+  {
+    "name": "Book Study: Gutsy Midfulness Practices for Everyday Bravery (Flordia)",
+    "status": "Open",
+    "image": "https://images.unsplash.com/photo-1517245386807-9b4d03a871c0?ixlib=r",
+    "schedule": "Bi-Weeky | Mondays 4pm PST | Online"
+  }
+] %}
+
+<div id="{{ name }}" class="group-card-list-wrapper">
+  <div class="group-card-list-inner">
+    {% for group in groups %}
+    <div class="group-card">
+      <div class="group-card-inner">
+        <div class="group-card-image">
+          <img src="{{ group.image }}" alt="{{ group.name }}">
+        </div>
+        <div class="group-card-header">
+          <h3>{{ group.name }}</h3>
+          <div class="group-card-status">
+            <p>{{ group.status }}</p>
+          </div>
+        </div>
+        <div class="group-card-schedule">
+          <p>{{ group.schedule }}</p>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
