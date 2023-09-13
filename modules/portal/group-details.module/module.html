@@ -1,5 +1,141 @@
+{% if dynamic_page_crm_object_type_fqn %}
 <div id="{{ name }}" class="group-details-wrapper">
   <div class="group-details-inner">
     <p>Group Details Module</p>
   </div>
 </div>
+{% elif dynamic_page_crm_object %}
+  {% set group = dynamic_page_crm_object %}
+  {# TODO: Convert to 2 queries, past and upcomming #}
+  {% set event_query = "limit=200&orderBy=starts_at" %}
+  {% set events = crm_associations(group.id, "USER_DEFINED", 219, event_query, "name, description, starts_at, starts_at_time, ends_at, ends_at_time").results %}
+  <div class="f-1 page-content" id="main_page_content">
+    <div class="f-1 container container--wide">
+      <div style="outline: none;" tabindex="-1">
+        <div style="outline: none;" tabindex="-1">
+          <div class="mb-2@sm mb-4@md" style="">
+            <div class="grid grid-cols-1 md:grid-cols-2 md:gap-4" data-testid="grid">
+              <div class="css-736fdb">
+                <img alt="Logo for {{ group.name }}" class="block w-full md:rounded" src="{{ group.featured_image }}">
+              </div>
+              <div class="grid grid-cols-1 sm:gap-2" data-testid="grid">
+                <div class="d-f fd-c jc-c g-2">
+                  <h1 class="lh-1.333 c-tint0 fs-0 fw-600">{{ group.name }}</h1>
+                  <div class="d-f g-4p fw-w">
+                    {% if group.location_type_preference %}<span class="badge"><strong>Location Type:</strong> {{ 'Virtual | Online' if group.location_type_preference else 'In Person' }}</span>{% endif %}
+                    {% if group.frequency %}<span class="badge"><strong>Frequency:</strong> {{ group.frequency }}</span>{% endif %}
+                    {% if group.group_type %}<span class="badge"><strong>Group Type:</strong> {{ group.group_type }}y</span>{% endif %}
+                    {% if group.target_audience %}<span class="badge"><strong>Target Audience:</strong> {{ group.target_audience }}</span>{% endif %}
+                    {% if group.neighborhood___area %}<span class="badge"><strong>Neighborhood | Area:</strong> {{ group.neighborhood___area }}</span>{% endif %}
+                    {% if group.time_zone %}<span class="badge"><strong>Time Zone:</strong> {{ group.time_zone }}</span>{% endif %}
+                    {% if group.day_of_week %}<span class="badge"><strong>Day of the Week:</strong> {{ group.day_of_week }}</span>{% endif %}
+                    {% if group.time_of_day %}<span class="badge"><strong>Time of Day:</strong> {{ group.time_of_day }}</span>{% endif %}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="d-f ai-c jc-sb px-2 action-drawer action-bar mb-1@sm mb-3@md" style="gap: 1rem;">
+            <div class="d-f fd-c ai-fs fg-1">
+              <p class="fs-4 m-0 c-tint2">Group is {{ 'open' if group.enrollment_open else 'closed' }}</p>
+              <button class="btn minor-compact-btn d-b mt-4p" style="color: var(--color-brand);">Contact</button>
+            </div>
+            <div>
+              <button class="btn">Join</button>
+            </div>
+          </div>
+          <div class="d-f@md mt-2 mt-0@sm" style="">
+            <div class="w-33%@md o-1@md fs-4 pt-4p">
+              <div class="mb-3 mb-4@md pt-2p">
+                <h2 class="fs-4 fw-600 lh-20p tt-u c-tint3">Schedule</h2>
+                <div class="mt-1">
+                  {{ group.schedule }}
+                </div>
+              </div>
+              {# todo: swap to contact association #}
+              <div class="mb-3">
+                <h2 class="fs-4 fw-600 lh-20p tt-u c-tint3">Leader</h2>
+                <div class="mt-1">
+                  <p class="fs-4 mb-0 c-tint1">{{ group.leader_name }}</p>
+                </div>
+              </div>
+              <section class="mb-4">
+                <div class="mb-1">
+                  <h2 class="fs-4 fw-600 lh-20p tt-u c-tint3">Location</h2>
+                </div>
+                <p class="mb-0 fs-4 c-tint1">{{ 'Online' if group.location_type_preference else 'In Person' }}</p>
+              </section>
+            </div>
+            <div class="f-1 pr-4@md o-h">
+              <h2 class="lh-1.333 c-tint0 fs-2 fw-600">About {{ group.name }}</h2>
+              <div class="mt-2 mb-3 mb-4@md" data-preformatted-content="heading-scale:legacy-church-center">
+                <div>
+                  {{ group.description_html }}
+                </div>
+              </div>
+              {% if events|length > 0 %}
+              <div class="mb-3" style="min-height: 200px;">
+                <div class="mb-3"></div>
+                <div class="mb-3">
+                  <h2 class="h3">Past events</h2>
+                  <div>
+                    {% for event in events %}
+                      {% set dateStr = event.starts_at %}
+                      {% set dateArr = dateStr|split("/", 1000) %}
+                      {% set useDate = [
+                          (dateArr[2]|int + 2000),
+                          (dateArr[0]|length == 1 ? '0' + dateArr[0] : dateArr[0]),
+                          (dateArr[1]|length == 1 ? '0' + dateArr[1] : dateArr[1])
+                        ]
+                      %}
+                      {# TODO: Replace With starts_at_time #}
+                      {% set start_date = (useDate[0] + "-" + useDate[1] + "-" + useDate[2] + "T14:31:30+0530")|strtotime("yyyy-MM-dd'T'HH:mm:ssZ")  %}
+                      
+                    <div class="d-f mb-1 pt-1">
+                      <article class="d-f f-1 ai-c">
+                        <div class="mr-2">
+                          <a href="/events/{{ event.id }}">
+                            <div class="w-8 h-8 ta-c event-cal">
+                              <div class="event-cal__month">
+                                {{ start_date|datetimeformat('MMM') }}
+                              </div>
+                              <div class="event-cal__day">
+                                {{ start_date|datetimeformat('dd') }}
+                              </div>
+                            </div>
+                          </a>
+                        </div>
+                        <div class="f-1">
+                          <a class="fw-500" href="/events/{{ event.id }}">
+                            <div class="lh-1.5 mb-2p">
+                              {{ event.name }}
+                              <span class="d-ib ml-4p c-tint3">
+                                <svg class="symbol" role="img">
+                                  <use xlink:href="/packs/b3a0770f4291d3f4e59b.svg#calendar-repeat"></use>
+                                </svg>
+                              </span>
+                            </div>
+                          </a>
+                          <div class="fs-13 lh-1.5 c-tint2">
+                            <time>{{ start_date|datetimeformat('%A, %B %e, %Y') }}, 4–6:30pm PDT</time>
+                          </div>
+                        </div>
+                      </article>
+                    </div>
+                    {% endfor %}
+                  </div>
+                  {# TODO: UPDATE FOR INFINITE SCROLL
+                  <div class="mt-2 mb-1">
+                    <a class="minor-btn secondary-btn btn" href="/groups/groups/book-study-promise-journey-led-by-jas-atl/events/past">View All</a>
+                  </div>
+                  #}
+                </div>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endif %}

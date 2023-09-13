@@ -16,8 +16,9 @@
     "lint": "npx eslint . -c .eslintrc.js",
     "lint-fix": "npx eslint --fix . -c .eslintrc.js",
     "watch": "hs watch . PORTAL_Clean_Child --remove",
-    "watch-sandbox": "hs watch . PORTAL_Clean_Child --account=one_sandbox --remove",
-    "fetch": "hs fetch --account=one_production PORTAL_Clean_Child --overwrite"
+    "watch-sandbox": "hs watch --account=one_sandbox . PORTAL_Clean_Child --remove",
+    "fetch": "hs fetch --account=one_production PORTAL_Clean_Child --overwrite",
+    "deploy": "hs upload --account=one_production . PORTAL_Clean_Child"
   },
   "dependencies": {
     "@hubspot/prettier-plugin-hubl": "^0.2.0",

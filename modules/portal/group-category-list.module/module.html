@@ -1,72 +1,242 @@
-{% set group_categories = [
-  { 
-    "name": "Community Groups",
-    "description": "Community Groups are where churche becomes FAMILY. Our Community Groups are where we connect with others who share common interests, dream, and life experiences to grow exponentially and share the journey together as ONE. Whether your group is watching the #OneExperience together on Sunday, unpacking a new Bible study, or hitting an hiking trail together while talking about this thing called life -- ONE thing's for sure, you are FAMILY. Groups meet all over the world, in person and online. If you need help with your community group experience, let us know by emailing us at connect@one.online!",
-    "children": [
-      {
-        "name": "Book Study: Promise Journey led by Jas (ATL)",
-        "feature_image": {
-          "alt": "",
-          "url": "https://groups-production.s3.amazonaws.com/uploads/group/header_image/1807564/thumbnail_Community-Groups_BOOK-STUDY.png",
-        }
-      },
-      {
-        "name": "Book Study: Promise Journey led by Jas (ATL)",
-        "feature_image": {
-          "alt": "",
-          "url": "https://groups-production.s3.amazonaws.com/uploads/group/header_image/1807564/thumbnail_Community-Groups_BOOK-STUDY.png",
-        }
-      },
-      {
-        "name": "Book Study: Promise Journey led by Jas (ATL)",
-        "feature_image": {
-          "alt": "",
-          "url": "https://groups-production.s3.amazonaws.com/uploads/group/header_image/1807564/thumbnail_Community-Groups_BOOK-STUDY.png",
-        }
-      }
-    ]
-  },
-  { 
-    "name": "Communities at ONE",
-    "description": "Find your community here at ONE. Unlike community groups, communities bring together large groups of members together in one place for specific gatherings. We encourage you to join one of our communities in addition to a group."
-  },
-  {
-    "name": "Wellness Groups",
-    "description": "At ONE, we value a person's whole being, which consists of the mind, body, and spirit. Our Wellness offerings provide supportive community groups, resources, and referrals connecting you to the support you need. For questions, please contact our team at wellness@one.online."
-  },
-  {
-    "name": "Unique Groups"
-  }
-] %}
 
-
-<div id="{{ name }}" class="group-category-list-wrapper">
-  <div class="group-category-list-inner">
-    {% for category in group_categories %}
-    <div id="" class="group-category-item">
-      <div class="group-category-item-inner">
-        <div class="group-category-content">
-          <div class="group-category-item-header">
-            <h2 class="group-category-item-name">{{ category.name }}</h2>
-            {% if category.children|length > 0 %}
-            <div class="group-category-item-groups">{{ category.children|length }} open groups</div>
-            {% endif %}
-          </div>
-          <div class="group-category-item-description">
-            <p>{{ category.description }}</p>
-          </div>
-        </div>
-        <div class="group-category-item-children">
-          {% if category.children|length > 0 %}
-            {% for child in category.children %}
-            <div class="group-feature-image">
-              <img loading="lazy" src="{{ child.feature_image.url }}" alt="{{ child.feature_image.alt }}">
-            </div>
+{% if dynamic_page_crm_object_type_fqn %}
+  {% set query = "limit=200" %}
+  {% set categories = crm_objects(dynamic_page_crm_object_type_fqn, query,"name, description, associations, dynamic_page_slug") %}
+  <div id="main_page_content" class="f-1 page-content">
+    <div class="f-1 container container--wide">
+      <div tabindex="-1" style="outline: none;">
+        <div tabindex="-1" style="outline: none;">
+          <div>
+            {% for category in categories.results %}
+              {% set children = crm_associations(category.id, "USER_DEFINED", 304, "", "name,featured_image").results %}
+              <a href="{{ request.path }}/{{ category.dynamic_page_slug }}" class="card-list-item__wrapper-link group-types-collection">
+                <div class="d-f@md jc-sb ai-c">
+                  <div class="f-1">
+                    <div>
+                      <div class="d-f ai-c mb-1">
+                        <h2 class="mb-0">{{ category.name }}</h2>
+                        {% if children|length > 0 %}
+                        <div class="ml-1 badge as-fs p-r t-2p">{{ children|length}} open groups</div>
+                        {% endif %}
+                      </div>
+                      <div class="fs-4">
+                        {{ category.description|striptags }}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="w-30%@md mt-3 mt-0@md d-f ai-c jc-c">
+                    {% for child in children[:3] %}
+                    <div class="w-8 h-8 ml-1 d-flex">
+                      <img loading="lazy" src="{{ child.featured_image }}" alt="Logo for {{ child.name }}" class="d-b circle" style="object-fit:cover">
+                    </div>
+                    {% endfor %}
+                  </div>
+                </div>
+              </a>
             {% endfor %}
-          {% endif %}
+          </div>
         </div>
       </div>
     </div>
-    {% endfor %}
   </div>
-</div>
+{% elif dynamic_page_crm_object %}
+  {% set categories = crm_objects("group_categories", "limit=200","name, description, associations, dynamic_page_slug") %}
+  {% set category = dynamic_page_crm_object %}
+  {% set group_types_filter = crm_property_definition("groups", "group_type") %}
+  {% set locations_filter = crm_property_definition("groups", "location_type_preference") %}
+  {% set frequency_filter = crm_property_definition("groups", "frequency") %}
+  {% set target_audience_filter = crm_property_definition("groups", "target_audience") %}
+  {% set neighborhood_filter = crm_property_definition("groups", "neighborhood___area") %}
+  {% set time_zone_filter = crm_property_definition("groups", "time_zone") %}
+  {% set day_of_week_filter = crm_property_definition("groups", "day_of_week") %}
+  {% set time_of_day_filter = crm_property_definition("groups", "time_of_day") %}
+
+  {% set queryparams = "limit=200&orderBy=name" %}
+  {% if request.query_dict.group_type %}
+    {% set queryparams = queryparams ~ "&group_type=" ~ request.query_dict.group_type %}
+  {% endif %}
+  {% if request.query_dict.location_type_preference %}
+    {% set queryparams = queryparams ~ "&location_type_preference=" ~ request.query_dict.location_type_preference %}
+  {% endif %}
+  {% if request.query_dict.frequency %}
+    {% set queryparams = queryparams ~ "&frequency=" ~ request.query_dict.frequency %}
+  {% endif %}
+  {% if request.query_dict.target_audience %}
+    {% set queryparams = queryparams ~ "&target_audience=" ~ request.query_dict.target_audience %}
+  {% endif %}
+  {% if request.query_dict.neighborhood___area %}
+    {% set queryparams = queryparams ~ "&neighborhood___area=" ~ request.query_dict.neighborhood___area %}
+  {% endif %}
+  {% if request.query_dict.time_zone %}
+    {% set queryparams = queryparams ~ "&time_zone=" ~ request.query_dict.time_zone %}
+  {% endif %}
+  {% if request.query_dict.day_of_week %}
+    {% set queryparams = queryparams ~ "&day_of_week=" ~ request.query_dict.day_of_week %}
+  {% endif %}
+  {% if request.query_dict.time_of_day %}
+    {% set queryparams = queryparams ~ "&time_of_day=" ~ request.query_dict.time_of_day %}
+  {% endif %}
+  {% if request.query_dict.enrollment_open %}
+    {% set queryparams = queryparams ~ "&enrollment_open=" ~ request.query_dict.enrollment_open %}
+  {% endif %}
+  {% set groups = crm_associations(category.id, "USER_DEFINED", 304, queryparams, "dynamic_page_slug,name,featured_image,description,enrollment_strategy,enrollment_open,schedule,visibility").results %}
+  
+  <nav aria-label="Breadcrumb" class="breadcrumbs">
+    <div class="breadcrumbs__layout">
+      <a aria-current="false" class="breadcrumbs__page" aria-label="All groups" href="/groups">
+        <span class="text">All groups</span>
+        <span class="icon">
+          <svg role="img" class="symbol">
+            <use xlink:href="/packs/89968e94549de0745d44.svg#three-dots"></use>
+          </svg>
+        </span>
+      </a>
+      <span class="breadcrumbs__divider-icon">
+        <svg role="img" class="symbol">
+          <use xlink:href="/packs/b3a0770f4291d3f4e59b.svg#right-chevron"></use>
+        </svg>
+      </span>
+      <div class="breadcrumbs__page breadcrumbs__current-page" aria-current="location" >
+        <button aria-expanded="false" aria-haspopup="true" aria-controls="menu--1" class="select breadcrumbs__btn" data-reach-menu-button="" type="button" id="menu-button--menu--1" style="margin-left: auto">
+          {{ category.name }}
+        </button>
+        
+        <div data-reach-popover="" data-reach-menu="" data-reach-menu-popover="">
+          <div aria-labelledby="menu-button--menu--1" role="menu" id="menu--1" data-reach-menu-list="" data-reach-menu-items="" tabindex="-1">
+          {% for category in categories.results %}
+            <div role="none" tabindex="-1">
+              <a role="menuitem" href="/groups/{{ category.dynamic_page_slug }}" data-reach-menu-link="" data-reach-menu-item="" data-valuetext="{{ category.name }}" tabindex="-1" id="option-0--menu--{{ category.id }}">{{ category.name }}</a>
+            </div>
+          {% endfor %}
+        </div>
+        
+      </div>
+    </div>
+  </nav>
+  <div id="main_page_content" class="f-1 page-content">
+    <div class="f-1 container container--wide">
+      <div tabindex="-1" style="outline: none;">
+        <div tabindex="-1" style="outline: none;">
+          <div class="mb-3" style="">
+            {{ category.description }}
+          </div>
+          <div data-testid="grid" class="grid grid-cols-1 gap-3" style="">
+            <div data-testid="grid" class="grid grid-cols-1 gap-2">
+              <div>
+                <div class="d-f jc-sb ai-c">
+                  <div style="flex: 1 1 0%; position: relative">
+                    <input type="text" value="" style="padding-left: 32px" />
+                    <span style="color: var(--color-tint4); font-size: 14px; left: 10px; top: 11px; position: absolute; z-index: 1;">
+                      <svg role="img" class="symbol">
+                        <use xlink:href="/packs/b3a0770f4291d3f4e59b.svg#search"></use>
+                      </svg>
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div>
+              <div data-testid="grid" class="filter-buttons grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+                <button aria-expanded="false" aria-haspopup="true" aria-controls="menu--8" class="select truncate ta-l" data-reach-menu-button="" type="button" id="menu-button--menu--8">Group Type</button>
+                <div data-reach-popover="" data-reach-menu="" data-reach-menu-popover="">
+                  <div aria-labelledby="menu-button--menu--8" role="menu" id="menu--8" data-reach-menu-list="" data-reach-menu-items="" tabindex="-1" style="max-height: 15.5rem; max-width: 13rem; overflow: auto;">
+                    <div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="(any)" tabindex="-1" id="option-0--menu--8">(any)</div>
+                    {% for option in group_types_filter.options %}
+                      <div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="{{ option.value }}" tabindex="-1" id="option-{{loop.index}}--menu--8">{{ option.label }}</div>
+                    {% endfor %}
+                  </div>
+                </div>
+                <button aria-expanded="false" aria-haspopup="true" aria-controls="menu--9" class="select truncate ta-l" data-reach-menu-button="" type="button" id="menu-button--menu--9">Location Type</button>
+                <div data-reach-popover="" data-reach-menu="" data-reach-menu-popover="">
+                  <div aria-labelledby="menu-button--menu--9" role="menu" id="menu--8" data-reach-menu-list="" data-reach-menu-items="" tabindex="-1" style="max-height: 15.5rem; max-width: 13rem; overflow: auto;">
+                    <div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="(any)" tabindex="-1" id="option-0--menu--9">(any)</div>
+                    {% for option in locations_filter.options %}
+                      <div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="{{ option.value }}" tabindex="-1" id="option-{{loop.index}}--menu--9">{{ option.label }}</div>
+                    {% endfor %}
+                  </div>
+                </div>
+                <button aria-expanded="false" aria-haspopup="true" aria-controls="menu--10" class="select truncate ta-l" data-reach-menu-button="" type="button" id="menu-button--menu--10">Target Audience</button>
+                <div data-reach-popover="" data-reach-menu="" data-reach-menu-popover="">
+                  <div aria-labelledby="menu-button--menu--10" role="menu" id="menu--8" data-reach-menu-list="" data-reach-menu-items="" tabindex="-1" style="max-height: 15.5rem; max-width: 13rem; overflow: auto;">
+                    <div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="(any)" tabindex="-1" id="option-0--menu--10">(any)</div>
+                    {% for option in target_audience_filter.options %}
+                      <div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="{{ option.value }}" tabindex="-1" id="option-{{loop.index}}--menu--10">{{ option.label }}</div>
+                    {% endfor %}
+                  </div>
+                </div>
+                <button aria-expanded="false" aria-haspopup="true"aria-controls="menu--11" class="select truncate ta-l" data-reach-menu-button="" type="button" id="menu-button--menu--11">Frequency</button>
+                <div data-reach-popover="" data-reach-menu="" data-reach-menu-popover="">
+                  <div aria-labelledby="menu-button--menu--11" role="menu" id="menu--8" data-reach-menu-list="" data-reach-menu-items="" tabindex="-1" style="max-height: 15.5rem; max-width: 13rem; overflow: auto;">
+                    <div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="(any)" tabindex="-1" id="option-0--menu--11">(any)</div>
+                    {% for option in frequency_filter.options %}
+                      <div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="{{ option.value }}" tabindex="-1" id="option-{{loop.index}}--menu--11">{{ option.label }}</div>
+                    {% endfor %}
+                  </div>
+                </div>
+                <button aria-expanded="false" aria-haspopup="true" aria-controls="menu--12" class="select truncate ta-l" data-reach-menu-button="" type="button" id="menu-button--menu--12">Neighborhood | Area</button>
+                <div data-reach-popover="" data-reach-menu="" data-reach-menu-popover="">
+                  <div aria-labelledby="menu-button--menu--12" role="menu" id="menu--8" data-reach-menu-list="" data-reach-menu-items="" tabindex="-1" style="max-height: 15.5rem; max-width: 13rem; overflow: auto;">
+                    <div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="(any)" tabindex="-1" id="option-0--menu--12">(any)</div>
+                    {% for option in neighborhood_filter.options %}
+                      <div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="{{ option.value }}" tabindex="-1" id="option-{{loop.index}}--menu--12">{{ option.label }}</div>
+                    {% endfor %}
+                  </div>
+                </div>
+                <button aria-expanded="false" aria-haspopup="true" aria-controls="menu--13" class="select truncate ta-l" data-reach-menu-button="" type="button" id="menu-button--menu--13">Time Zone</button>
+                <div data-reach-popover="" data-reach-menu="" data-reach-menu-popover="">
+                  <div aria-labelledby="menu-button--menu--13" role="menu" id="menu--8" data-reach-menu-list="" data-reach-menu-items="" tabindex="-1" style="max-height: 15.5rem; max-width: 13rem; overflow: auto;">
+                    <div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="(any)" tabindex="-1" id="option-0--menu--13">(any)</div>
+                    {% for option in time_zone_filter.options %}
+                      <div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="{{ option.value }}" tabindex="-1" id="option-{{loop.index}}--menu--13">{{ option.label }}</div>
+                    {% endfor %}
+                  </div>
+                </div>
+                <button aria-expanded="false" aria-haspopup="true" aria-controls="menu--14" class="select truncate ta-l" data-reach-menu-button="" type="button" id="menu-button--menu--14">Day of the Week</button>
+                <div data-reach-popover="" data-reach-menu="" data-reach-menu-popover="">
+                  <div aria-labelledby="menu-button--menu--14" role="menu" id="menu--8" data-reach-menu-list="" data-reach-menu-items="" tabindex="-1" style="max-height: 15.5rem; max-width: 13rem; overflow: auto;">
+                    <div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="(any)" tabindex="-1" id="option-0--menu--14">(any)</div>
+                    {% for option in day_of_week_filter.options %}
+                      <div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="{{ option.value }}" tabindex="-1" id="option-{{loop.index}}--menu--14">{{ option.label }}</div>
+                    {% endfor %}
+                  </div>
+                </div>
+                <button aria-expanded="false" aria-haspopup="true" aria-controls="menu--15" class="select truncate ta-l" data-reach-menu-button="" type="button" id="menu-button--menu--15">Time of Day</button>
+                <div data-reach-popover="" data-reach-menu="" data-reach-menu-popover="">
+                  <div aria-labelledby="menu-button--menu--15" role="menu" id="menu--8" data-reach-menu-list="" data-reach-menu-items="" tabindex="-1" style="max-height: 15.5rem; max-width: 13rem; overflow: auto;">
+                    <div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="(any)" tabindex="-1" id="option-0--menu--15">(any)</div>
+                    {% for option in time_of_day_filter.options %}
+                      <div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="{{ option.value }}" tabindex="-1" id="option-{{loop.index}}--menu--15">{{ option.label }}</div>
+                    {% endfor %}
+                  </div>
+                </div>
+              </div>
+              <div class="mb-3">
+                <input type="checkbox" id="enrollment-status" class="checkbox"/>
+                <label for="enrollment-status" class="checkbox-label" >Include closed &amp; full groups</label>
+              </div>
+            </div>
+            <div>
+              <section data-testid="grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3 md:gap-4">
+                {% for group in groups %}
+                  {% if group.visibility == "Yes" %}
+                  <article class="d-b">
+                    <a href="/group/{{ group.dynamic_page_slug }}" class="d-b">
+                      <div class="card-list-item__image">
+                        <img loading="lazy" alt="Logo for {{ group.name }}" src="{{ group.featured_image }}" />
+                      </div>
+                      <div class="d-f jc-sb ai-fs">
+                        <h1 class="lh-1.333 c-tint0 fs-3 fw-600">{{ group.name }}</h1>
+                        <span class="badge ml-2 {{ 'open' if group.enrollment_open else 'closed' }}-badge" style="text-transform: capitalize">{{ "Open" if group.enrollment_open else "Closed" }}</span>
+                      </div>
+                      <div class="c-tint1 fs-13">{{ group.schedule }}</div>
+                    </a>
+                  </article>
+                  {% endif %}
+                {% endfor %}
+              </section>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endif %}
