@@ -1,3 +1,7 @@
+<!--
+  templateType: global_partial
+  label: Group Members Tab
+-->
 {% set group_leaders = crm_associations(group.id, "USER_DEFINED", 229, "").results %}
 {% set group_members = crm_associations(group.id, "USER_DEFINED", 305, "").results %}
 {% set member_count = group_leaders|length + group_members|length %}

@@ -1,0 +1,22 @@
+<!--
+  templateType: global_partial
+  label: Event Detail
+-->
+<main class="body-container-wrapper event-listing-template">
+  <div id="main_page_content" class="f-1 page-content">
+    <div class="f-1 container container--wide">
+      <div tabindex="-1" style="outline: none;">
+        <div tabindex="-1" style="outline: none;">
+          <div class="recurring">
+            {% include "./event-header.html" %}
+            {% include "./event-register-bar.html" %}
+            <div class="d-f@md">
+              {% include "./event-sidebar.html" %}
+              {% include "./event-content.html" %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
