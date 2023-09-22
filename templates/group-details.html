@@ -1,0 +1,31 @@
+<!--
+  templateType: page
+  isAvailableForNewContent: true
+  label: Portal - Group Details
+-->
+{% extends "./layouts/base.html" %}
+
+{% block body %}
+<main class="body-container-wrapper group-details-template">
+  {% if dynamic_page_crm_object %}
+    {% set group = dynamic_page_crm_object %}
+    {# TODO: Convert to 2 queries, past and upcomming #}
+    {% set event_query = "limit=200&orderBy=starts_at" %}
+    {% set events = crm_associations(group.id, "USER_DEFINED", 219, event_query, "name, description, starts_at, starts_at_time, ends_at, ends_at_time").results %}
+    <div class="f-1 page-content" id="main_page_content">
+      <div class="f-1 container container--wide">
+        <div style="outline: none;" tabindex="-1">
+          <div style="outline: none;" tabindex="-1">
+            {% include "./partials/groups/group-header.html" %}
+            {% include "./partials/groups/group-enrollment-bar.html" %}
+            <div class="d-f@md mt-2 mt-0@sm" style="">
+              {% include "./partials/groups/group-sidebar.html" %}
+              {% include "./partials/groups/group-content.html" %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+</main>
+{% endblock body %}

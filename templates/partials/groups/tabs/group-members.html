@@ -1,0 +1,63 @@
+{% set group_leaders = crm_associations(group.id, "USER_DEFINED", 229, "").results %}
+{% set group_members = crm_associations(group.id, "USER_DEFINED", 305, "").results %}
+{% set member_count = group_leaders|length + group_members|length %}
+<div class="f-1">
+	<div class="d-f jc-sb mt-1 mb-2">
+		<h1 class="lh-1.333 c-tint0 fs-2 fw-600">{{ member_count }} Members</h1>
+		<div class="d-f" style="gap: 0.5rem;">
+		</div>
+	</div>
+
+	<div>
+		<a href="/my/groups/interest-crafting-and-conversations/membership/edit">
+			<article class="d-f ai-c mb-2 pb-2 my-member__row">
+				<div class="w-8 h-8 mr-2">
+					<img alt="avatar" src="https://avatars.planningcenteronline.com/uploads/initials/RW.png?background_color=EEE&amp;color=9E9E9E" style="border-radius: 50%; width: 100%; height: 100%; object-fit: cover;">
+				</div>
+				<div class="f-1 d-f jc-sb ai-c">
+					<div class="d-f fd-c ai-fs">
+						<h3 class="lh-1.333 c-tint0 fs-3 fw-600">Richard Walsh</h3>
+						<span class="fs-13 lh-1.5 c-brand">Edit visible info</span>
+					</div>
+				</div>
+			</article>
+		</a>
+		{% for leader in group_leaders %}
+			{% if leader.id != contact_id %}
+			<a id="leader-{{leader.id}}" class="member-modal-btn" data-id="{{ leader.id }}" href="javascript:void(0);">
+				<article class="d-f ai-c mb-2">
+					<div class="w-8 h-8 mr-2">
+						<img alt="avatar" src="https://avatars.planningcenteronline.com/uploads/initials/ER.png?background_color=EEE&amp;color=9E9E9E" style="border-radius: 50%; width: 100%; height: 100%; object-fit: cover;">
+					</div>
+					<div class="f-1 d-f jc-sb ai-c">
+						<div class="d-f fd-c ai-fs">
+							<h3 class="lh-1.333 c-tint0 fs-3 fw-600">{{ leader.firstname ~ " " ~ leader.lastname }}</h3>
+							<span class="fs-13 lh-1.5 c-brand">Member info</span>
+						</div>
+						<div>
+							<span class="badge">Leader</span>
+						</div>
+					</div>
+				</article>
+			</a>
+			{% endif %}
+		{% endfor %}
+		{% for member in group_members %}
+			{% if member.id != contact_id %}
+			<a id="member-{{member.id}}" class="member-modal-btn" data-id="{{ member.id }}" href="javascript:void(0);">
+				<article class="d-f ai-c mb-2">
+					<div class="w-8 h-8 mr-2">
+						<img alt="avatar" src="https://avatars.planningcenteronline.com/uploads/initials/BS.png?background_color=EEE&amp;color=9E9E9E" style="border-radius: 50%; width: 100%; height: 100%; object-fit: cover;">
+					</div>
+					<div class="f-1 d-f jc-sb ai-c">
+						<div class="d-f fd-c ai-fs">
+							<h3 class="lh-1.333 c-tint0 fs-3 fw-600">{{ member.firstname ~ " " ~ member.lastname }}</h3>
+							<span class="fs-13 lh-1.5 c-brand">Member info</span>
+						</div>
+					</div>
+				</article>
+			</a>
+			{% endif %}
+		{% endfor %}
+	</div>
+</div>

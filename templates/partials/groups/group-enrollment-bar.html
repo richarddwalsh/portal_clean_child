@@ -1,0 +1,67 @@
+<!--
+  templateType: global_partial
+  label: Group Enrollment Bar
+-->
+{{ require_js(get_asset_url("/PORTAL_Clean_Child/js/group-enrollment-bar.js"), { position: 'footer'}) }}
+<div class="d-f ai-c jc-sb px-2 action-drawer action-bar mb-1@sm mb-3@md" style="gap: 1rem;">
+  <div class="d-f fd-c ai-fs fg-1">
+    <p class="fs-4 m-0 c-tint2">{{ 'Group is open' if group.enrollment_open else 'This group is not currently accepting new members.' }}</p>
+    {# TODO: Trigger Pop Up To Send Message #}
+    {# Show "My Information" #}
+    {# Text Area #}
+    <button class="btn minor-compact-btn d-b mt-4p" id="contact-btn" style="color: var(--color-brand);">Contact</button>
+  </div>
+  <div>
+    {% if group.enrollment_open %}
+      {% if request_contact.is_logged_in %}
+        <button class="btn">Join</button>
+        {# If member changes to View Group, url https://one-online.churchcenter.com/my/groups/interest-crafting-and-conversations #}
+      {% else %}
+        {% set return_path = "https://" ~ request.domain ~ request.path %}
+        <a href="/_hcms/mem/login?return={{return_path|urlencode}}" class="btn">Joi 2</a>
+      {% endif %}
+    {% endif %}
+  </div>
+</div>
+
+<div id="message-modal" data-focus-lock-disabled="false" style="display:none">
+	<div>
+		<div data-reach-alert-dialog-overlay="true" data-reach-dialog-overlay="">
+			<div aria-describedby="alert-dialog-description--1" aria-labelledby="alert-dialog--1" data-reach-alert-dialog-content="true" data-reach-alert-dialong-content="true" data-reach-dialog-content="" role="alertdialog" tabindex="-1">
+				<div class="mb-1" data-reach-alert-dialog-label="true" id="alert-dialog--1">
+					Send message
+				</div>
+				<div data-reach-alert-dialog-description="true" id="alert-dialog-description--1">
+					<form>
+						<div class="mb-2">
+							<h2 class="lh-1.333 c-tint0 fs-3 fw-600">My information</h2>
+							<div class="d-f ai-c jc-sb action-drawer mt-1">
+								<div class="d-f">
+									<div class="w-6 h-6 mr-2"><img alt="Richard Walsh" src="https://avatars.planningcenteronline.com/uploads/initials/RW.png?background_color=EEE&amp;color=9E9E9E" style="border-radius: 50%; width: 100%; height: 100%; object-fit: cover;"></div>
+									<div class="d-f fd-c">
+										<div>
+											Richard Walsh
+										</div>
+										<div class="fs-13 c-tint2">
+											rwalsh@bluefrogdm.com
+										</div>
+									</div>
+								</div><a class="minor-compact-btn btn" href="/logout">Log Out</a>
+							</div>
+						</div>
+						<div class="field-group mb-2">
+							<label class="label" for="body">Message <span class="c-ruby">*</span></label>
+							<textarea class="textarea" id="body" maxlength="500" name="body" placeholder="Have questions before joining? Ask here and someone will get back to you soon!" rows="4"></textarea>
+							<div class="ta-r">
+								<span class="c-tint3 fs-5">500 characters remaining</span>
+							</div>
+						</div>
+						<div class="d-f jc-fe mt-3">
+							<button class="btn text-btn mr-2">Cancel</button><button class="btn" disabled type="submit">Send message</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

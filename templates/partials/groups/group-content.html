@@ -1,0 +1,67 @@
+<div class="f-1 pr-4@md o-h">
+  <h2 class="lh-1.333 c-tint0 fs-2 fw-600">About {{ group.name }}</h2>
+  <div class="mt-2 mb-3 mb-4@md" data-preformatted-content="heading-scale:legacy-church-center">
+    <div>
+      {{ group.description_html }}
+    </div>
+  </div>
+  {% if events|length > 0 %}
+  <div class="mb-3" style="min-height: 200px;">
+    <div class="mb-3"></div>
+    <div class="mb-3">
+      <h2 class="h3">Past events</h2>
+      <div>
+        {% for event in events %}
+          {% set dateStr = event.starts_at %}
+          {% set dateArr = dateStr|split("/", 1000) %}
+          {% set useDate = [
+              (dateArr[2]|int + 2000),
+              (dateArr[0]|length == 1 ? '0' + dateArr[0] : dateArr[0]),
+              (dateArr[1]|length == 1 ? '0' + dateArr[1] : dateArr[1])
+            ]
+          %}
+          {# TODO: Replace With starts_at_time #}
+          {% set start_date = (useDate[0] + "-" + useDate[1] + "-" + useDate[2] + "T14:31:30+0530")|strtotime("yyyy-MM-dd'T'HH:mm:ssZ")  %}
+          
+        <div class="d-f mb-1 pt-1">
+          <article class="d-f f-1 ai-c">
+            <div class="mr-2">
+              <a href="/events/{{ event.id }}">
+                <div class="w-8 h-8 ta-c event-cal">
+                  <div class="event-cal__month">
+                    {{ start_date|datetimeformat('MMM') }}
+                  </div>
+                  <div class="event-cal__day">
+                    {{ start_date|datetimeformat('dd') }}
+                  </div>
+                </div>
+              </a>
+            </div>
+            <div class="f-1">
+              <a class="fw-500" href="/events/{{ event.id }}">
+                <div class="lh-1.5 mb-2p">
+                  {{ event.name }}
+                  <span class="d-ib ml-4p c-tint3">
+                    <svg class="symbol" role="img">
+                      <use xlink:href="/packs/b3a0770f4291d3f4e59b.svg#calendar-repeat"></use>
+                    </svg>
+                  </span>
+                </div>
+              </a>
+              <div class="fs-13 lh-1.5 c-tint2">
+                <time>{{ start_date|datetimeformat('%A, %B %e, %Y') }}, 4–6:30pm PDT</time>
+              </div>
+            </div>
+          </article>
+        </div>
+        {% endfor %}
+      </div>
+      {# TODO: UPDATE FOR INFINITE SCROLL
+      <div class="mt-2 mb-1">
+        <a class="minor-btn secondary-btn btn" href="/groups/groups/book-study-promise-journey-led-by-jas-atl/events/past">View All</a>
+      </div>
+      #}
+    </div>
+  </div>
+  {% endif %}
+</div>

@@ -14722,3 +14722,16 @@ _:-moz-tree-row(hover) {
     color: var(--color-ruby);
     content: " *"
 }
+
+@media (min-width: 720px) {
+    .css-736fdb {
+    margin: 0px;
+    order: 2;
+    }
+}
+
+.message {
+    padding: 1rem 1rem 0.25rem;
+    background-color: var(--alert--primary);
+    color: var(--alert--text);
+}

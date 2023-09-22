@@ -1,6 +1,0 @@
-{
-  "global" : false,
-  "host_template_types" : [ "PAGE" ],
-  "label" : "Portal - Group Details",
-  "is_available_for_new_content" : true
-}

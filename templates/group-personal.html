@@ -1,0 +1,165 @@
+<!--
+  templateType: page
+  isAvailableForNewContent: true
+  label: Portal - My Group Details
+-->
+
+{% extends "./layouts/base.html" %}
+
+{% block body %}
+  <main class="body-container-wrapper my-group-template">
+    {% set group = dynamic_page_crm_object %}
+    {% set lists = [1121, 1122] %}
+    {% set contact = request_contact %}
+    {% set contact_id = contact.contact_vid %}
+    {% set memberships = request_contact.list_memberships %}
+    {% if dynamic_page_crm_object_type_fqn %}
+      {% set fields = "name,featured_image,dynamic_page_slug,contact_name,schedule" %}
+      {% set my_leadership_groups = crm_associations(contact_id, "USER_DEFINED", 230, "", fields).results %}
+      {% set my_membership_groups = crm_associations(contact_id, "USER_DEFINED", 306, "", fields).results %}
+      {% set groups = my_leadership_groups|union(my_membership_groups) %}
+      <nav aria-label="Breadcrumb" class="breadcrumbs">
+        <div class="breadcrumbs__layout">
+          <a aria-label="Me" class="breadcrumbs__page" href="/me">
+            <span class="text">Me</span>
+            <span class="icon">
+              <svg class="symbol" role="img">
+                <use xlink:href="/packs/89968e94549de0745d44.svg#three-dots"></use>
+              </svg>
+            </span>
+          </a>
+          <span class="breadcrumbs__divider-icon">
+            <svg class="symbol" role="img">
+              <use xlink:href="/packs/b3a0770f4291d3f4e59b.svg#right-chevron"></use>
+            </svg>
+          </span>
+          <a aria-label="My groups" class="breadcrumbs__page" href="/my/groups">
+            <span class="text">My groups</span><span class="icon">
+              <svg class="symbol" role="img">
+                <use xlink:href="/packs/89968e94549de0745d44.svg#three-dots"></use>
+              </svg>
+            </span>
+          </a>
+        </div>
+      </nav>
+      <div class="f-1 pb-4 pt-4" id="main_page_content">
+        <div class="f-1 container container--wide">
+          <div tabindex="-1" style="outline: none;">
+            <div tabindex="-1" style="outline: none;">
+              <section id="groups_collection pt-4 pb-4">
+                <div class="mb-2">
+                  <h1 class="lh-1.333 c-tint0 fs-2 fw-600">My groups</h1>
+                </div>
+                <div>
+                  {% for group in groups %}
+                  <article class="d-f mb-2">
+                    <div class="mr-2">
+                      <a href="{{ request.path }}/{{ group.dynamic_page_slug }}">
+                        <div class="profile-item__image">
+                          <img src="{{ group.featured_image }}" alt="Logo for {{ group.name }}">
+                        </div>
+                      </a>
+                    </div>
+                    <div class="f-1 d-f@sm jc-sb g-1">
+                      <div class="f-1">
+                        <div class="lh-1.25">
+                          <a href="{{ request.path }}/{{ group.dynamic_page_slug }}" style="color: inherit;">{{ group.name }}</a>
+                          <span class="badge ml-4p open-badge tt-c">open</span>
+                        </div>
+                        <div class="fs-4 lh-1.5 c-tint2">
+                          <div>
+                            <span class="c-secondary">Leader:&nbsp;</span>{{ group.contact_name }}
+                          </div>
+                        </div>
+                        <div class="fs-4 lh-1.5 c-tint2">
+                          <div>Schedule: {{ group.schedule }}</div>
+                        </div>
+                      </div>
+                      <button class="mt-1 mt-0@sm destroy-btn secondary-btn minor-btn btn" data-id="{{ group.id }}">Leave this group</button>
+                    </div>
+                  </article>
+                  {% endfor %}
+                </div>
+              </section>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-focus-lock-disabled="false" style="display:none;"><div><div data-reach-alert-dialog-overlay="true" data-reach-dialog-overlay=""><div aria-modal="true" role="alertdialog" tabindex="-1" aria-describedby="alert-dialog-description--1" aria-labelledby="alert-dialog--1" data-reach-alert-dialong-content="true" data-reach-alert-dialog-content="true" data-reach-dialog-content=""><div class="mb-1" id="alert-dialog--1" data-reach-alert-dialog-label="true">Leave Interest: Crafting and Conversations</div><div id="alert-dialog-description--1" data-reach-alert-dialog-description="true">Are you sure you would like to leave Interest: Crafting and Conversations?<div class="d-f jc-fe mt-3"><button class="btn text-btn mr-2">Cancel</button><button class="btn"><div>Yes, leave group</div></button></div></div></div></div></div></div>
+    {% elif dynamic_page_crm_object %}
+    <nav aria-label="Breadcrumb" class="breadcrumbs">
+      <div class="breadcrumbs__layout">
+        <a aria-label="Me" class="breadcrumbs__page" href="/me">
+          <span class="text">Me</span>
+          <span class="icon">
+            <svg class="symbol" role="img">
+              <use xlink:href="/packs/89968e94549de0745d44.svg#three-dots"></use>
+            </svg>
+          </span>
+        </a>
+        <span class="breadcrumbs__divider-icon">
+          <svg class="symbol" role="img">
+            <use xlink:href="/packs/b3a0770f4291d3f4e59b.svg#right-chevron"></use>
+          </svg>
+        </span>
+        <a aria-label="My groups" class="breadcrumbs__page" href="/my/groups">
+          <span class="text">My groups</span><span class="icon">
+            <svg class="symbol" role="img">
+              <use xlink:href="/packs/89968e94549de0745d44.svg#three-dots"></use>
+            </svg>
+          </span>
+        </a>
+        <span class="breadcrumbs__divider-icon">
+          <svg class="symbol" role="img">
+            <use xlink:href="/packs/b3a0770f4291d3f4e59b.svg#right-chevron"></use>
+          </svg>
+        </span>
+        <a aria-label="Interest: Crafting and Conversations" class="breadcrumbs__page breadcrumbs__current-page" href="/my/groups/interest-crafting-and-conversations">
+          <span class="text">{{ group.name }}</span>
+          <span class="icon">
+            <svg class="symbol" role="img">
+              <use xlink:href="/packs/89968e94549de0745d44.svg#three-dots"></use>
+            </svg>
+          </span>
+        </a>
+        <button aria-controls="menu--103" aria-expanded="false" aria-haspopup="true" class="minor-btn secondary-btn btn" data-reach-menu-button="" id="menu-button--menu--103" style="margin-left: auto;" type="button">
+          Actions
+          <span class="fs-6 pl-4p dropdown-trigger__icon">
+            <svg class="symbol" role="img">
+              <use xlink:href="/packs/b3a0770f4291d3f4e59b.svg#down-chevron"></use>
+            </svg>
+          </span>
+        </button>
+      </div>
+    </nav>
+    <div class="f-1 page-content" id="main_page_content">
+      <div class="f-1 container container--wide">
+        <div style="outline: none;" tabindex="-1">
+          <div style="outline: none;" tabindex="-1">
+            <div style="outline: none;" tabindex="-1">
+              <div class="d-f@md">
+                <nav class="sub-navigation mr-4 d-n d-b@md">  
+                  <a class="sub-navigation__link {{ 'is-active-link' if request.query_dict.tab == "messages" }}" href="{{ request.path_and_query }}&tab=messages">Messaging</a>
+                  <a class="sub-navigation__link {{ 'is-active-link' if request.query_dict.tab == "events" }}" href="{{ request.path_and_query }}&tab=events">Events</a>
+                  <a class="sub-navigation__link {{ 'is-active-link' if request.query_dict.tab == "resources" }}" href="{{ request.path_and_query }}&tab=resources">Resources</a>
+                  <a class="sub-navigation__link {{ 'is-active-link' if request.query_dict.tab == "members" }}" href="{{ request.path_and_query }}&tab=members">Members</a>
+                </nav>
+                <button aria-controls="menu--1" aria-expanded="false" aria-haspopup="true" class="d-n@md mb-2 ta-l select" data-reach-menu-button="" id="menu-button--menu--1" type="button">Messaging</button>
+                {% if request.query_dict.tab == "events" %}
+                  {% include "./partials/groups/tabs/group-events.html" %}
+                {% elif request.query_dict.tab == "resources" %}
+                  {% include "./partials/groups/tabs/group-resources.html" %}
+                {% elif request.query_dict.tab == "members" %}
+                  {% include "./partials/groups/tabs/group-members.html" %}
+                {% else %}
+                  {% include "./partials/groups/tabs/group-messages.html" %}
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+{% endif %}
+{% endblock body %}

@@ -1,0 +1,17 @@
+<!--
+  templateType: page
+  isAvailableForNewContent: true
+  label: Portal - Group Categories
+-->
+{% extends "./layouts/base.html" %}
+
+{% block body %}
+<main class="body-container-wrapper group-categories-template">
+  {% if dynamic_page_crm_object_type_fqn %}
+    {% include "./partials/groups/group-category-list.html" %}
+  {% elif dynamic_page_crm_object %}
+    {% include "./partials/groups/group-category.html" %}
+    {{ require_js(get_asset_url("/PORTAL_Clean_Child/js/group-category.js"), { position: 'footer'}) }}
+  {% endif %}
+</main>
+{% endblock body %}

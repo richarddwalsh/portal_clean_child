@@ -1,0 +1,25 @@
+<!--
+  templateType: global_partial
+  label: Group Sidebar
+-->
+<div class="w-33%@md o-1@md fs-4 pt-4p">
+  <div class="mb-3 mb-4@md pt-2p">
+    <h2 class="fs-4 fw-600 lh-20p tt-u c-tint3">Schedule</h2>
+    <div class="mt-1">
+      {{ group.schedule }}
+    </div>
+  </div>
+  {# todo: swap to contact association #}
+  <div class="mb-3">
+    <h2 class="fs-4 fw-600 lh-20p tt-u c-tint3">Leader</h2>
+    <div class="mt-1">
+      <p class="fs-4 mb-0 c-tint1">{{ group.leader_name }}</p>
+    </div>
+  </div>
+  <section class="mb-4">
+    <div class="mb-1">
+      <h2 class="fs-4 fw-600 lh-20p tt-u c-tint3">Location</h2>
+    </div>
+    <p class="mb-0 fs-4 c-tint1">{{ 'Online' if group.location_type_preference else 'In Person' }}</p>
+  </section>
+</div>

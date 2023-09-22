@@ -1,0 +1,24 @@
+<div class="f-1">
+  <div style="">
+    <div class="d-f jc-sb ai-c mb-2">
+      <h1 class="lh-1.333 c-tint0 fs-2 fw-600">Messaging</h1>
+    </div>
+    {% if group.announcement %}
+      <article class="mb-1 message info-alert">
+        <div class="d-f">
+          <div class="f-1">
+            {{ group.announcement }}
+          </div>
+        </div>
+      </article>
+    {% else %}
+      <article class="mb-1 message">
+        <div class="d-f">
+          <div class="f-1">
+            <p>There are currently no announcements regarding this group.</p>
+          </div>
+        </div>
+      </article>
+    {% endif %}
+  </div>
+</div>
