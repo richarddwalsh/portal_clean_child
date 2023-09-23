@@ -1,0 +1,19 @@
+{
+  "global" : true,
+  "smart_type" : "NOT_SMART",
+  "icon" : "https://cdn2.hubspot.net/hubfs/507386/CLEAN-images/module-icons/icon-header.svg",
+  "host_template_types" : [ "PAGE", "BLOG_POST", "BLOG_LISTING" ],
+  "module_id" : 136219558240,
+  "css_assets" : [ {
+    "autoload" : true,
+    "path" : "../../../@marketplace/Helpful_Hero/CLEAN-6-1-theme/css/modules/global-header-v2.css",
+    "name" : "global-header-v2.css"
+  } ],
+  "js_assets" : [ {
+    "autoload" : true,
+    "path" : "../../../@marketplace/Helpful_Hero/CLEAN-6-1-theme/js/mega-menu.js",
+    "name" : "mega-menu.js"
+  } ],
+  "label" : "Global Header - Opt2 (Pro)",
+  "is_available_for_new_content" : true
+}

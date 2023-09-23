@@ -1,0 +1,1749 @@
+{# 
+ NAME: GLOBAL HEADER V2
+ MODULE VERSION: 1.1.9
+ CLEAN PRO VERSION: 6.2
+ LAST UPDATED: 5/31/23
+ REMINDER: You Rock!
+#}
+
+{% require_css %}
+<style>
+
+  {# MAIN DESKTOP NAV STYLE #}
+  
+  .hhs-top-bar {
+    background-color: rgba({{ module.style.header_bg_color.color|convert_rgb }}, {% if module.style.header_bg_color.opacity == '100' %}1{% else %}0.{{ module.style.header_bg_color.opacity }}{% endif %});
+    padding: {{ module.style.standard_tb_padding }}px 0;
+    {% if module.start.header_overlap %}
+      position: absolute;
+      left: 0;
+      right: 0;
+      z-index: 999;
+    {% endif %}
+  }
+  .hhs-top-bar.sticky-menu.active {
+    padding: {{ module.style.sticky_tb_padding }}px 0; 
+  }
+  
+  @media (min-width: 992px) {
+    {% if module.style.header_width == 'container' %}
+      .hhs-header-hat .container,
+      .hhs-top-bar .container {
+        padding-right: 30px;
+        padding-left: 30px;
+      }
+    {% endif %}
+  }
+  
+  {# LOGOS #}
+  
+  .hhs-top-bar.hhs-alt-nav .logo-sticky,
+  .logo-standard  {
+    max-width: {{ module.start.logo.size_desktop }}px;
+    float: left;
+  }
+  
+  .hhs-top-bar.hhs-alt-nav.sticky-menu.active .logo-sticky,
+  .logo-sticky  {
+    max-width: {{ module.start.logo.size_sticky }}px;
+    float: left;
+  }
+  
+  .hhs-header-logo {
+    padding-top:  {{ module.start.logo.space_above_logo }}px;
+  }
+  
+  {# MENU STYLE #}
+  .hhs-nav-grid__menu {
+    {% if module.style.nav_menu_align == 'left' %}
+      margin-right: auto;
+      margin-left: 25px;
+    {% elif module.style.nav_menu_align == 'center' %}
+      margin: 0 auto;
+    {% else %}
+      margin-left: auto;
+    {% endif %}
+  }
+  
+  .hhs-top-bar .hs-menu-wrapper.hs-menu-flow-horizontal>ul li a,
+  .hs-menu-wrapper.hs-menu-flow-horizontal ul.hhs-nav-links .hs-menu-item a {
+    color: rgba({{ module.style.nav_link_color.color|convert_rgb }}, {{ module.style.nav_link_color.opacity * 0.01 }});
+  }
+  
+  
+  .hhs-top-bar .hs-menu-wrapper.hs-menu-flow-horizontal>ul li {
+    margin: 15px {{ module.style.nav_spacing }}px;
+  }
+  
+  .hhs-top-bar .hs-menu-wrapper.hs-menu-flow-horizontal>ul li a:hover,
+  .hs-menu-wrapper.hs-menu-flow-horizontal ul.hhs-nav-links .hs-menu-item a:hover,
+  .hhs-top-bar .hs-menu-wrapper.hs-menu-flow-horizontal>ul li a:hover,
+  .hhs-header-search a i:hover,
+  .hhs-lang-switch .globe_class:hover{
+    color: rgba({{ module.style.nav_link_color_hover.color|convert_rgb }}, {{ module.style.nav_link_color_hover.opacity * 0.01 }});
+  } 
+  
+  .hhs-header-search a i{
+    color: rgba({{ module.style.nav_link_color.color|convert_rgb }}, {% if module.style.nav_link_color.opacity == '100' %}1{% else %}0.{{ module.style.nav_link_color.opacity }}{% endif %});
+    
+  }
+  
+  .hhs-top-bar .hs-menu-wrapper.hs-menu-flow-horizontal>ul li.hs-menu-depth-1.active:after,
+  .hhs-top-bar .hs-menu-wrapper.hs-menu-flow-horizontal>ul li.hs-menu-depth-1:after {
+    background-color: rgba({{ module.style.standard_underline_color.color|convert_rgb }}, {{ module.style.standard_underline_color.opacity * 0.01 }});
+  }
+  
+  {# LANGUAGE SWITCHER #}
+  
+  .hhs-lang-switch .globe_class:before{
+    color: rgba({{ module.style.nav_link_color.color|convert_rgb }}, {% if module.style.nav_link_color.opacity == '100' %}1{% else %}0.{{ module.style.nav_link_color.opacity }}{% endif %});
+  }
+  
+  .lang_list_class li {
+     background: rgba({{  module.style.drop_down.bg_color.color|convert_rgb }}, {% if  module.style.drop_down.bg_color.opacity == '100' %}1{% else %}0.{{  module.style.drop_down.bg_color.opacity }}{% endif %}) !important;
+  }
+  
+  .hhs-lang-switch .lang_list_class:after {
+   border-bottom-color: rgba({{  module.style.drop_down.bg_color.color|convert_rgb }}, {% if  module.style.drop_down.bg_color.opacity == '100' %}1{% else %}0.{{  module.style.drop_down.bg_color.opacity }}{% endif %}) !important;
+  }
+  
+  {# STANDARD DROP DOWN MENU #}
+ 
+  .hhs-hat-menu .hs-menu-children-wrapper,
+  .sc-site-header__menu .hs-menu-children-wrapper {
+    background-color: {{ module.style.drop_down.bg_color.color }};
+  }
+  
+  .hhs-hat-menu .hs-menu-children-wrapper:before,
+  .hs-menu-wrapper.hs-menu-flow-horizontal>ul li.hs-item-has-children ul.hs-menu-children-wrapper:before {
+     color: rgba({{  module.style.drop_down.bg_color.color|convert_rgb }}, {% if  module.style.drop_down.bg_color.opacity == '100' %}1{% else %}0.{{  module.style.drop_down.bg_color.opacity }}{% endif %}) !important;
+  }
+  
+  .hhs-hat-menu .hs-menu-children-wrapper li a,
+  .hhs-lang-switch .lang_list_class li a,
+  .custom-menu-primary .hs-menu-wrapper > ul li a, 
+  .hs-menu-wrapper.hs-menu-flow-horizontal > ul li.hs-item-has-children ul.hs-menu-children-wrapper li a,
+  .hhs-lang-switch .lang_list_class li a {
+    color: {{ module.style.drop_down.link_color.color }};
+    font-size: {{ module.style.drop_down.font_size }}px !important;
+  }
+  
+  .hhs-hat-menu .hs-menu-children-wrapper li a:hover,
+  .hhs-lang-switch .lang_list_class li a:hover,
+  .hs-menu-wrapper.hs-menu-flow-horizontal ul.hhs-nav-links .hs-menu-item.hs-menu-depth-2 a:hover,
+  .hhs-top-bar .hs-menu-wrapper.hs-menu-flow-horizontal>ul li.hs-item-has-children ul.hs-menu-children-wrapper li a:hover{
+   background-color:  {{ module.style.drop_down.sub_nav_bg_hover.color }};
+  }
+  
+  .hhs-hat-menu .hs-menu-children-wrapper li a:hover,
+  .hhs-lang-switch .lang_list_class li a:hover,
+  .custom-menu-primary .hs-menu-wrapper > ul li.hs-item-has-children ul.hs-menu-children-wrapper li a:hover,
+  .hs-menu-wrapper.hs-menu-flow-horizontal ul.hhs-nav-links .hs-menu-item.hs-menu-depth-2 a:hover,
+  .hhs-top-bar .hs-menu-wrapper.hs-menu-flow-horizontal>ul li.hs-item-has-children ul.hs-menu-children-wrapper li a:hover{
+   color: {{ module.style.drop_down.sub_nav_text_hover.color }} !important;
+  }
+  .custom-menu-primary .hs-menu-wrapper > ul li.hs-item-has-children ul.hs-menu-children-wrapper li.active a:hover {
+    color: {{ module.style.drop_down.link_color.color }} !important;
+  }
+  
+  .hhs-top-bar.hhs-alt-nav .hs-menu-wrapper.hs-menu-flow-horizontal ul.hhs-nav-links ul .hs-menu-item.sub-active a,
+  .hhs-top-bar .hs-menu-wrapper.hs-menu-flow-horizontal ul.hhs-nav-links ul .hs-menu-item.sub-active a{
+     background-color:  {{ module.style.drop_down.sub_nav_bg_active.color }};
+     color: {{ module.style.drop_down.sub_nav_text_active.color }} !important;
+    }
+    
+  {# STICKY & ALT HEADER #}
+  
+  .hhs-top-bar.hhs-alt-nav.sticky-menu,
+  .hhs-top-bar.sticky-menu,
+  .hhs-top-bar.hhs-alt-nav{
+    background-color: rgba({{ module.style.sticky_header_bg_color.color|convert_rgb }}, {% if module.style.sticky_header_bg_color.opacity == '100' %}1{% else %}0.{{ module.style.sticky_header_bg_color.opacity }}{% endif %});
+  }
+  .sticky-menu.active {
+    background-color: rgba({{ module.style.sticky_header_bg_color.color|convert_rgb }}, {% if module.style.sticky_header_bg_color.opacity == '100' %}1{% else %}0.{{ module.style.sticky_header_bg_color.opacity }}{% endif %});
+  }
+  
+  .hhs-top-bar.sticky-menu .hs-menu-wrapper.hs-menu-flow-horizontal>ul li a,
+  .hhs-top-bar.hhs-alt-nav .hs-menu-wrapper.hs-menu-flow-horizontal>ul li a,
+  .hhs-top-bar.hhs-alt-nav .hs-menu-wrapper.hs-menu-flow-horizontal ul.hhs-nav-links .hs-menu-item a,
+  .hhs-top-bar.hhs-alt-nav .hhs-header-search a i,
+  .hhs-top-bar.hhs-alt-nav .fas,
+  .hhs-top-bar.hhs-alt-nav .hhs-lang-switch .globe_class:before,
+  .sticky-menu .hs-menu-wrapper.hs-menu-flow-horizontal ul.hhs-nav-links li a,
+  .sticky-menu .hhs-nav-grid__extras i,
+  .sticky-menu .hhs-lang-switch .globe_class:before{
+    color: rgba({{ module.style.sticky_nav_link_color.color|convert_rgb }}, {{ module.style.sticky_nav_link_color.opacity * 0.01 }});
+  }
+  
+  .hhs-top-bar.hhs-alt-nav .hs-menu-wrapper.hs-menu-flow-horizontal ul.hhs-nav-links ul .hs-menu-item a {
+    color: {{ module.style.drop_down.link_color.color }};
+  }
+  
+  .hhs-top-bar.sticky-menu .hs-menu-wrapper.hs-menu-flow-horizontal>ul li a:hover,
+  .hhs-top-bar.hhs-alt-nav .hs-menu-wrapper.hs-menu-flow-horizontal>ul li a:hover,
+  .hhs-top-bar.hhs-alt-nav .hhs-top-bar .hs-menu-wrapper.hs-menu-flow-horizontal .hs-menu-depth-1:first-child:hover,
+  .hhs-top-bar.hhs-alt-nav .hhs-header-search a i:hover,
+  .hhs-top-bar.hhs-alt-nav .fas:hover,
+  .hhs-top-bar.hhs-alt-nav .hhs-lang-switch .globe_class:before,
+  .sticky-menu .hhs-top-bar .hs-menu-wrapper.hs-menu-flow-horizontal .hs-menu-depth-1:first-child:hover,
+  .sticky-menu .hs-menu-wrapper.hs-menu-flow-horizontal ul.hhs-nav-links li a:hover,
+  .sticky-menu .hhs-header-search a i:hover{
+    color: rgba({{ module.style.sticky_nav_link_color_hover.color|convert_rgb }}, {{ module.style.sticky_nav_link_color_hover.opacity * 0.01 }});
+  }
+  
+  .hhs-top-bar.hhs-alt-nav .hhs-header-search a i,
+  .hhs-top-bar.hhs-alt-nav .globe_class {
+    color: rgba({{ module.style.sticky_nav_link_color.color|convert_rgb }}, {% if module.style.sticky_nav_link_color.opacity == '100' %}1{% else %}0.{{ module.style.sticky_nav_link_color_hover.opacity }}{% endif %}) !important;
+  }
+  
+  .hhs-top-bar.hhs-alt-nav .hhs-top-bar .hs-menu-wrapper.hs-menu-flow-horizontal>ul li a:hover,
+  .hhs-top-bar.hhs-alt-nav .hhs-header-search a i:hover,
+  .hhs-top-bar.hhs-alt-nav .globe_class:hover {
+    color: rgba({{ module.style.sticky_nav_link_color_hover.color|convert_rgb }}, {% if module.style.sticky_nav_link_color_hover.opacity == '100' %}1{% else %}0.{{ module.style.sticky_nav_link_color_hover.opacity }}{% endif %}) !important;
+  }
+  
+  
+  .hhs-top-bar.hhs-alt-nav .hs-menu-wrapper.hs-menu-flow-horizontal>ul li.hs-menu-depth-1.active:after,
+  .hhs-top-bar.hhs-alt-nav .hs-menu-wrapper.hs-menu-flow-horizontal>ul li.hs-menu-depth-1:after,
+  .sticky-menu.hhs-top-bar .hs-menu-wrapper.hs-menu-flow-horizontal>ul li.hs-menu-depth-1.active:after,
+  .sticky-menu.hhs-top-bar .hs-menu-wrapper.hs-menu-flow-horizontal>ul li.hs-menu-depth-1:after {
+    background-color: rgba({{ module.style.sticky_underline_color.color|convert_rgb }}, {{ module.style.sticky_underline_color.opacity * 0.01 }});
+  }
+ 
+  {# CTA #}
+  
+  .hhs-header-cta .cta-secondary,
+  .hhs-header-cta .cta-tertiary,
+  .hhs-header-cta .cta-primary,
+  .hhs-header-cta .cta-four,
+  .hhs-header-cta .cta-five{
+    padding: {{ module.style.cta_padding_tb }}px {{ module.style.cta_padding_rl }}px !important;
+    font-size: {{ module.style.header_cta_font_size }}px !important;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+  }
+  
+   {# END #}
+   {# SIDE MENU #}
+  
+  .hhs-side-menu {
+   width:  {{ module.style.hamburger.menu_width }}px;
+  }
+  
+  .hhs-side-menu {
+   background-color:  rgba({{ module.style.hamburger.side_menu_bg_color.color|convert_rgb }}, {{ module.style.hamburger.side_menu_bg_color.opacity * 0.01 }});
+  }
+  
+  .body-wrapper::after {
+    background-color:  rgba({{ module.style.hamburger.side_menu_overlay_color.color|convert_rgb }}, {{ module.style.hamburger.side_menu_overlay_color.opacity * 0.01 }});
+  }
+  
+  {# ICON #}
+  
+  .hamburger-icon .line {
+    background: rgba({{ module.style.hamburger.icon_open_color.color|convert_rgb }}, {{ module.style.hamburger.icon_open_color.opacity * 0.01 }});
+  }
+  
+  .hhs-top-bar.hhs-alt-nav .hamburger-icon .line,
+  .sticky-menu .hamburger-icon .line {
+    background: rgba({{ module.style.hamburger.icon_open_color_sticky.color|convert_rgb }}, {{ module.style.hamburger.icon_open_color_sticky.opacity * 0.01 }});
+  }
+  
+  .hamburger-icon.active .line {
+    background: rgba({{ module.style.hamburger.icon_close_color.color|convert_rgb }}, {{ module.style.hamburger.icon_close_color.opacity * 0.01 }});
+  }
+  
+  {% if !module.start.use_search %}
+    .hhs-side-menu__controls .hhs-lang-switch {
+      right: 70px !important;   
+    }
+  {% endif %}
+  
+  {# LANG GLOBE & SEARCH #}
+  .hhs-side-menu .hhs-lang-switch .globe_class:before,
+  .hhs-side-menu .fas{
+    color: rgba({{ module.style.hamburger.icon_close_color.color|convert_rgb }}, {{ module.style.hamburger.icon_close_color.opacity * 0.01 }});
+  }
+  
+  .hhs-top-bar .fas {
+    color: {{ module.style.nav_link_color.color }};
+  }
+  
+  .hhs-side-menu__footer a i,
+  .hhs-side-menu__footer a:visited i {
+    color: {{ module.style.hamburger.social_icon_color.color }};
+  }
+  
+  .hhs-side-menu__footer a:hover i,
+  .hhs-side-menu__footer a:focus i {
+    color: {{ module.style.hamburger.social_icon_color_hover.color }};
+  }
+  
+  {#* MAIN MENU *#}
+  
+  .hhs-side-menu .hhs-side-menu__mobile li a {
+    font-size: {{ module.style.hamburger.main_menu_font_size }}px;
+    font-weight: {{ module.style.hamburger.main_menu_font_weight }};
+    color: rgba({{ module.style.hamburger.main_menu_color.color|convert_rgb }}, {{ module.style.hamburger.main_menu_color.opacity * 0.01 }});
+  }
+  
+  .hhs-side-menu .hhs-side-menu__mobile li a:hover {
+    color: rgba({{ module.style.hamburger.main_menu_color_hover.color|convert_rgb }}, {{ module.style.hamburger.main_menu_color_hover.opacity * 0.01 }});
+  }
+  
+  .hhs-sidebar-nav-toggle i {
+    color: rgba({{ module.style.hamburger.menu_icon_color.color|convert_rgb }}, {{ module.style.hamburger.menu_icon_color.opacity * 0.01 }});
+  }
+  
+  {#* EXTRAS MENU *#}
+  
+  .hhs-side-menu__extras .hs-menu-item a,
+  .hhs-side-menu__extras .hs-menu-wrapper.hs-menu-flow-horizontal>ul li.hs-item-has-children ul.hs-menu-children-wrapper a {
+    font-size: {{ module.style.hamburger.extras_font_size }}px;
+    font-weight: {{ module.style.hamburger.extras_menu_font_weight }};
+    color: rgba({{ module.style.hamburger.extras_link_color.color|convert_rgb }}, {% if module.style.hamburger.extras_link_color.opacity == '100' %}1{% else %}0.{{ module.style.hamburger.extras_link_color.opacity }}{% endif %});
+  }
+  
+  .hhs-side-menu__extras .hs-menu-item a:hover,
+  .hhs-side-menu__extras .hs-menu-wrapper.hs-menu-flow-horizontal>ul li.hs-item-has-children ul.hs-menu-children-wrapper a:hover {
+    color: rgba({{ module.style.hamburger.extras_link_color_hover.color|convert_rgb }}, {% if module.style.hamburger.extras_link_color_hover.opacity == '100' %}1{% else %}0.{{ module.style.hamburger.extras_link_color_hover.opacity }}{% endif %});
+  }
+  
+  {# FOR LAST BLOCK IN SIDE MENU #}
+  
+  {% if module.menu.side_menu.use_form %}
+    .hhs-side-menu__form {flex: 1;}
+  {% elif module.menu.side_menu.use_rich_text %}
+    .hhs-side-menu__text {flex: 1;}
+  {% else %}
+    .hhs-side-menu__extras {flex: 1;}
+  {% endif %}
+  
+  @media (max-width: 575px) {
+    .hhs-side-menu {
+     width: 100%; 
+    }
+  }
+  
+   {# END #}
+   {# MEGA MENU #}
+  
+  {% if module.start.mega_menu %}
+    {# On desktop #}
+    @media screen and (min-width: {{ module.style.hamburger.responsive.main_nav_side_menu }}px) {
+      [class^=mega-drop].loaded {
+        position: relative; 	{# 	Make span element relative #}
+        display: inline-block; 	{# 	Make span element block #}
+        padding: 0 !important; 	{# 	remove padding #}
+      }
+      {# 	add after element so you can bridge the gap between the link and the mega menu #}
+      [class^=mega-drop].loaded:hover::after {
+        display: block; {# make it hoverable	 #}
+        position: absolute;
+        top:0; {# 	place at bottom of link #}
+        width: 100%; 
+        height: 100px; {# 	magic number #}
+        left: -36px;
+        {#border: 1px solid red; #}
+      }
+      [class^=mega-drop].loaded:hover::before {
+        display: block; {# make it hoverable	 #}
+        position: absolute;
+        top: 0; {# 	place at bottom of link #}
+        width: 100%; 
+        height: 100px; {# 	magic number #}
+        right: -36px;
+        {#border: 1px solid red; #}
+      }
+      .mega-menu::before {
+        height: {{ module.style.mega_menu.bridge_height }}px;
+        top: -{{ module.style.mega_menu.bridge_height }}px;
+	      background-color: rgba({{ module.style.mega_menu.bridge_color_guide.color|convert_rgb }}, {{ module.style.mega_menu.bridge_color_guide.opacity * 0.01 }});
+      }
+    } 
+  
+    .mega-menu {
+      background-color: rgba({{ module.style.mega_menu.bg_color.color|convert_rgb }}, {% if module.style.mega_menu.bg_color.opacity == '100' %}1{% else %}0.{{ module.style.mega_menu.bg_color.opacity }}{% endif %});
+      top: {{ module.style.mega_menu.pos_top }}px;
+    }
+    .sticky-menu.active .mega-menu  {
+      top: {{ module.style.mega_menu.pos_top_sticky }}px;
+    }
+    .mega-menu span.hs_cos_wrapper_type_text {
+      text-transform: none !important;
+      font-weight: normal !important;
+      white-space: normal !important; 
+    }
+
+    .hhs-top-bar .hs-menu-wrapper.hs-menu-flow-horizontal>ul li .mega-menu a,
+    .hhs-alt-nav .hhs-top-bar .hs-menu-wrapper.hs-menu-flow-horizontal>ul li .mega-menu a,
+    .hhs-top-bar .mega-menu .mega-nav-con ul li ul.hs-menu-children-wrapper li a,
+    .hhs-alt-nav .hhs-top-bar .mega-menu .mega-nav-con ul li ul.hs-menu-children-wrapper li a{
+      color: {{ module.style.mega_menu.link_color.color }} !important;
+      font-size: {{ module.style.mega_menu.link_font_size }}px !important;
+      font-weight: {{ module.style.mega_menu.link_font_weight }};
+      text-transform: {{ module.style.mega_menu.link_font_case }};
+      padding-top:{{ module.style.mega_menu.link_tb_padding }}px !important;
+      padding-bottom:{{ module.style.mega_menu.link_tb_padding }}px !important;
+    }
+    .hhs-top-bar .mega-menu .mega-nav-con ul li ul.hs-menu-children-wrapper li a{
+      font-size: 0.95em !important;
+    }
+    .hhs-top-bar .mega-menu .mega-nav-con .hs-menu-wrapper.hs-menu-flow-horizontal ul .hs-menu-item.hs-menu-depth-2 a:hover,
+    .hhs-top-bar .hs-menu-wrapper.hs-menu-flow-horizontal>ul li .mega-menu a:hover,
+    .hhs-alt-nav .hhs-top-bar .hs-menu-wrapper.hs-menu-flow-horizontal>ul li .mega-menu a:hover,
+    .hhs-top-bar .mega-menu .mega-nav-con ul li ul.hs-menu-children-wrapper li a:hover,
+    .hhs-alt-nav .hhs-top-bar .mega-menu .mega-nav-con ul li ul.hs-menu-children-wrapper li a:hover{
+      color: {{ module.style.mega_menu.link_color_hover.color }} !important;
+      background-color: transparent !important;
+    } 
+  {% endif %}
+  
+  {# END #}
+  
+  {# RESPONSIVE SIDE MENU #}
+  
+  {% if !module.start.use_side_menu_desktop %}
+    .hhs-menu-toggle {
+      display: none;  
+    }
+    @media (max-width: {{ module.style.hamburger.responsive.cta_1_side_menu }}px) {
+      .hhs-menu-toggle {
+        display: block;  
+      }
+    }
+    @media (max-width: {{ module.style.hamburger.responsive.cta_2_side_menu }}px) {
+      .hhs-menu-toggle {
+        display: block;  
+      }
+    }
+  {% endif %}
+  
+  {# CTAS #}  
+  
+  .hhs-side-menu__ctas .hhs-side-cta-1,
+  .hhs-side-menu__ctas .hhs-side-cta-2{
+    display: none;
+  }
+  @media (max-width: {{ module.style.hamburger.responsive.cta_1_side_menu }}px) {
+      .hhs-extras-ctas,
+      .hhs-extras-ctas .hhs-head-cta-1 {
+        display: none;
+      }
+      .hhs-side-menu__ctas .hhs-side-cta-1 {
+        display: inline-block;
+      }
+    }
+    @media (max-width: {{ module.style.hamburger.responsive.cta_2_side_menu }}px) {
+      .hhs-extras-ctas .hhs-head-cta-2 {
+        display: none;
+      }
+      .hhs-side-menu__ctas .hhs-side-cta-2 {
+        display: inline-block;
+      }
+    }
+    
+  {# MAIN NAV #}
+    @media (min-width: {{ module.style.hamburger.responsive.main_nav_side_menu }}px) {
+      .hhs-side-menu__mobile {
+        display: none;
+      }
+    }
+
+  @media (max-width: {{ module.style.hamburger.responsive.main_nav_side_menu }}px) {
+    .main-nav .sc-site-header__menu {
+       display: none;
+      }
+    }
+  
+  {# FORM #}
+  
+  {% if module.style.hamburger.form_custom_color %}
+    .hhs-side-menu__form .hs-form label,
+    .hhs-side-menu__form .hs-form .legal-consent-container,
+    .hhs-side-menu__form .hs-form .legal-consent-container p{
+      color: {{ module.style.hamburger.form_text_color.color }};
+    }
+  {% endif %}
+  
+  {# END #}
+  
+  {# HEADER HAT #}
+  
+  {% if module.start.use_header_hat %}
+    .hhs-header-hat {
+      background-color: rgba({{ module.style.header_hat.bg_color.color|convert_rgb }}, {{ module.style.header_hat.bg_color.opacity * 0.01 }});
+      padding: {{ module.style.header_hat.padding_tb }}px 0;
+    }
+
+    .hhs-hat-menu .hs-menu-wrapper.hs-menu-flow-horizontal>ul li.hs-menu-depth-1 a {
+      color: rgba({{ module.style.header_hat.link_color.color|convert_rgb }}, {{ module.style.header_hat.link_color.opacity * 0.01 }});
+      font-size: {{ module.style.header_hat.link_font_size }}px;
+      font-weight: {{ module.style.header_hat.link_font_weight }};
+      padding: {{ module.style.header_hat.text_link_padding_tb }}px 0 {{ module.style.header_hat.text_link_padding_tb }}px 20px;
+    }
+
+    .hhs-hat-menu .hs-menu-wrapper.hs-menu-flow-horizontal>ul li.hs-menu-depth-1 a:hover {
+      color: rgba({{ module.style.header_hat.link_color_hover.color|convert_rgb }}, {{ module.style.header_hat.link_color_hover.opacity * 0.01 }});
+    }
+  
+    {% if module.style.header_hat.nav_alignement == 'center' %}
+     .hhs-hat-menu .hs-menu-wrapper.hs-menu-flow-horizontal>ul{
+       float: none;
+       margin-right: auto;
+       margin-left: auto;
+       display: table;
+      }
+    {% elif module.style.header_hat.nav_alignement == 'left' %}
+      .hhs-hat-menu .hs-menu-wrapper.hs-menu-flow-horizontal>ul{
+       float: left;
+      }
+    {% endif %}
+    {% if module.style.header_hat.hide_hat_on_mobile %}
+      @media (max-width: 575px) {
+        .hhs-header-hat {
+          display: none;  
+        }
+      }
+    {% endif %}
+   {% endif %}
+  
+  {# END #}
+  
+   {#* TABLET CSS *#}
+  @media (max-width: 922px) {
+    .custom-menu-primary .hs-menu-wrapper > ul {
+       margin-top: {{ module.style.drop_down.dd_mt }}px !important;
+    }
+    .custom-menu-primary .hs-menu-wrapper > ul,
+    .custom-menu-primary .hs-menu-wrapper > ul li.active a:hover{
+      background-color:  rgba({{  module.style.drop_down.bg_color.color|convert_rgb }}, {% if  module.style.drop_down.bg_color.opacity == '100' %}1{% else %}0.{{  module.style.drop_down.bg_color.opacity }}{% endif %}) !important;
+    }
+    .hhs-top-bar .hs-menu-wrapper.hs-menu-flow-horizontal>ul li a:hover,
+    .custom-menu-primary .hs-menu-wrapper > ul li.active a:hover {
+      color:  {{ module.style.drop_down.link_color.color }} ;
+    }
+    .custom-menu-primary .hs-menu-wrapper > ul li{
+      {% if module.style.drop_down.sub_nav_line_color == 'dark' %}
+        border-top: 1px solid rgba(0, 0, 0, .1) !important; 
+      {% else %}
+        border-top: 1px solid rgba(255, 255, 255, .2) !important; 
+      {% endif %}
+    }
+    .custom-menu-primary .hs-menu-wrapper > ul ul li{
+      {% if module.style.drop_down.sub_nav_line_color == 'dark' %}
+        background-color: rgba(0, 0, 0, .05);
+      {% else %}
+        background-color: rgba(255, 255, 255, .15);
+      {% endif %}
+    }
+    {% if module.start.use_sticky_header && module.start.sticky_header_on_mobile %}
+      .sticky-menu.active {
+        position: fixed !important;
+      }
+    {% else %}
+      .sticky-menu.active {
+        position: static !important;
+      }
+      .sticky-menu.active {
+        display: none !important;
+        height: 0px !important;
+      }
+    {% endif %}
+  }
+  
+  {#* MOBILE CSS *#}
+  @media (max-width: 575px) {
+    .logo-standard, .logo-sticky {
+      max-width: {{ module.start.logo.size_mobile }}px !important;
+    }
+    {% if !module.menu.side_menu_use_extras_menu %}
+      .hhs-nav-opt-items .hhs-header-search {
+        right: 3px;
+      }
+      .hhs-nav-opt-items .hhs-lang-switch
+       {
+        right: 33px;
+      }
+    {% else %}
+      .hhs-nav-opt-items .hhs-header-search {
+        right: 40px;
+      }
+      .hhs-nav-opt-items .hhs-lang-switch
+       {
+        right: 70px;
+      }
+    {% endif %}
+  }
+  
+</style>
+{% end_require_css %}
+<a href="#main-content" class="screen-reader-text">{{ module.menu.accessibility_skip_to_content }}</a>
+{% if module.start.use_header_hat %}
+<div class="hhs-header-hat">
+  <div class="{{ module.style.header_width }}">
+    <div class="row">
+      <div class="col-12">
+        <nav class="hhs-hat-menu" data-collapsed="true">
+          {% if module.menu.header_hat.display == 'text' %}
+            {% if module.menu.translate %}
+              {% for item in module.menu.translated_menus %}
+                {% if item.lang_url == i18n_getlanguage() %}
+                  {% inline_rich_text field="header_hat_content_translated" value="{{ item.header_hat_content_translated }}" %}
+                {% endif %}
+              {% endfor %}
+              {% if i18n_getlanguage() == module.menu.default_lang_url or i18n_getlanguage() == module.menu.default_lang_url_blog %}
+                {% inline_rich_text field="menu.header_hat.text" value="{{ module.menu.header_hat.text }}" %}
+              {% endif %}
+            {% else %}
+              {% inline_rich_text field="menu.header_hat.text" value="{{ module.menu.header_hat.text }}" %}
+            {% endif %} 
+          {% elif module.menu.header_hat.display == 'links' %}
+            {% if module.menu.translate %}
+              {% for item in module.menu.translated_menus %}
+                {% if item.lang_url == i18n_getlanguage() %}
+                  {% simple_menu menu_tree="{{ item.header_hat_menu_translated }}" %}
+                {% endif %}
+              {% endfor %}
+              {% if i18n_getlanguage() == module.menu.default_lang_url or i18n_getlanguage() == module.menu.default_lang_url_blog %}
+                {% simple_menu menu_tree="{{ module.menu.header_hat.simple_menu }}" %}
+              {% endif %}
+            {% else %}
+              {% simple_menu menu_tree="{{ module.menu.header_hat.simple_menu }}" %}
+            {% endif %} 
+          {% endif %}
+        </nav>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<header id="hhs-main-nav" class="hhs-top-bar">
+  <div class="{{ module.style.header_width }}
+              hhs-nav-grid">
+      <div class="hhs-header-logo">
+        <div class="logo-standard">
+          {% set loadingAttr = module.start.logo.standard.loading != 'disabled' ? '{{ module.start.logo.standard.loading }}' : '' %}
+            
+          {% if module.start.logo.set_custom_link %}
+            {% logo
+              override_inherited_src="{{ module.start.logo.standard.override_inherited_src }}"
+              link="{{ module.start.logo.logo_link.url.href }}"
+              src="{{ module.start.logo.standard.src }}"
+              alt="{{ module.start.logo.standard.alt }}"
+              width="{{ module.start.logo.standard.width }}"
+              height="{{ module.start.logo.standard.height }}"
+              loading="{{ loadingAttr }}"
+              suppress_company_name="{{ module.start.logo.standard.suppress_company_name }}"
+            %}
+          {% else %}
+            {% logo
+              override_inherited_src="{{ module.start.logo.standard.override_inherited_src }}"
+              src="{{ module.start.logo.standard.src }}"
+              alt="{{ module.start.logo.standard.alt }}"
+              width="{{ module.start.logo.standard.width }}"
+              height="{{ module.start.logo.standard.height }}"
+              loading="{{ loadingAttr }}"
+              suppress_company_name="{{ module.start.logo.standard.suppress_company_name }}"
+            %}
+          {% endif %}
+        </div>
+        <div class="logo-sticky">
+            {% set loadingAttr = module.start.logo.sticky.loading != 'disabled' ? '{{ module.start.logo.sticky.loading }}' : '' %}
+            {% if module.start.logo.set_custom_link %}
+            {% logo
+                override_inherited_src="{{ module.start.logo.sticky.override_inherited_src }}"
+                link="{{ module.start.logo.logo_link.url.href }}"
+                src="{{ module.start.logo.sticky.src }}"
+                alt="{{ module.start.logo.sticky.alt }}"
+                width="{{ module.start.logo.sticky.width }}"
+                height="{{ module.start.logo.sticky.height }}"
+                loading="{{ loadingAttr }}"
+                suppress_company_name="{{ module.start.logo.sticky.suppress_company_name }}"
+              %}
+            {% else %}
+            {% logo
+                override_inherited_src="{{ module.start.logo.sticky.override_inherited_src }}"
+                src="{{ module.start.logo.sticky.src }}"
+                alt="{{ module.start.logo.sticky.alt }}"
+                width="{{ module.start.logo.sticky.width }}"
+                height="{{ module.start.logo.sticky.height }}"
+                loading="{{ loadingAttr }}"
+                suppress_company_name="{{ module.start.logo.sticky.suppress_company_name }}"
+              %}
+          {% endif %}
+        </div>
+      </div>
+    
+    <div class="hhs-nav-grid__menu
+                main-nav">
+              {% macro render_link_item(link,depth)%}
+                {% if link != [] && link.label %}
+                  <li class="hs-menu-item hs-menu-depth-{{depth}}
+                             {{'hs-item-has-children' if link.children}}
+                             {{'active' if link.activeNode}}
+                             {{'sub-active' if sublink.activeNode}}
+                             {{'active-branch' if link.activeBranch}}" 
+                      {{'aria-haspopup="true"' if link.children}}>
+                    <a href="{{link.url if link.url else '#'}}"
+                       target="{{link.linkTarget}}">
+                      {{link.label}}
+                    </a>
+                    {% if link.children %}
+                    <ul class="hs-menu-children-wrapper">
+                      {% set depth = depth + 1 %}
+                      {% for sublink in link.children %}
+                        {{ render_link_item(sublink,depth) }}
+                      {% endfor %}
+                    </ul>
+                    {% endif %}
+                  </li>
+                {% endif %}
+              {% endmacro %}
+              
+              {% if module.menu.translate %}
+                {% for item in module.menu.translated_menus %}
+                  {% if item.lang_url == i18n_getlanguage() %}
+                  <nav class="sc-site-header__menu
+                              sc-site-header__menu--{{ item.adv_menu_translated }}
+                              hs-menu-wrapper active-branch
+                              flyouts
+                              hs-menu-flow-horizontal"
+                       aria-label="{{menu_name}} menu">
+                      {% set menu = menu(item.adv_menu_translated , "site_root").children %}
+                      <ul class="hhs-nav-links">
+                        {% for link in menu %}
+                          {{ render_link_item(link,1) }}
+                        {% endfor %}
+                      </ul>
+                  </nav>
+                  {% endif %}
+                {% endfor %}
+                {% if i18n_getlanguage() == module.menu.default_lang_url or i18n_getlanguage() == module.menu.default_lang_url_blog %}
+                <nav class="sc-site-header__menu
+                            sc-site-header__menu--{{ module.menu.adv_menu_default }}
+                            hs-menu-wrapper active-branch
+                            flyouts
+                            hs-menu-flow-horizontal"
+                     aria-label="{{menu_name}} menu">
+                    {% set menu = menu(module.menu.adv_menu_default , "site_root").children %}
+                    <ul class="hhs-nav-links">
+                      {% for link in menu %}
+                        {{ render_link_item(link,1) }}
+                      {% endfor %}
+                    </ul>
+                </nav> 
+                {% endif %}
+              {% else %}
+                <nav class="sc-site-header__menu
+                            sc-site-header__menu--{{ module.menu.adv_menu_default }}
+                            hs-menu-wrapper
+                            active-branch
+                            flyouts
+                            hs-menu-flow-horizontal"
+                     aria-label="{{menu_name}} menu">
+                    {% set menu = menu(module.menu.adv_menu_default , "site_root").children %}
+                    <ul class="hhs-nav-links">
+                      {% for link in menu %}
+                        {{render_link_item(link,1)}}
+                      {% endfor %}
+                    </ul>
+                </nav>
+              {% endif %}
+    </div>
+    <div class="hhs-nav-grid__extras">
+      {% if content.translated_content.values()|selectattr('published')|length || is_listing_view && group.translations %}
+        <div class="hhs-lang-switch">
+          {% language_switcher "language_switcher" overrideable=false, display_mode='localized', label='Language Switcher' %}
+        </div>
+      {% endif %}
+        {% if module.start.use_search %}
+          <div class="hs-search-field
+                      js-search-pop">
+            <div class="hs-search-field__bar"> 
+              <form action="/{{ site_settings.content_search_results_page_path }}">
+                <label for="main-search" style="display: none;" aria-hidden="true">Search</label>
+                <input id="main-search"
+                       type="text"
+                       class="hs-search-field__input"
+                       name="term"
+                       autocomplete="off"
+                       placeholder="{{ module.start.search_placeholder }}"
+                       >
+                {% if module.start.search_these == 'web' %}
+                  <input type="hidden"name="type"value="SITE_PAGE">
+                {% endif %}
+                {% if module.start.search_these == 'lp' %}
+                  <input type="hidden"name="type"value="LANDING_PAGE">
+                {% endif %}
+                {% if module.start.search_these == 'blog' %}
+                  <input type="hidden"name="type"value="BLOG_POST">
+                {% endif %}
+                {% if module.start.use_multilingual_search %}
+                  {% if content.language.languageTag == i18n_getlanguage() %}
+                    <input type="hidden" name="language" value="{{ i18n_getlanguage() }}">
+                  {% endif %}
+                {% endif %}
+              </form>
+            </div>
+          </div>
+          <button type="button"
+                  class="top-bar-search"
+                  aria-label="Search">
+            <i class="fas fa-search" aria-hidden="true"><span class="screen-reader-text">Search</span></i>
+          </button>
+        {% endif %}
+        
+        {% if module.start.use_cta %}
+          <div class="hhs-extras-ctas">
+            {% if !module.menu.use_std_btns %}
+            <div class="hhs-header-cta">
+              {% if module.menu.translate %}
+                {% for item in module.menu.translated_menus %}
+                  {% if item.lang_url == i18n_getlanguage() %}
+                    <span class="hhs-head-cta-1">{% cta guid="{{ item.cta_translated }}" %}</span> {% if item.cta_2_translated %}<span class="hhs-head-cta-2">{% cta guid="{{ item.cta_2_translated }}" %}</span>{% endif %}
+                  {% endif %}
+                {% endfor %}
+                {% if i18n_getlanguage() == module.menu.default_lang_url or i18n_getlanguage() == module.menu.default_lang_url_blog %}
+                  <span class="hhs-head-cta-1">{% cta guid="{{ module.menu.cta_default }}" %}</span> {% if module.menu.cta_default_2 %}<span class="hhs-head-cta-2">{% cta guid="{{ module.menu.cta_default_2 }}" %}</span>{% endif %}
+                {% endif %}
+              {% else %}
+                <span class="hhs-head-cta-1">{% cta guid="{{ module.menu.cta_default }}" %}</span> {% if module.menu.cta_default_2 %}<span class="hhs-head-cta-2">{% cta guid="{{  module.menu.cta_default_2 }}" %}</span>{% endif %}
+              {% endif %}
+            </div>
+            {% else %}
+              <div class="hhs-header-cta">
+                {% if module.menu.translate %}
+                {% for item in module.menu.translated_menus %}
+                  {% if item.lang_url == i18n_getlanguage() %}
+                    <span class="hhs-head-cta-1">
+                      {% set href = item.std_btn_1_translated.link_field.url.href %}
+                      {% if item.std_btn_1_translated.link_field.url.type is equalto "EMAIL_ADDRESS" %}
+                        {% set href = "mailto:" + href %}
+                      {% endif %}
+                      <a href="{{ href }}"
+                        class="{{ item.std_btn_1_translated.style }}" 
+                        {% if item.std_btn_1_translated.link_field.open_in_new_tab %}target="_blank"{% endif %}
+                        {% if item.std_btn_1_translated.link_field.rel %}rel="{{ item.std_btn_1_translated.link_field.rel }}"{% endif %}
+                        >
+                        {{ item.std_btn_1_translated.btn_label }}
+                      </a>
+                    </span> 
+                    {% if item.std_btn_2_translated.btn_label %}
+                      <span class="hhs-head-cta-2">
+                        {% set href = item.std_btn_2_translated.link_field.url.href %}
+                        {% if item.std_btn_2_translated.link_field.url.type is equalto "EMAIL_ADDRESS" %}
+                          {% set href = "mailto:" + href %}
+                        {% endif %}
+                        <a href="{{ href }}"
+                          class="{{ item.std_btn_2_translated.style }}" 
+                          {% if item.std_btn_2_translated.link_field.open_in_new_tab %}target="_blank"{% endif %}
+                          {% if item.std_btn_2_translated.link_field.rel %}rel="{{ item.std_btn_2_translated.link_field.rel }}"{% endif %}
+                          >
+                          {{ item.std_btn_2_translated.btn_label }}
+                        </a>
+                      </span>
+                    {% endif %}
+                  {% endif %}
+                {% endfor %}
+                {% if i18n_getlanguage() == module.menu.default_lang_url or i18n_getlanguage() == module.menu.default_lang_url_blog %}
+                  <span class="hhs-head-cta-1">
+                     {% set href = module.menu.std_btn_1.link_field.url.href %}
+                      {% if module.menu.std_btn_1.link_field.url.type is equalto "EMAIL_ADDRESS" %}
+                        {% set href = "mailto:" + href %}
+                      {% endif %}
+                      <a href="{{ href }}"
+                        class="{{ module.menu.std_btn_1.style }}" 
+                        {% if module.menu.std_btn_1.link_field.open_in_new_tab %}target="_blank"{% endif %}
+                        {% if module.menu.std_btn_1.link_field.rel %}rel="{{ module.menu.std_btn_1.link_field.rel }}"{% endif %}
+                        >
+                        {{ module.menu.std_btn_1.btn_label }}
+                      </a>
+                  </span> 
+                  {% if module.menu.std_btn_2.btn_label %}
+                    <span class="hhs-head-cta-2">
+                      {% set href = module.menu.std_btn_2.link_field.url.href %}
+                      {% if module.menu.std_btn_2.link_field.url.type is equalto "EMAIL_ADDRESS" %}
+                        {% set href = "mailto:" + href %}
+                      {% endif %}
+                      <a href="{{ href }}"
+                        class="{{ module.menu.std_btn_2.style }}" 
+                        {% if module.menu.std_btn_2.link_field.open_in_new_tab %}target="_blank"{% endif %}
+                        {% if module.menu.std_btn_2.link_field.rel %}rel="{{ module.menu.std_btn_2.link_field.rel }}"{% endif %}
+                        >
+                        {{ module.menu.std_btn_2.btn_label }}
+                      </a>
+                    </span>
+                  {% endif %}
+                {% endif %}
+              {% else %}
+                <span class="hhs-head-cta-1">
+                     {% set href = module.menu.std_btn_1.link_field.url.href %}
+                      {% if module.menu.std_btn_1.link_field.url.type is equalto "EMAIL_ADDRESS" %}
+                        {% set href = "mailto:" + href %}
+                      {% endif %}
+                      <a href="{{ href }}"
+                        class="{{ module.menu.std_btn_1.style }}" 
+                        {% if module.menu.std_btn_1.link_field.open_in_new_tab %}target="_blank"{% endif %}
+                        {% if module.menu.std_btn_1.link_field.rel %}rel="{{ module.menu.std_btn_1.link_field.rel }}"{% endif %}
+                        >
+                        {{ module.menu.std_btn_1.btn_label }}
+                      </a>
+                  </span> 
+                  {% if module.menu.std_btn_2.btn_label %}
+                    <span class="hhs-head-cta-2">
+                      {% set href = module.menu.std_btn_2.link_field.url.href %}
+                      {% if module.menu.std_btn_2.link_field.url.type is equalto "EMAIL_ADDRESS" %}
+                        {% set href = "mailto:" + href %}
+                      {% endif %}
+                      <a href="{{ href }}"
+                        class="{{ module.menu.std_btn_2.style }}" 
+                        {% if module.menu.std_btn_2.link_field.open_in_new_tab %}target="_blank"{% endif %}
+                        {% if module.menu.std_btn_2.link_field.rel %}rel="{{ module.menu.std_btn_2.link_field.rel }}"{% endif %}
+                        >
+                        {{ module.menu.std_btn_2.btn_label }}
+                      </a>
+                    </span>
+                  {% endif %}
+              {% endif %}
+              </div>
+            {% endif %}
+          </div>          
+        {% endif %}
+        <div class="hhs-menu-toggle
+                    {{ 'hhs-menu-toggle--always-show' if module.menu.side_menu.use_extras_menu }}">
+          <button class="hhs-menu-button
+                         hamburger-icon
+                         js-toggle-main-nav"
+                  id="hamburger-icon"
+                  aria-label="Toggle Side Menu">
+            <span class="line line-1"></span>
+            <span class="line line-2"></span>
+            <span class="line line-3"></span>
+            <span class="screen-reader-text">Toggle Menu</span>
+          </button>
+        </div>
+    </div>
+    
+  </div>
+</header>
+
+<div class="hhs-side-menu
+            js-side-menu">
+        <div class="hhs-side-menu__controls">
+          <div class="hhs-side-menu__mobile-controls">
+            {% if content.translated_content.values()|selectattr('published')|length || is_listing_view && group.translations %}
+              <div class="hhs-lang-switch">
+                {% language_switcher "language_switcher" overrideable=false, display_mode='localized', label='Language Switcher' %}
+              </div>
+            {% endif %}
+             {% if module.start.use_search %}
+                <div class="hs-search-field
+                            js-search-pop-side">
+                  <div class="hs-search-field__bar"> 
+                    <form action="/{{ site_settings.content_search_results_page_path }}">
+                      <label for="side-search" style="display: none;" aria-hidden="true">Search</label>
+                      <input id="side-search"
+                             type="text"
+                             class="hs-search-field__input"
+                             name="term"
+                             autocomplete="off"
+                             placeholder="{{ module.start.search_placeholder }}"
+                             >
+                      {% if module.start.search_these == 'web' %}
+                          <input type="hidden"name="type"value="SITE_PAGE">
+                      {% endif %}
+                      {% if module.start.search_these == 'lp' %}
+                        <input type="hidden"name="type"value="LANDING_PAGE">
+                      {% endif %}
+                      {% if module.start.search_these == 'blog' %}
+                        <input type="hidden"name="type"value="BLOG_POST">
+                      {% endif %}
+                      {% if module.start.use_multilingual_search %}
+                        {% if content.language.languageTag == i18n_getlanguage() %}
+                          <input type="hidden" name="language" value="{{ i18n_getlanguage() }}">
+                        {% endif %}
+                      {% endif %}
+                    </form>
+                  </div>
+                </div>
+                <button type="button"
+                        class="top-bar-search"
+                        aria-label="Search">
+                  <i class="fas fa-search" aria-hidden="true"><span class="screen-reader-text">Search</span></i>
+                </button>
+              {% endif %}
+            </div>
+          <div class="hhs-menu-toggle
+                      hhs-menu-toggle--always-show">
+            <button class="hhs-menu-button
+                           hamburger-icon
+                           js-toggle-main-nav"
+                    aria-label="Toggle Side Menu">
+              <span class="line line-1"></span>
+              <span class="line line-2"></span>
+              <span class="line line-3"></span>
+              <span class="screen-reader-text">Toggle Menu</span>
+            </button>
+          </div>
+        </div>
+        
+        {% if module.menu.side_menu.use_rich_text_above %}
+          <div class="hhs-side-menu__text text-above">
+            {% if module.menu.translate %}
+              {% for item in module.menu.translated_menus %}
+                {% if item.lang_url == i18n_getlanguage() %}
+                  {% inline_rich_text field="side_menu_content_above_translated" value="{{ item.side_menu_content_above_translated }}" %}
+                {% endif %}
+              {% endfor %}
+              {% if i18n_getlanguage() == module.menu.default_lang_url or i18n_getlanguage() == module.menu.default_lang_url_blog %}
+                {% inline_rich_text field="menu.side_menu.side_menu_content_above" value="{{ module.menu.side_menu.side_menu_content_above }}" %}
+              {% endif %}
+            {% else %}
+              {% inline_rich_text field="menu.side_menu.side_menu_content_above" value="{{ module.menu.side_menu.side_menu_content_above }}" %}
+            {% endif %}  
+          </div>
+        {% endif %}
+        {% if module.start.use_cta %}
+          <div class="hhs-side-menu__ctas">
+            {% if !module.menu.use_std_btns %}
+              <div class="hhs-header-cta {% if module.menu.show_cta_on_mobile == 'false' %}hide-mobile{% endif %}">
+                {% if module.menu.translate %}
+                  {% for item in module.menu.translated_menus %}
+                    {% if item.lang_url == i18n_getlanguage() %}
+                      <span class="hhs-side-cta-1">{% cta guid="{{ item.cta_translated }}" %}</span> {% if item.cta_2_translated %}<span class="hhs-side-cta-2">{% cta guid="{{ item.cta_2_translated }}" %}</span>{% endif %}
+                    {% endif %}
+                  {% endfor %}
+                  {% if i18n_getlanguage() == module.menu.default_lang_url or i18n_getlanguage() == module.menu.default_lang_url_blog %}
+                    <span class="hhs-side-cta-1">{% cta guid="{{ module.menu.cta_default }}" %}</span> {% if module.menu.cta_default_2 %}<span class="hhs-side-cta-2">{% cta guid="{{ module.menu.cta_default_2 }}" %}</span>{% endif %}
+                  {% endif %}
+                {% else %}
+                  <span class="hhs-side-cta-1">{% cta guid="{{ module.menu.cta_default }}" %}</span> {% if module.menu.cta_default_2 %}<span class="hhs-side-cta-2">{% cta guid="{{ module.menu.cta_default_2 }}" %}</span>{% endif %}
+                {% endif %}
+              </div>
+            {% else %}
+              <div class="hhs-header-cta">
+                {% if module.menu.translate %}
+                {% for item in module.menu.translated_menus %}
+                  {% if item.lang_url == i18n_getlanguage() %}
+                    <span class="hhs-head-cta-1">
+                      {% set href = item.std_btn_1_translated.link_field.url.href %}
+                      {% if item.std_btn_1_translated.link_field.url.type is equalto "EMAIL_ADDRESS" %}
+                        {% set href = "mailto:" + href %}
+                      {% endif %}
+                      <a href="{{ href }}"
+                        class="{{ item.std_btn_1_translated.style }}" 
+                        {% if item.std_btn_1_translated.link_field.open_in_new_tab %}target="_blank"{% endif %}
+                        {% if item.std_btn_1_translated.link_field.rel %}rel="{{ item.std_btn_1_translated.link_field.rel }}"{% endif %}
+                        >
+                        {{ item.std_btn_1_translated.btn_label }}
+                      </a>
+                    </span> 
+                    {% if item.std_btn_2_translated.btn_label %}
+                      <span class="hhs-head-cta-2">
+                        {% set href = item.std_btn_2_translated.link_field.url.href %}
+                        {% if item.std_btn_2_translated.link_field.url.type is equalto "EMAIL_ADDRESS" %}
+                          {% set href = "mailto:" + href %}
+                        {% endif %}
+                        <a href="{{ href }}"
+                          class="{{ item.std_btn_2_translated.style }}" 
+                          {% if item.std_btn_2_translated.link_field.open_in_new_tab %}target="_blank"{% endif %}
+                          {% if item.std_btn_2_translated.link_field.rel %}rel="{{ item.std_btn_2_translated.link_field.rel }}"{% endif %}
+                          >
+                          {{ item.std_btn_2_translated.btn_label }}
+                        </a>
+                      </span>
+                    {% endif %}
+                  {% endif %}
+                {% endfor %}
+                {% if i18n_getlanguage() == module.menu.default_lang_url or i18n_getlanguage() == module.menu.default_lang_url_blog %}
+                  <span class="hhs-head-cta-1">
+                     {% set href = module.menu.std_btn_1.link_field.url.href %}
+                      {% if module.menu.std_btn_1.link_field.url.type is equalto "EMAIL_ADDRESS" %}
+                        {% set href = "mailto:" + href %}
+                      {% endif %}
+                      <a href="{{ href }}"
+                        class="{{ module.menu.std_btn_1.style }}" 
+                        {% if module.menu.std_btn_1.link_field.open_in_new_tab %}target="_blank"{% endif %}
+                        {% if module.menu.std_btn_1.link_field.rel %}rel="{{ module.menu.std_btn_1.link_field.rel }}"{% endif %}
+                        >
+                        {{ module.menu.std_btn_1.btn_label }}
+                      </a>
+                  </span> 
+                  {% if module.menu.std_btn_2.btn_label %}
+                    <span class="hhs-head-cta-2">
+                      {% set href = module.menu.std_btn_2.link_field.url.href %}
+                      {% if module.menu.std_btn_2.link_field.url.type is equalto "EMAIL_ADDRESS" %}
+                        {% set href = "mailto:" + href %}
+                      {% endif %}
+                      <a href="{{ href }}"
+                        class="{{ module.menu.std_btn_2.style }}" 
+                        {% if module.menu.std_btn_2.link_field.open_in_new_tab %}target="_blank"{% endif %}
+                        {% if module.menu.std_btn_2.link_field.rel %}rel="{{ module.menu.std_btn_2.link_field.rel }}"{% endif %}
+                        >
+                        {{ module.menu.std_btn_2.btn_label }}
+                      </a>
+                    </span>
+                  {% endif %}
+                {% endif %}
+              {% else %}
+                <span class="hhs-head-cta-1">
+                     {% set href = module.menu.std_btn_1.link_field.url.href %}
+                      {% if module.menu.std_btn_1.link_field.url.type is equalto "EMAIL_ADDRESS" %}
+                        {% set href = "mailto:" + href %}
+                      {% endif %}
+                      <a href="{{ href }}"
+                        class="{{ module.menu.std_btn_1.style }}" 
+                        {% if module.menu.std_btn_1.link_field.open_in_new_tab %}target="_blank"{% endif %}
+                        {% if module.menu.std_btn_1.link_field.rel %}rel="{{ module.menu.std_btn_1.link_field.rel }}"{% endif %}
+                        >
+                        {{ module.menu.std_btn_1.btn_label }}
+                      </a>
+                  </span> 
+                  {% if module.menu.std_btn_2.btn_label %}
+                    <span class="hhs-head-cta-2">
+                      {% set href = module.menu.std_btn_2.link_field.url.href %}
+                      {% if module.menu.std_btn_2.link_field.url.type is equalto "EMAIL_ADDRESS" %}
+                        {% set href = "mailto:" + href %}
+                      {% endif %}
+                      <a href="{{ href }}"
+                        class="{{ module.menu.std_btn_2.style }}" 
+                        {% if module.menu.std_btn_2.link_field.open_in_new_tab %}target="_blank"{% endif %}
+                        {% if module.menu.std_btn_2.link_field.rel %}rel="{{ module.menu.std_btn_2.link_field.rel }}"{% endif %}
+                        >
+                        {{ module.menu.std_btn_2.btn_label }}
+                      </a>
+                    </span>
+                  {% endif %}
+              {% endif %}
+              </div>
+            {% endif %}
+          </div>          
+        {% endif %}
+  <div class="hhs-side-menu__mobile"> 
+    {% macro render_sidebar_link_item(link,depth)%}
+    {% if link != [] && link.label %}
+    <li class="hs-menu-item hs-menu-depth-{{depth}}
+               {{'hs-item-has-children' if link.children}}
+               {{'active' if link.activeNode}}
+               {{'sub-active' if sublink.activeNode}}
+               {{'active-branch' if link.activeBranch}}" 
+        {{'aria-haspopup="true"' if link.children}}>
+      <a href="{{link.url if link.url else '#'}}"
+         target="{{link.linkTarget}}"  
+		 class="{{ link.url is string_startingwith '#' ? 'hs-menu-item__quicklink' : '' }} ">
+        {{link.label}}
+        {% if link.children %}
+        <button class="hhs-sidebar-nav-toggle
+                       js-sidebar-nav-toggle"
+                aria-label="Toggle Menu">
+          <i class="fa fa-plus"><span class="screen-reader-text">Toggle Menu</span></i>
+        </button>
+        {% endif %}
+      </a>
+      {% if link.children %}
+      <ul class="hs-menu-children-wrapper">
+        {% set depth = depth + 1 %}
+        {% for sublink in link.children %}
+        {{ render_sidebar_link_item(sublink,depth) }}
+        {% endfor %}
+      </ul>
+      {% endif %}
+    </li>
+    {% endif %}
+    {% endmacro %}
+
+    {% if module.menu.translate %}
+    {% for item in module.menu.translated_menus %}
+    {% if item.lang_url == i18n_getlanguage() %}
+    <nav class="sc-site-header__menu
+                sc-site-header__menu--{{ item.adv_menu_translated }}
+                hs-menu-wrapper active-branch
+                flyouts
+                hs-menu-flow-vertical"
+         aria-label="{{menu_name}} menu">
+      {% set menu = menu(item.adv_menu_translated , "site_root").children %}
+      <ul class="hhs-nav-links">
+        {% for link in menu %}
+        {{ render_sidebar_link_item(link,1) }}
+        {% endfor %}
+      </ul>
+    </nav>
+    {% endif %}
+    {% endfor %}
+    {% if i18n_getlanguage() == module.menu.default_lang_url or i18n_getlanguage() == module.menu.default_lang_url_blog %}
+    <nav class="sc-site-header__menu
+                sc-site-header__menu--{{ module.menu.adv_menu_default }}
+                hs-menu-wrapper active-branch
+                flyouts
+                hs-menu-flow-vertical"
+         aria-label="{{menu_name}} menu">
+      {% set menu = menu(module.menu.adv_menu_default , "site_root").children %}
+      <ul class="hhs-nav-links">
+        {% for link in menu %}
+        {{ render_sidebar_link_item(link,1) }}
+        {% endfor %}
+      </ul>
+    </nav> 
+    {% endif %}
+    {% else %}
+    <nav class="sc-site-header__menu
+                sc-site-header__menu--{{ module.menu.adv_menu_default }}
+                hs-menu-wrapper
+                active-branch
+                flyouts
+                hs-menu-flow-vertical"
+         aria-label="{{menu_name}} menu">
+      {% set menu = menu(module.menu.adv_menu_default , "site_root").children %}
+      <ul>
+        {% for link in menu %}
+        {{render_sidebar_link_item(link,1)}}
+        {% endfor %}
+      </ul>
+    </nav>
+    {% endif %}
+  </div>
+    {% if module.menu.side_menu.use_extras_menu %}
+    <nav class="hhs-side-menu__extras">
+      {% if module.menu.translate %}
+        {% for item in module.menu.translated_menus %}
+          {% if item.lang_url == i18n_getlanguage() %}
+            {% simple_menu menu_tree="{{ item.extras_menu_translated }}" %}
+          {% endif %}
+        {% endfor %}
+        {% if i18n_getlanguage() == module.menu.default_lang_url or i18n_getlanguage() == module.menu.default_lang_url_blog %}
+          {% simple_menu menu_tree="{{ module.menu.side_menu.extras_menu_default }}" %}
+        {% endif %}
+      {% else %}
+        {% simple_menu menu_tree="{{ module.menu.side_menu.extras_menu_default }}" %}
+      {% endif %}
+    </nav>
+    {% endif %}
+    {% if module.menu.side_menu.use_rich_text %}
+      <div class="hhs-side-menu__text">
+        {% if module.menu.translate %}
+          {% for item in module.menu.translated_menus %}
+            {% if item.lang_url == i18n_getlanguage() %}
+              {% inline_rich_text field="side_menu_content_translated" value="{{ item.side_menu_content_translated }}" %}
+            {% endif %}
+          {% endfor %}
+          {% if i18n_getlanguage() == module.menu.default_lang_url or i18n_getlanguage() == module.menu.default_lang_url_blog %}
+            {% inline_rich_text field="menu.side_menu.side_menu_content" value="{{ module.menu.side_menu.side_menu_content }}" %}
+          {% endif %}
+        {% else %}
+          {% inline_rich_text field="menu.side_menu.side_menu_content" value="{{ module.menu.side_menu.side_menu_content }}" %}
+        {% endif %}  
+      </div>
+    {% endif %}
+    {% if module.menu.side_menu.use_form %}
+    <div class="hhs-side-menu__form">
+        {% if module.menu.translate %}
+          {% for item in module.menu.translated_menus %}
+            {% if item.lang_url == i18n_getlanguage() %}
+              {% form
+                form_to_use="{{ item.menu_form_translated.form_id }}"
+                response_response_type="{{ item.menu_form_translated.response_type }}"
+                response_message="{{ item.menu_form_translated.message }}"
+                response_redirect_id="{{ item.menu_form_translated.redirect_id }}"
+                response_redirect_url="{{item.menu_form_translated.redirect_url}}"
+                gotowebinar_webinar_key="{{ item.menu_form_translated.gotowebinar_webinar_key }}"
+              %}
+            {% endif %}
+          {% endfor %}
+          {% if i18n_getlanguage() == module.menu.default_lang_url or i18n_getlanguage() == module.menu.default_lang_url_blog %}
+            {% form
+              form_to_use="{{ module.menu.side_menu.side_menu_form.form_id }}"
+              response_response_type="{{ module.menu.side_menu.side_menu_form.response_type }}"
+              response_message="{{ module.menu.side_menu.side_menu_form.message }}"
+              response_redirect_id="{{ module.menu.side_menu.side_menu_form.redirect_id }}"
+              response_redirect_url="{{module.menu.side_menu.side_menu_form.redirect_url}}"
+              gotowebinar_webinar_key="{{ module.menu.side_menu.side_menu_form.gotowebinar_webinar_key }}",
+              follow_up_type_simple='{{ module.menu.side_menu.follow_up_type_simple }}',
+              simple_email_for_live_id='{{ module.menu.side_menu.simple_email_for_live_id }}'
+            %}
+          {% endif %}
+        {% else %}
+          {% form
+            form_to_use="{{ module.menu.side_menu.side_menu_form.form_id }}"
+            response_response_type="{{ module.menu.side_menu.side_menu_form.response_type }}"
+            response_message="{{ module.menu.side_menu.side_menu_form.message }}"
+            response_redirect_id="{{ module.menu.side_menu.side_menu_form.redirect_id }}"
+            response_redirect_url="{{module.menu.side_menu.side_menu_form.redirect_url}}"
+            gotowebinar_webinar_key="{{ module.menu.side_menu.side_menu_form.gotowebinar_webinar_key }}",
+            follow_up_type_simple='{{ module.menu.side_menu.follow_up_type_simple }}',
+            simple_email_for_live_id='{{ module.menu.side_menu.simple_email_for_live_id }}'
+          %}
+        {% endif %} 
+    </div>
+  {% endif %}
+  <div class="hhs-side-menu__footer">
+    {% if module.menu.side_menu.social.facebook_url %}
+      <a href="{{ module.menu.side_menu.social.facebook_url }}" target="_blank" rel="noreferrer">
+        <i class="fab fa-facebook-f" aria-hidden="true"><span class="screen-reader-text">Facebook</span></i>
+      </a>
+    {% endif %}
+    {% if module.menu.side_menu.social.instagram_url %}
+      <a href="{{ module.menu.side_menu.social.instagram_url }}" target="_blank" rel="noreferrer">
+        <i class="fab fa-instagram" aria-hidden="true"><span class="screen-reader-text">Instagram</span></i>
+      </a>
+    {% endif %}
+    {% if module.menu.side_menu.social.linkedin_url %}
+      <a href="{{ module.menu.side_menu.social.linkedin_url }}" target="_blank" rel="noreferrer">
+        <i class="fab fa-linkedin-in" aria-hidden="true"><span class="screen-reader-text">LinkedIn</span></i>
+      </a>
+    {% endif %}
+    {% if module.menu.side_menu.social.twitter_url %}
+      <a href="{{ module.menu.side_menu.social.twitter_url }}" target="_blank" rel="noreferrer">
+        <i class="fab fa-twitter" aria-hidden="true"><span class="screen-reader-text">Twitter</span></i>
+      </a>
+    {% endif %}
+    {% if module.menu.side_menu.social.youtube_url %}
+      <a href="{{ module.menu.side_menu.social.youtube_url }}" target="_blank" rel="noreferrer">
+        <i class="fab fa-youtube" aria-hidden="true"><span class="screen-reader-text">Youtube</span></i>
+      </a>
+    {% endif %}
+    {% if module.menu.side_menu.social.medium_url %}
+      <a href="{{ module.menu.side_menu.social.medium_url }}" target="_blank" rel="noreferrer">
+        <i class="fab fa-medium-m" aria-hidden="true"><span class="screen-reader-text">Medium</span></i>
+      </a>
+    {% endif %}
+    {% if module.menu.side_menu.social.telegram_url %}
+      <a href="{{ module.menu.side_menu.social.telegram_url }}" target="_blank" rel="noreferrer">
+        <i class="fab fa-telegram" aria-hidden="true"><span class="screen-reader-text">Telegram</span></i>
+      </a>
+    {% endif %}
+    {% if module.menu.side_menu.social.tiktok_url %}
+      <a href="{{ module.menu.side_menu.social.tiktok_url }}" target="_blank" rel="noreferrer">
+        <i class="fa-brands fa-tiktok" aria-hidden="true"><span class="screen-reader-text">Tiktok</span></i>
+      </a>
+    {% endif %}
+    {% if module.menu.side_menu.social.discord_url %}
+      <a href="{{ module.menu.side_menu.social.discord_url }}" target="_blank" rel="noreferrer">
+        <i class="fab fa-discord" aria-hidden="true"><span class="screen-reader-text">Discord</span></i>
+      </a>
+    {% endif %}
+    {% if module.menu.side_menu.social.pinterest_url %}
+      <a href="{{ module.menu.side_menu.social.pinterest_url }}" target="_blank" rel="noreferrer">
+        <i class="fa-brands fa-pinterest" aria-hidden="true"><span class="screen-reader-text">Pinterest</span></i>
+      </a>
+    {% endif %}
+  </div>
+</div>
+
+{% require_js %}
+<script>
+$( document ).ready(function() {
+  
+  var hamburger = $('.js-toggle-main-nav');
+  var hhsMenuQuickLink = $('.hs-menu-item__quicklink');
+  hamburger.on('click', function(){
+	  SideMenu();
+  });
+  hhsMenuQuickLink.on('click', function(){
+	  SideMenu();
+  });
+	
+  function SideMenu() {
+    hamburger.toggleClass('active');
+    $('.js-side-menu').toggleClass('is-open');
+    $('.body-wrapper').toggleClass('nav-is-open');
+    return false;
+  };
+	
+});
+  
+$('.js-sidebar-nav-toggle').on('click', function(e) {
+  e.preventDefault();
+  $(this).toggleClass('is-open');
+  $(this).parent().next().toggleClass('is-open');
+});
+  
+   
+  
+  {% if module.start.use_sticky_header %}
+    // THIS IS FOR THE STICKY HEADER
+    $(function() {
+        //caches a jQuery object containing the header element
+        var header = $(".hhs-top-bar");
+        $(window).scroll(function() {
+            var scroll = $(window).scrollTop();
+
+            if (scroll >= {{ module.start.sticky_slide_in }}) {
+                header.addClass("sticky-menu");
+            } else {
+                header.removeClass('sticky-menu');
+            }
+        });
+    });
+    $(window).scroll(function(){
+
+      // Variables
+      var $body = $(".sticky-menu");
+      var windowScrollTop = $(window).scrollTop();
+      var scroll = $(window).scrollTop();
+
+      if (scroll >= 50) {
+        $body.addClass("active");
+      } else {
+        $body.removeClass('active');
+      }
+    });
+  {% endif %}
+
+  {% if module.start.mega_menu %}
+    jQuery(document).ready(function($) {
+      if (window.hsInEditor) {
+        return;
+      }
+      // show mega menu
+      megaMenu({{ module.style.hamburger.responsive.main_nav_side_menu }});
+    });
+  {% endif %}
+</script>
+{% end_require_js %}
+
+{% if module.start.use_search %}
+  {% require_js %}
+  <script defer>
+    
+    $(function() {
+      $('.hhs-top-bar .top-bar-search').on('click', function() {
+        $('.js-search-pop').toggleClass('is-open');
+        $('#main-search').trigger('focus');
+      });
+    });
+    
+    $(function() {
+      $('.hhs-side-menu .top-bar-search').on('click', function() {
+        $('.js-search-pop-side').toggleClass('is-open');
+        $('#main-search').trigger('focus');
+      });
+    });
+    
+  var hsSearch = function(_instance) {
+    var TYPEAHEAD_LIMIT			= 3;
+    var searchTerm      		= "",
+        searchForm 					=	_instance,
+        searchField 				= _instance.querySelector('.hs-search-field__input'),
+        searchResults 			= _instance.querySelector('.hs-search-field__suggestions'),
+        searchOptions				= function() {
+          var formParams = [];
+          var form = _instance.querySelector('form');
+          for ( var i = 0; i < form.querySelectorAll('input[type=hidden]').length; i++ ) {
+             var e = form.querySelectorAll('input[type=hidden]')[i];
+              if (e.name !== 'limit') {
+                formParams.push(encodeURIComponent(e.name) + "=" + encodeURIComponent(e.value));
+              }
+          }
+          var queryString = formParams.join("&");
+          return queryString;
+        };
+
+    var debounce = function(func, wait, immediate) {
+      var timeout;
+      return function() {
+        var context = this,
+            args = arguments;
+        var later = function() { 
+          timeout = null;
+          if ( !immediate ) {
+            func.apply(context, args);
+          }
+        };
+        var callNow = immediate && !timeout;
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait || 200);
+        if ( callNow ) { 
+          func.apply(context, args); 
+        }
+      };
+    },
+    emptySearchResults = function(){
+      searchResults.innerHTML = '';
+      searchField.focus();
+      searchForm.classList.remove('hs-search-field--open');
+    },
+    fillSearchResults = function(response){
+      var items = [];
+      items.push( "<li id='results-for'>Results for \"" + response.searchTerm + "\"</li>" );
+      response.results.forEach(function(val, index) {
+        items.push( "<li id='result" + index + "'><a href='" + val.url + "'>" + val.title + "</a></li>" );
+      });
+
+      emptySearchResults();
+      searchResults.innerHTML = items.join("");
+      searchForm.classList.add('hs-search-field--open');
+    },
+    getSearchResults = function() {
+        var request = new XMLHttpRequest();
+        var requestUrl = "/_hcms/search?&term="+encodeURIComponent(searchTerm)+"&limit="+encodeURIComponent(TYPEAHEAD_LIMIT)+"&autocomplete=true&analytics=true&" + searchOptions();
+
+        request.open('GET', requestUrl, true);
+        request.onload = function() {
+          if (request.status >= 200 && request.status < 400) {
+            var data = JSON.parse(request.responseText);
+            if (data.total > 0) {
+              fillSearchResults(data);
+              trapFocus();      
+            }
+            else {
+              emptySearchResults();
+            }
+          } else {
+            console.error('Server reached, error retrieving results.');
+          }
+        };
+        request.onerror = function() {
+          console.error('Could not reach the server.');
+        };
+        request.send();
+      },
+    trapFocus = function(){
+      var tabbable = [];
+      tabbable.push(searchField);
+      var tabbables = searchResults.getElementsByTagName('A');
+      for (var i = 0; i < tabbables.length; i++) {
+        tabbable.push(tabbables[i]);
+      }
+      var firstTabbable = tabbable[0],
+          lastTabbable  = tabbable[tabbable.length-1];
+      var tabResult = function(e){
+        if (e.target == lastTabbable && !e.shiftKey) {
+          e.preventDefault();
+          firstTabbable.focus();   		
+        }
+        else if (e.target == firstTabbable && e.shiftKey) {
+          e.preventDefault();
+          lastTabbable.focus();
+        } 
+      },
+      nextResult = function(e) {
+        e.preventDefault();
+        if (e.target == lastTabbable) {
+          firstTabbable.focus();
+        }
+        else {
+          tabbable.forEach(function(el){
+            if (el == e.target) {
+              tabbable[tabbable.indexOf(el) + 1].focus();
+            }
+          });
+        }
+      },
+      lastResult = function(e) {
+        e.preventDefault();
+        if (e.target == firstTabbable) {
+          lastTabbable.focus();
+        }
+        else {
+          tabbable.forEach(function(el){
+            if (el == e.target) {
+              tabbable[tabbable.indexOf(el) - 1].focus();
+            }
+          });
+        }
+      };
+      searchForm.addEventListener('keydown', function(e){
+        switch (e.which) {
+          case 9:
+            tabResult(e);
+            break;
+          case 27:
+            emptySearchResults();
+            break;
+          case 38:
+            lastResult(e);
+            break;
+          case 40:
+            nextResult(e);
+            break;
+        }
+      });      
+    },
+    isSearchTermPresent = debounce(function() {
+      searchTerm = searchField.value;
+      if(searchTerm.length > 2) {
+        getSearchResults();
+      }    
+      else if (searchTerm.length == 0)  {
+        emptySearchResults(); 
+      }
+    }, 250),
+    init = (function(){
+      searchField.addEventListener('input', function(e) {
+        if ((e.which != 9) && (e.which != 40) && (e.which != 38) && (e.which != 27) && (searchTerm != searchField.value)) {
+          isSearchTermPresent();
+        }
+      });
+    })();
+  }
+
+  if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading"){
+    var searchResults = document.querySelectorAll('.hs-search-field');
+    Array.prototype.forEach.call(searchResults, function(el){
+      var hsSearchModule = hsSearch(el);
+    });
+  } else {
+    document.addEventListener('DOMContentLoaded', function() {
+      var searchResults = document.querySelectorAll('.hs-search-field');
+      Array.prototype.forEach.call(searchResults, function(el){
+        var hsSearchModule = hsSearch(el);
+      });
+    });
+  }
+  </script>
+  {% end_require_js %}
+{% endif %}
+
+{% if module.start.mega_menu %}
+
+  {% for item in module.mega_menu_group %}
+    {% if item.num_cols == '2' %}
+      {% if item.two_col_arrangement == 'opt1' %}
+        {% set col_size_1 = "col-6" %}
+        {% set col_size_2 = "col-6" %}
+      {% endif %}
+      {% if item.two_col_arrangement == 'opt2' %}
+        {% set col_size_1 = "col-4" %}
+        {% set col_size_2 = "col-8" %}
+      {% endif %}
+      {% if item.two_col_arrangement == 'opt3' %}
+        {% set col_size_1 = "col-8" %}
+        {% set col_size_2 = "col-4" %}
+      {% endif %}
+      {% if item.two_col_arrangement == 'opt4' %}
+        {% set col_size_1 = "col-5" %}
+        {% set col_size_2 = "col-7" %}
+      {% endif %}
+      {% if item.two_col_arrangement == 'opt5' %}
+        {% set col_size_1 = "col-7" %}
+        {% set col_size_2 = "col-5" %}
+      {% endif %}
+    {% endif %}
+    {% if item.num_cols == '3' %}
+      {% if item.three_col_arrangement == 'opt1' %}
+        {% set col_size_1 = "col-4" %}
+        {% set col_size_2 = "col-4" %}
+        {% set col_size_3 = "col-4" %}
+      {% endif %}
+      {% if item.three_col_arrangement == 'opt2' %}
+        {% set col_size_1 = "col-6" %}
+        {% set col_size_2 = "col-3" %}
+        {% set col_size_3 = "col-3" %}
+      {% endif %}
+      {% if item.three_col_arrangement == 'opt3' %}
+        {% set col_size_1 = "col-3" %}
+        {% set col_size_2 = "col-3" %}
+        {% set col_size_3 = "col-6" %}
+      {% endif %}
+      {% if item.three_col_arrangement == 'opt4' %}
+        {% set col_size_1 = "col-3" %}
+        {% set col_size_2 = "col-6" %}
+        {% set col_size_3 = "col-3" %}
+      {% endif %}
+      {% if item.three_col_arrangement == 'opt5' %}
+        {% set col_size_1 = "col-8" %}
+        {% set col_size_2 = "col-2" %}
+        {% set col_size_3 = "col-2" %}
+      {% endif %}
+      {% if item.three_col_arrangement == 'opt6' %}
+        {% set col_size_1 = "col-2" %}
+        {% set col_size_2 = "col-2" %}
+        {% set col_size_3 = "col-8" %}
+      {% endif %}
+      {% if item.three_col_arrangement == 'opt7' %}
+        {% set col_size_1 = "col-2" %}
+        {% set col_size_2 = "col-8" %}
+        {% set col_size_3 = "col-2" %}
+      {% endif %}
+    {% endif %}
+    {% if item.num_cols == '4' %}
+      {% if item.four_col_arrangement == 'opt1' %}
+        {% set col_size_1 = "col-3" %}
+        {% set col_size_2 = "col-3" %}
+        {% set col_size_3 = "col-3" %}
+        {% set col_size_4 = "col-3" %}
+      {% endif %}
+      {% if item.four_col_arrangement == 'opt2' %}
+        {% set col_size_1 = "col-6" %}
+        {% set col_size_2 = "col-2" %}
+        {% set col_size_3 = "col-2" %}
+        {% set col_size_4 = "col-2" %}
+      {% endif %}
+      {% if item.four_col_arrangement == 'opt3' %}
+        {% set col_size_1 = "col-2" %}
+        {% set col_size_2 = "col-2" %}
+        {% set col_size_3 = "col-2" %}
+        {% set col_size_4 = "col-6" %}
+      {% endif %}
+      {% if item.four_col_arrangement == 'opt4' %}
+        {% set col_size_1 = "col-5" %}
+        {% set col_size_2 = "col-3" %}
+        {% set col_size_3 = "col-2" %}
+        {% set col_size_4 = "col-2" %}
+      {% endif %}
+      {% if item.four_col_arrangement == 'opt5' %}
+        {% set col_size_1 = "col-2" %}
+        {% set col_size_2 = "col-2" %}
+        {% set col_size_3 = "col-3" %}
+        {% set col_size_4 = "col-5" %}
+      {% endif %}
+    {% endif %}
+
+
+    <div class="mega-menu-{{ loop.index }} mega-menu">
+      <div class="">
+        <div class="container">
+          <div class="row">
+            <div class="{{ col_size_1 }}">
+              <div class="mega-text-con">
+                {% inline_rich_text field="col_1.text" value="{{ item.col_1.text }}" %}
+              </div>
+              {% if item.col_1.menu %}
+                <div class="mega-nav-con">
+                  {% simple_menu menu_tree="{{ item.col_1.menu }}" %}
+                </div>
+              {% endif %}
+            </div>
+            <div class="{{ col_size_2 }}">
+              <div class="mega-text-con">
+                {% inline_rich_text field="col_2.text" value="{{ item.col_2.text }}" %}
+              </div>
+              {% if item.col_2.menu %}
+                <div class="mega-nav-con">          
+                  {% simple_menu menu_tree="{{ item.col_2.menu }}" %}
+                </div>
+              {% endif %}
+            </div>
+            {% if item.num_cols >= '3' %}
+              <div class="{{ col_size_3 }}">
+                <div class="mega-text-con">
+                  {% inline_rich_text field="col_3.text" value="{{ item.col_3.text }}" %}
+                </div>
+                {% if item.col_3.menu %}
+                  <div class="mega-nav-con">          
+                    {% simple_menu menu_tree="{{ item.col_3.menu }}" %}
+                  </div>
+                {% endif %}
+              </div>
+            {% endif %}
+            {% if item.num_cols >= '4' %}
+              <div class="{{ col_size_4 }}">
+                <div class="mega-text-con">
+                  {% inline_rich_text field="col_4.text" value="{{ item.col_4.text }}" %}
+                </div>
+                {% if item.col_4.menu %}
+                  <div class="mega-nav-con">          
+                    {% simple_menu menu_tree="{{ item.col_4.menu }}" %}
+                  </div>
+                {% endif %}
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+
+{% endif %}
