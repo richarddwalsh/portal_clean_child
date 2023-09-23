@@ -24,7 +24,12 @@
     <div class="body-wrapper {{ builtin_body_classes }}">
       <header class="header">
         <div class="header__container">
-          {% module "global_header_v2" path="../../modules/Global Header v2", label="Global Header - Pro" %}
+          {# module "global_header_v2" path="../../modules/Global Header v2", label="Global Header - Pro" #}
+          {% if request_contact.is_logged_in %}
+            <div>Logged In Header</div>
+          {% else %}
+            <div>Logged Out Header</div>
+          {% endif %}
         </div>
       </header>
       <main id="main-content">

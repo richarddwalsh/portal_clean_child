@@ -5,11 +5,18 @@
 <div class="mb-3@sm px-2 action-drawer d-f ai-c jc-sb action-bar">
 	<div data-turbolinks="false">
 		<div class="c-tint2 fs-13 f-1 mr-2 lh-1.5">
-			Registration is open
+		{{ 'Registration is open' if event.registration_status == "Open" else 'Registration is closed.' }}
 		</div>
 		<div class="c-tint2 fs-13 f-1 mr-2 lh-1.5"></div>
 	</div>
 	<div class="ta-r">
-		<a class="btn" href="/registrations/events/1297980/logins/new?return=https://one-online.churchcenter.com/registrations/events/1297980/registrations/new">Register</a>
+		{% if event.registration_status == "Open" %}
+				{% if request_contact.is_logged_in %}
+					{# TODO: Trigger Popup #}
+					<a class="btn" href="/registrations/events/1297980/logins/new?return=https://one-online.churchcenter.com/registrations/events/1297980/registrations/new">Register</a>
+				{% else %}
+					<a class="btn" href="/_hcms/mem/login">Register</a>
+				{% endif %}			
+		{% endif %}
 	</div>
 </div>
