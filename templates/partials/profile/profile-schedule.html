@@ -1,0 +1,23 @@
+<div class="mb-4">
+	<div class="d-f ai-c jc-sb mb-1">
+		<h2 class="lh-1.333 c-tint0 fs-21 fw-600">My Schedule</h2>
+    {# <button aria-controls="menu--1" aria-expanded="false" aria-haspopup="true" class="minor-btn secondary-btn btn" data-reach-menu-button="" id="menu-button--menu--1" type="button">
+      Actions
+      <span class="fs-6 pl-4p dropdown-trigger__icon">
+        <svg class="symbol" id="down-chevron" viewBox="0 0 16 16">
+          <path d="M16 6.07L8 14.07L0 6.07L1.782 4.293L8 10.514L14.22 4.293L16 6.07Z"></path>
+        </svg>
+      </span>
+    </button> #}
+	</div>
+  {% if my_events|length > 0 %}
+
+  {% else %}
+	<div class="action-drawer mb-1">
+		Upcoming events you register for, along with group events and serving schedule, will appear here<br>
+		<a href="/registrations">
+      <button class="md-btn secondary-btn btn mt-2">Explore upcoming events</button>
+    </a>
+	</div>
+  {% endif %}
+</div>

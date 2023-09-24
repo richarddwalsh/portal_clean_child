@@ -2,52 +2,31 @@
   templateType: global_partial
   label: Events Filter
 -->
-<div class="action-drawer mb-2 mb-4@md d-f@sm ai-fs">
-	<div class="d-b d-f@sm fw-w mb-1 mb-0@sm mr-1@sm">
-		<div class="dropdown">
-			<button class="select ta-l"><span>All Campuses</span><span class="caret c-primary"></span></button>
-			<ul class="dropdown__menu">
-				<li class="dropdown__item p-0">
-          <button style="display: block; color: rgb(66, 66, 66); line-height: 1.25; padding: 0.5rem 0.75rem; background-color: transparent; border: none; font-weight: 400; text-align: left; width: 100%;">All Campuses</button>
-        </li>
-				<li class="dropdown__item p-0">
-          <button style="display: block; color: rgb(66, 66, 66); line-height: 1.25; padding: 0.5rem 0.75rem; background-color: transparent; border: none; font-weight: 400; text-align: left; width: 100%; white-space: nowrap;">ARC NoHo</button>
-        </li>
-				<li class="dropdown__item p-0">
-          <button style="display: block; color: rgb(66, 66, 66); line-height: 1.25; padding: 0.5rem 0.75rem; background-color: transparent; border: none; font-weight: 400; text-align: left; width: 100%; white-space: nowrap;">ONE | A Potter's House Church</button>
-        </li>
-				<li class="dropdown__item p-0">
-          <button style="display: block; color: rgb(66, 66, 66); line-height: 1.25; padding: 0.5rem 0.75rem; background-color: transparent; border: none; font-weight: 400; text-align: left; width: 100%; white-space: nowrap;">ONE | Global</button>
-        </li>
-			</ul>
+{% if dynamic_page_crm_object_type_fqn %}
+{% set campus_filter = crm_property_definition(dynamic_page_crm_object_type_fqn, "campus") %}
+{% set category_filter = crm_property_definition(dynamic_page_crm_object_type_fqn, "category") %}
+{% endif %}
+<div data-testid="grid" class="filter-buttons grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 action-drawer">
+	<div>
+		<button aria-expanded="false" aria-haspopup="true" aria-controls="menu--8" class="select truncate ta-l" data-reach-menu-button="" type="button" id="menu-button--menu--8">All Campuses</button>
+		<div data-reach-popover="" data-reach-menu="" data-reach-menu-popover="">
+			<div aria-labelledby="menu-button--menu--8" role="menu" id="menu--8" data-reach-menu-list="" data-reach-menu-items="" tabindex="-1" style="max-height: 15.5rem; max-width: 13rem; overflow: auto;">
+				<div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="(any)" tabindex="-1" id="option-0--menu--8">(any)</div>
+				{% for option in campus_filter.options %}
+					<div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="{{ option.value }}" tabindex="-1" id="option-{{loop.index}}--menu--8">{{ option.label }}</div>
+				{% endfor %}
+			</div>
 		</div>
 	</div>
-	<div class="d-b d-f@sm fw-w">
-		<div class="dropdown">
-			<button class="select ta-l"><span>All Categories</span><span class="caret c-primary"></span></button>
-			<ul class="dropdown__menu">
-				<li class="dropdown__item p-0">
-          <button style="display: block; color: rgb(66, 66, 66); line-height: 1.25; padding: 0.5rem 0.75rem; background-color: transparent; border: none; font-weight: 400; text-align: left; width: 100%;">All Categories</button>
-        </li>
-				<li class="dropdown__item p-0">
-          <button style="display: block; color: rgb(66, 66, 66); line-height: 1.25; padding: 0.5rem 0.75rem; background-color: transparent; border: none; font-weight: 400; text-align: left; width: 100%; white-space: nowrap;">ONE | Connect</button>
-        </li>
-				<li class="dropdown__item p-0">
-          <button style="display: block; color: rgb(66, 66, 66); line-height: 1.25; padding: 0.5rem 0.75rem; background-color: transparent; border: none; font-weight: 400; text-align: left; width: 100%; white-space: nowrap;">ONE | Events</button>
-        </li>
-				<li class="dropdown__item p-0">
-          <button style="display: block; color: rgb(66, 66, 66); line-height: 1.25; padding: 0.5rem 0.75rem; background-color: transparent; border: none; font-weight: 400; text-align: left; width: 100%; white-space: nowrap;">ONE | Heart</button>
-        </li>
-				<li class="dropdown__item p-0">
-          <button style="display: block; color: rgb(66, 66, 66); line-height: 1.25; padding: 0.5rem 0.75rem; background-color: transparent; border: none; font-weight: 400; text-align: left; width: 100%; white-space: nowrap;">ONE | Kidz</button>
-        </li>
-				<li class="dropdown__item p-0">
-          <button style="display: block; color: rgb(66, 66, 66); line-height: 1.25; padding: 0.5rem 0.75rem; background-color: transparent; border: none; font-weight: 400; text-align: left; width: 100%; white-space: nowrap;">ONE | Meet + Greet</button>
-        </li>
-				<li class="dropdown__item p-0">
-          <button style="display: block; color: rgb(66, 66, 66); line-height: 1.25; padding: 0.5rem 0.75rem; background-color: transparent; border: none; font-weight: 400; text-align: left; width: 100%; white-space: nowrap;">ONE | Workshops</button>
-        </li>
-			</ul>
+	<div>
+		<button aria-expanded="false" aria-haspopup="true" aria-controls="menu--9" class="select truncate ta-l" data-reach-menu-button="" type="button" id="menu-button--menu--9">All Campuses</button>
+		<div data-reach-popover="" data-reach-menu="" data-reach-menu-popover="">
+			<div aria-labelledby="menu-button--menu--9" role="menu" id="menu--9" data-reach-menu-list="" data-reach-menu-items="" tabindex="-1" style="max-height: 15.5rem; max-width: 13rem; overflow: auto;">
+				<div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="(any)" tabindex="-1" id="option-0--menu--9">(any)</div>
+				{% for option in category_filter.options %}
+					<div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="{{ option.value }}" tabindex="-1" id="option-{{loop.index}}--menu--9">{{ option.label }}</div>
+				{% endfor %}
+			</div>
 		</div>
 	</div>
 </div>

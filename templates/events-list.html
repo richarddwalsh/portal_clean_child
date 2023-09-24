@@ -15,12 +15,19 @@
       {% set queryparams = queryparams ~ "&starts_at__gte=" ~ local_dt|datetimeformat('%j') %}
     {% endif %}
     {% if request.query_dict.archived %}
-    {% set queryparams = queryparams ~ "&include_on_signup_page__in=On A specific date/time,Now" %}
+      {% set queryparams = queryparams ~ "&include_on_signup_page__in=On A specific date/time,Now" %}
     {% else %}
-    {% set queryparams = queryparams ~ "&include_on_signup_page__ne=Do not include (direct link only)" %}
+      {% set queryparams = queryparams ~ "&include_on_signup_page__ne=Do not include (direct link only)" %}
     {% endif %}
-    {% set events = crm_objects(dynamic_page_crm_object_type_fqn, queryparams, "name,description,dynamic_page_slug,banner_image,featured,registration_status,include_on_signup_page,starts_at,starts_at_time").results %}
+    {% if request.query_dict.campus %}
+      {% set queryparams = queryparams ~ "&campus=" ~ request.query_dict.campus %}
+    {% endif %}
+    {% if request.query_dict.category %}
+      {% set queryparams = queryparams ~ "&category=" ~ request.query_dict.category %}
+    {% endif %}
+    {% set events = crm_objects(dynamic_page_crm_object_type_fqn, queryparams, "name,description,dynamic_page_slug,banner_image,featured,registration_status,include_on_signup_page,starts_at,starts_at_time,campus,category").results %}
     {% include "./partials/events/event-list.html" %}
+    {{ require_js(get_asset_url("/PORTAL_Clean_Child/js/events-list.js"), { position: 'footer'}) }}
   {% elif dynamic_page_crm_object %}
     {% set event = dynamic_page_crm_object %}
     {% include "./partials/events/event-detail.html" %}

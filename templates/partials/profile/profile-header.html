@@ -1,0 +1,25 @@
+{% macro contactInitials(firstname, lastname) %}
+  {% set initials = "" %}
+  {% if firstname|length>0 %}
+    {% set initials = initials ~ truncate(firstname, 1, false, "") %}
+  {% endif %}
+  {% if lastname|length>0 %}
+    {% set initials = initials ~ truncate(lastname, 1, false, "") %}
+  {% endif %}
+  {{ initials }}
+{% endmacro %}
+
+<div class="d-f jc-sb ai-c mb-3">
+	<div class="d-f ai-c">
+		<div class="avatar mr-2 w-8 h-8 o-h">
+      {{ contactInitials(contact.firstname, contact.lastname) }}
+    </div>
+		<div class="df-c">
+			<h1 class="lh-1.333 c-tint0 fs-21 fw-600">Hello, {{contact.firstname}}!</h1>
+      <a class="f-2" href="/profile">My profile &amp; settings</a>
+		</div>
+	</div>
+	<div>
+		<a class="f-2" href="/_hcms/mem/logout">Logout</a>
+	</div>
+</div>

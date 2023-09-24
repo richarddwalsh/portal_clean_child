@@ -18,7 +18,7 @@
       {% set my_leadership_groups = crm_associations(contact_id, "USER_DEFINED", 230, "", fields).results %}
       {% set my_membership_groups = crm_associations(contact_id, "USER_DEFINED", 306, "", fields).results %}
       {% set groups = my_leadership_groups|union(my_membership_groups) %}
-      <nav aria-label="Breadcrumb" class="breadcrumbs">
+      <nav aria-label="Breadcrumb" class="breadcrumbs container">
         <div class="breadcrumbs__layout">
           <a aria-label="Me" class="breadcrumbs__page" href="/me">
             <span class="text">Me</span>
@@ -87,7 +87,7 @@
       </div>
       <div data-focus-lock-disabled="false" style="display:none;"><div><div data-reach-alert-dialog-overlay="true" data-reach-dialog-overlay=""><div aria-modal="true" role="alertdialog" tabindex="-1" aria-describedby="alert-dialog-description--1" aria-labelledby="alert-dialog--1" data-reach-alert-dialong-content="true" data-reach-alert-dialog-content="true" data-reach-dialog-content=""><div class="mb-1" id="alert-dialog--1" data-reach-alert-dialog-label="true">Leave Interest: Crafting and Conversations</div><div id="alert-dialog-description--1" data-reach-alert-dialog-description="true">Are you sure you would like to leave Interest: Crafting and Conversations?<div class="d-f jc-fe mt-3"><button class="btn text-btn mr-2">Cancel</button><button class="btn"><div>Yes, leave group</div></button></div></div></div></div></div></div>
     {% elif dynamic_page_crm_object %}
-    <nav aria-label="Breadcrumb" class="breadcrumbs">
+    <nav aria-label="Breadcrumb" class="breadcrumbs container">
       <div class="breadcrumbs__layout">
         <a aria-label="Me" class="breadcrumbs__page" href="/me">
           <span class="text">Me</span>

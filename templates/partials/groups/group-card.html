@@ -1,0 +1,12 @@
+<article class="d-b">
+  <a href="/group/{{ group.dynamic_page_slug }}" class="d-b">
+    <div class="card-list-item__image">
+      <img loading="lazy" alt="Logo for {{ group.name }}" src="{{ group.featured_image }}" />
+    </div>
+    <div class="d-f jc-sb ai-fs">
+      <h1 class="lh-1.333 c-tint0 fs-3 fw-600">{{ group.name }}</h1>
+      <span class="badge ml-2 {{ 'open' if group.enrollment_open else 'closed' }}-badge" style="text-transform: capitalize">{{ "Open" if group.enrollment_open else "Closed" }}</span>
+    </div>
+    <div class="c-tint1 fs-13">{{ group.schedule }}</div>
+  </a>
+</article>

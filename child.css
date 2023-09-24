@@ -2383,6 +2383,17 @@ button[disabled],button.disabled-btn,input[type=submit][disabled],input.disabled
     opacity: 0.3
 }
 
+.avatar {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: var(--color-tint3);
+    color: var(--color-tint7);
+    font-weight: 700;
+    border-radius: 100%;
+}
+
 .link-btn,.text-btn {
     background: none;
     border: none;
@@ -14733,4 +14744,25 @@ _:-moz-tree-row(hover) {
     padding: 1rem 1rem 0.25rem;
     background-color: var(--alert--primary);
     color: var(--alert--text);
+}
+
+.css-rsyo22 {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 16px;
+}
+
+.css-pfjh3 {
+    -webkit-box-align: center;
+    align-items: center;
+    background-color: var(--color-tint9);
+    border-radius: 4px;
+    border: 0px;
+    color: var(--color-tint1);
+    display: flex;
+    -webkit-box-pack: justify;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    padding: 12px 16px;
+    width: 100%;
+    transition: all 0.2s ease 0s;
 }
