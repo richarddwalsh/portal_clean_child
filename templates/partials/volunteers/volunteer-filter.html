@@ -1,0 +1,67 @@
+<!--
+  templateType: global_partial
+  label: Volunteer Teams Filter
+-->
+{% if dynamic_page_crm_object_type_fqn %}
+{% set schedule_filter = crm_property_definition(dynamic_page_crm_object_type_fqn, "serve_schedule") %}
+{% set location_filter = crm_property_definition(dynamic_page_crm_object_type_fqn, "location") %}
+{% set experience_filter = crm_property_definition(dynamic_page_crm_object_type_fqn, "requires_experience") %}
+{% set background_filter = crm_property_definition(dynamic_page_crm_object_type_fqn, "require_background_check") %}
+{% endif %}
+<div data-testid="grid" class="grid grid-cols-1 gap-2">
+	<div>
+		<div class="d-f jc-sb ai-c">
+			<div style="flex: 1 1 0%; position: relative">
+				<input type="text" value="" style="padding-left: 32px" />
+				<span style="color: var(--color-tint4); font-size: 14px; left: 10px; top: 11px; position: absolute; z-index: 1;">
+					<svg class="symbol" id="search" viewBox="0 0 16 16">
+						<path fill-rule="evenodd" clip-rule="evenodd" d="M16 14.3288L12.3216 10.7424C13.2016 9.616 13.7296 8.2168 13.7296 6.696C13.7296 3.004 10.6504 0 6.8656 0C3.08 0 0 3.004 0 6.696C0 10.388 3.08 13.392 6.8656 13.392C8.2168 13.392 9.4744 13.004 10.5384 12.344L14.2864 16L16 14.3288ZM1.616 6.696C1.616 3.8728 3.9704 1.576 6.8656 1.576C9.7592 1.576 12.1152 3.8728 12.1152 6.696C12.1152 9.5192 9.7592 11.816 6.8656 11.816C3.9704 11.816 1.616 9.5192 1.616 6.696Z"></path>
+					</svg>
+				</span>
+			</div>
+		</div>
+	</div>
+	<div>
+	<div data-testid="grid" class="filter-buttons grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+		<button aria-expanded="false" aria-haspopup="true" aria-controls="menu--8" class="select truncate ta-l" data-reach-menu-button="" type="button" id="menu-button--menu--8">Schedule</button>
+		<div data-reach-popover="" data-reach-menu="" data-reach-menu-popover="">
+			<div aria-labelledby="menu-button--menu--8" role="menu" id="menu--8" data-reach-menu-list="" data-reach-menu-items="" tabindex="-1" style="max-height: 15.5rem; max-width: 13rem; overflow: auto;">
+				<div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="(any)" tabindex="-1" id="option-0--menu--8">(any)</div>
+				{% for option in schedule_filter.options %}
+					<div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="{{ option.value }}" tabindex="-1" id="option-{{loop.index}}--menu--8">{{ option.label }}</div>
+				{% endfor %}
+			</div>
+		</div>
+		<button aria-expanded="false" aria-haspopup="true" aria-controls="menu--9" class="select truncate ta-l" data-reach-menu-button="" type="button" id="menu-button--menu--9">Location</button>
+		<div data-reach-popover="" data-reach-menu="" data-reach-menu-popover="">
+			<div aria-labelledby="menu-button--menu--9" role="menu" id="menu--8" data-reach-menu-list="" data-reach-menu-items="" tabindex="-1" style="max-height: 15.5rem; max-width: 13rem; overflow: auto;">
+				<div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="(any)" tabindex="-1" id="option-0--menu--9">(any)</div>
+				{% for option in location_filter.options %}
+					<div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="{{ option.value }}" tabindex="-1" id="option-{{loop.index}}--menu--9">{{ option.label }}</div>
+				{% endfor %}
+			</div>
+		</div>
+		<button aria-expanded="false" aria-haspopup="true" aria-controls="menu--10" class="select truncate ta-l" data-reach-menu-button="" type="button" id="menu-button--menu--10">Requires Experience</button>
+		<div data-reach-popover="" data-reach-menu="" data-reach-menu-popover="">
+			<div aria-labelledby="menu-button--menu--10" role="menu" id="menu--8" data-reach-menu-list="" data-reach-menu-items="" tabindex="-1" style="max-height: 15.5rem; max-width: 13rem; overflow: auto;">
+				<div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="(any)" tabindex="-1" id="option-0--menu--10">(any)</div>
+				{% for option in experience_filter.options %}
+					<div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="{{ option.value }}" tabindex="-1" id="option-{{loop.index}}--menu--10">{{ option.label }}</div>
+				{% endfor %}
+			</div>
+		</div>
+		<button aria-expanded="false" aria-haspopup="true"aria-controls="menu--11" class="select truncate ta-l" data-reach-menu-button="" type="button" id="menu-button--menu--11">Requires Background Check</button>
+		<div data-reach-popover="" data-reach-menu="" data-reach-menu-popover="">
+			<div aria-labelledby="menu-button--menu--11" role="menu" id="menu--8" data-reach-menu-list="" data-reach-menu-items="" tabindex="-1" style="max-height: 15.5rem; max-width: 13rem; overflow: auto;">
+				<div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="(any)" tabindex="-1" id="option-0--menu--11">(any)</div>
+				{% for option in background_filter.options %}
+					<div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="{{ option.value }}" tabindex="-1" id="option-{{loop.index}}--menu--11">{{ option.label }}</div>
+				{% endfor %}
+			</div>
+		</div>
+	</div>
+	<div class="pt-3 mb-3">
+		<input type="checkbox" id="enrollment-status" class="checkbox"/>
+		<label for="enrollment-status" class="checkbox-label" >Include closed &amp; full teams</label>
+	</div>
+</div>

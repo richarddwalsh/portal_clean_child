@@ -13,7 +13,7 @@
 {% set day_of_week_filter = crm_property_definition("groups", "day_of_week") %}
 {% set time_of_day_filter = crm_property_definition("groups", "time_of_day") %}
 
-{% set queryparams = "limit=200&orderBy=name" %}
+{% set queryparams = "limit=200&orderBy=name&visibility=true" %}
 {% if request.query_dict.group_type %}
   {% set queryparams = queryparams ~ "&group_type=" ~ request.query_dict.group_type %}
 {% endif %}
@@ -76,7 +76,7 @@
   </div>
 </nav>
 <div id="main_page_content" class="f-1">
-  <div class="f-1 container container--wide pb-4 pt-4">
+  <div class="f-1 container pb-4 pt-4">
     <div tabindex="-1" style="outline: none;">
       <div tabindex="-1" style="outline: none;">
         <div class="mb-3" style="">
@@ -180,7 +180,6 @@
             <div>
               <section data-testid="grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3 md:gap-4">
                 {% for group in groups %}
-                  {% if group.visibility == "Yes" %}
                   <article class="d-b">
                     <a href="/group/{{ group.dynamic_page_slug }}" class="d-b">
                       <div class="card-list-item__image">
@@ -193,7 +192,6 @@
                       <div class="c-tint1 fs-13">{{ group.schedule }}</div>
                     </a>
                   </article>
-                  {% endif %}
                 {% endfor %}
               </section>
             </div>

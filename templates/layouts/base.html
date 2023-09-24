@@ -9,10 +9,10 @@
     <title>{{ page_meta.html_title }}</title>
     {% if site_settings.favicon_src %}<link rel="shortcut icon" href="{{ site_settings.favicon_src }}" />{% endif %}
     <meta name="description" content="{{ page_meta.meta_description }}">
-    {{ require_css(get_asset_url("../../css/main-head.css")) }}
-    {{ require_css(get_asset_url("../../css/main-foot.css"), { async: true }) }}
-    {{ require_js(get_asset_url("../../js/clean-pro.js"), { position: 'footer'}) }}
-    {{ require_js(get_asset_url("../../js/jquery-modal-min.js"), { position: 'footer', defer:true }) }}
+    {{ require_css(get_asset_url("/@marketplace/Helpful_Hero/CLEAN-6-1-theme/css/main-head.css")) }}
+    {{ require_css(get_asset_url("/@marketplace/Helpful_Hero/CLEAN-6-1-theme/css/main-foot.css"), { async: true }) }}
+    {{ require_js(get_asset_url("/@marketplace/Helpful_Hero/CLEAN-6-1-theme/js/clean-pro.js"), { position: 'footer'}) }}
+    {{ require_js(get_asset_url("/@marketplace/Helpful_Hero/CLEAN-6-1-theme/js/jquery-modal-min.js"), { position: 'footer', defer:true }) }}
     {{ require_js(get_asset_url("../../child.js")) }}
     {{ standard_header_includes }}
     {{ require_css(get_public_template_url("../../child.css")) }}
@@ -24,11 +24,10 @@
     <div class="body-wrapper {{ builtin_body_classes }}">
       <header class="header">
         <div class="header__container">
-          {# module "global_header_v2" path="../../modules/Global Header v2", label="Global Header - Pro" #}
           {% if request_contact.is_logged_in %}
             <div>Logged In Header</div>
           {% else %}
-            <div>Logged Out Header</div>
+            {% module "global_header_v2" path="../../modules/Portal - Global Header v2", label="Global Header - Pro" %}
           {% endif %}
         </div>
       </header>

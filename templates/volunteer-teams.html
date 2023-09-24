@@ -1,0 +1,17 @@
+<!--
+  templateType: page
+  isAvailableForNewContent: true
+  label: Portal - Volunteer Teams
+-->
+{% extends "./layouts/base.html" %}
+
+{% block body %}
+<main class="body-container-wrapper group-categories-template">
+  {% if dynamic_page_crm_object_type_fqn %}
+    {% include "./partials/volunteers/volunteer-teams-list.html" %}
+    {{ require_js(get_asset_url("/PORTAL_Clean_Child/js/volunteer-list.js"), { position: 'footer'}) }}
+  {% elif dynamic_page_crm_object %}
+    {% include "./partials/volunteers/volunteer-team-details.html" %}
+  {% endif %}
+</main>
+{% endblock body %}
