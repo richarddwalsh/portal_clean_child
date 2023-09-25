@@ -11,7 +11,7 @@
 		<div class="d-f ai-c mb-2">
 			<h2 class="h3">Upcoming events</h2>
 			<div class="ml-a">
-				<button aria-controls="menu--15" aria-expanded="false" aria-haspopup="true" class="minor-btn secondary-btn btn" data-reach-menu-button="" id="menu-button--menu--15" type="button">
+				<button aria-controls="menu--{{ group.id }}" aria-expanded="false" aria-haspopup="true" class="minor-btn secondary-btn btn" data-reach-menu-button="" id="menu-button--menu--subscribe" type="button">
 					<div class="d-f jc-sb ai-c">
 						Subscribe to group calendar
 						<span class="dropdown-trigger__icon fs-6 ml-4p">
@@ -21,6 +21,28 @@
 						</span>
 					</div>
 				</button>
+				<div data-reach-popover="" data-reach-menu="" data-reach-menu-popover="" style="position: absolute; left: 819.688px; top: 251px;">
+					<div aria-labelledby="menu-button--menu--{{ group.id }}" role="menu" id="menu--subscribe" class="dropdown__menu" data-reach-menu-list="" data-reach-menu-items="" tabindex="-1">
+						{# TODO: Calendar Link Subscription Service #}
+						<div role="none" tabindex="-1">
+							<a role="menuitem" href="webcal://one-online.churchcenter.com/groups/icalendars/qfqnjp3p0pwhzmvvw999k7Abc1Zfmvbn6928tt1A4njcvd8vk12lmxg85tdy85rpr5cxk3yqtkqqsvpjyshxjwdcpl3qy2jhpqcghw9nqbAtwzjnv0cyj6tfjdlm74w2k4ntx6dfhhkx3htcxtjApA64964.ics" target="_blank" class="dropdown__item" data-reach-menu-link="" data-reach-menu-item="" data-valuetext="Apple Calendar" tabindex="-1" id="option-0--menu--{{ group.id }}">Apple Calendar</a>
+						</div>
+						<div role="none" tabindex="-1">
+							<a role="menuitem" href="webcal://one-online.churchcenter.com/groups/icalendars/qfqnjp3p0pwhzmvvw999k7Abc1Zfmvbn6928tt1A4njcvd8vk12lmxg85tdy85rpr5cxk3yqtkqqsvpjyshxjwdcpl3qy2jhpqcghw9nqbAtwzjnv0cyj6tfjdlm74w2k4ntx6dfhhkx3htcxtjApA64964.ics" target="_blank" class="dropdown__item" data-reach-menu-link="" data-reach-menu-item="" data-valuetext="Outlook Calendar" tabindex="-1" id="option-1--menu--{{ group.id }}">Outlook Calendar</a>
+						</div>
+						<div role="none" tabindex="-1">
+							<a role="menuitem" href="https://www.google.com/calendar/r?cid=webcal%3A%2F%2Fone-online.churchcenter.com%2Fgroups%2Ficalendars%2Fqfqnjp3p0pwhzmvvw999k7Abc1Zfmvbn6928tt1A4njcvd8vk12lmxg85tdy85rpr5cxk3yqtkqqsvpjyshxjwdcpl3qy2jhpqcghw9nqbAtwzjnv0cyj6tfjdlm74w2k4ntx6dfhhkx3htcxtjApA64964.ics" target="_blank" class="dropdown__item" data-reach-menu-link="" data-reach-menu-item="" data-valuetext="Google Calendar" tabindex="-1" id="option-2--menu--{{ group.id }}">Google Calendar</a>
+						</div>
+						<div role="none" tabindex="-1">
+							<a role="menuitem" href="https://outlook.live.com/owa/?name=Book+Study%3A+Promise+Journey+led+by+Jas+%28ATL%29+events&amp;path=%2Fcalendar%2Faction%2Fsubscribe&amp;url=https%3A%2F%2Fone-online.churchcenter.com%2Fgroups%2Ficalendars%2Fqfqnjp3p0pwhzmvvw999k7Abc1Zfmvbn6928tt1A4njcvd8vk12lmxg85tdy85rpr5cxk3yqtkqqsvpjyshxjwdcpl3qy2jhpqcghw9nqbAtwzjnv0cyj6tfjdlm74w2k4ntx6dfhhkx3htcxtjApA64964.ics" target="_blank" class="dropdown__item" data-reach-menu-link="" data-reach-menu-item="" data-valuetext="Outlook.com" tabindex="-1" id="option-3--menu--{{ group.id }}">Outlook.com</a>
+						</div>
+						<div role="none" tabindex="-1">
+							<a role="menuitem" href="https://calendar.yahoo.com/subscribe?ics=webcal%3A%2F%2Fone-online.churchcenter.com%2Fgroups%2Ficalendars%2Fqfqnjp3p0pwhzmvvw999k7Abc1Zfmvbn6928tt1A4njcvd8vk12lmxg85tdy85rpr5cxk3yqtkqqsvpjyshxjwdcpl3qy2jhpqcghw9nqbAtwzjnv0cyj6tfjdlm74w2k4ntx6dfhhkx3htcxtjApA64964.ics&amp;name=Book+Study%3A+Promise+Journey+led+by+Jas+%28ATL%29+events" target="_blank" class="dropdown__item" data-reach-menu-link="" data-reach-menu-item="" data-valuetext="Yahoo Calendar" tabindex="-1" id="option-4--menu--{{ group.id }}">Yahoo Calendar</a>
+						</div>
+						<div class="mt-4p mb-4p" style="border-top: 1px solid var(--color-tint6);"></div>
+						<div class="dropdown__item">Copy the iCal link</div>
+						</div>
+					</div>
 			</div>
 		</div>
 		<div class="ta-c c-tint3 p-4">

@@ -100,7 +100,12 @@
                         <form data-endpoint="https://{{ request.domain }}/_hcms/api/group/leave">
                           <div class="d-f jc-fe mt-3">
                             <input type="hidden" name="groupId" value="{{ group.id }}">
+                            <input type="hidden" name="groupName" value="{{ group.name }}">
+                            <input type="hidden" name="groupUrl" value="http://{{ request.domain }}/my/groups/{{ group.dynamic_page_slug }}">
+                            <input type="hidden" name="groupBannerUrl" value="{{ group.featured_image }}">
                             <input type="hidden" name="contactId" value="{{ contact_id }}">
+                            <input type="hidden" name="firstname" value="{{ contact.firstname }}">
+                            <input type="hidden" name="contactEmail" value="{{ contact.email }}">
                             <button class="btn text-btn mr-2 cancel-btn">Cancel</button>
                             <button class="btn" type="submit">Yes, leave group</button>
                           </div>
@@ -143,7 +148,7 @@
             <path d="M13.75 8.045L5.80002 16L4.02802 14.233L10.215 8.045L4.02802 1.859L5.80002 0.0910034L13.75 8.045Z"></path>
           </svg>
         </span>
-        <a aria-label="Interest: Crafting and Conversations" class="breadcrumbs__page breadcrumbs__current-page" href="/my/groups/{{ group.dynamic_page_slug }}">
+        <a aria-label="I{{ group.name }}" class="breadcrumbs__page breadcrumbs__current-page" href="/my/groups/{{ group.dynamic_page_slug }}">
           <span class="text">{{ group.name }}</span>
           <span class="icon">
             <svg class="symbol" id="three-dots" viewBox="0 0 16 16">
@@ -151,7 +156,7 @@
             </svg>
           </span>
         </a>
-        <button aria-controls="menu--103" aria-expanded="false" aria-haspopup="true" class="minor-btn secondary-btn btn" data-reach-menu-button="" id="menu-button--menu--103" style="margin-left: auto;" type="button">
+        <button aria-controls="menu--103" aria-expanded="false" aria-haspopup="true" class="minor-btn secondary-btn btn" data-reach-menu-button="" id="menu-button--menu--{{ group.id }}" style="margin-left: auto;" type="button">
           Actions
           <span class="fs-6 pl-4p dropdown-trigger__icon">
             <svg class="symbol" id="down-chevron" viewBox="0 0 16 16">
@@ -159,6 +164,30 @@
             </svg>
           </span>
         </button>
+        <div data-reach-popover="" data-reach-menu="" data-reach-menu-popover="" style="position: absolute;">
+          <div aria-labelledby="menu-button--menu--{{ group.id }}" role="menu" id="menu--{{ group.id }}" data-reach-menu-list="" data-reach-menu-items="" tabindex="-1">
+            <div role="none" tabindex="-1">
+              <a role="menuitem" href="/groups/{{ group.dynamic_page_slug }}" data-reach-menu-link="" data-reach-menu-item="" data-valuetext="View public group page" tabindex="-1" id="option-0--menu--{{ group.id }}">View public group page</a>
+            </div>
+            <div 
+              role="menuitem" 
+              class="dropdown__item" 
+              data-reach-menu-item=""
+              data-endpoint="https://{{ request.domain }}/_hcms/api/group/leave"
+              data-valuetext="Leave group…" 
+              data-group-id="{{ group.id }}" 
+              data-group-name="{{ group.name }}" 
+              data-group-banner-url="{{ group.featured_image }}" 
+              data-group-url="https://{{ request.domain }}/my/groups/{{ group.dynamic_page_slug }}"
+              data-contact-id="{{ contact_id }}" 
+              data-firstname="{{ contact.firstname }}" 
+              data-contact-email="{{ contact.email }}" 
+              data-domain="https://{{ request.domain }}"
+              data-return-url="https://{{ request.domain }}/my/groups"
+              tabindex="-1" 
+              id="option-1--menu--{{ group.id }}">Leave group…</div>
+          </div>
+        </div>
       </div>
     </nav>
     <div class="f-1 page-content" id="main_page_content">

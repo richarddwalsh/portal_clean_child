@@ -114,7 +114,12 @@
 					<form data-endpoint="https://{{ request.domain }}/_hcms/api/group/join" method="POST">
 						<div class="d-f jc-fe mt-3">
 							<input type="hidden" name="groupId" value="{{ group.id }}">
+							<input type="hidden" name="groupName" value="{{ group.name }}">
+							<input type="hidden" name="groupUrl" value="http://{{ request.domain }}/my/groups/{{ group.dynamic_page_slug }}">
+							<input type="hidden" name="groupBannerUrl" value="{{ group.featured_image }}">
 							<input type="hidden" name="contactId" value="{{ contact_id }}">
+							<input type="hidden" name="firstname" value="{{ contact.firstname }}">
+							<input type="hidden" name="contactEmail" value="{{ contact.email }}">
 							<button class="btn text-btn mr-2">Cancel</button>
 							<button class="btn" type="submit">Join group</button>
 						</div>

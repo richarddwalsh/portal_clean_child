@@ -5,7 +5,11 @@ const axios = require('axios');
 // This function is executed when a request is made to the endpoint associated with this file in the serverless.json file
 exports.main = ({ body }, sendResponse) => {
 
-  const { groupId, contactId } = body;
+  if (typeof(body) === "undefined") {
+    sendResponse({ body: { status: "error", error: "No body provided.", step: "validateBody" }, statusCode: 500 });
+  }
+
+  const { groupId, contactId, firstname, contactEmail, groupUrl, groupName, groupBannerUrl } = body;
   
   const config = {
     headers: {
@@ -19,13 +23,35 @@ exports.main = ({ body }, sendResponse) => {
 
   axios
     .delete(endpoint, config)
-    .then(response => {
-      sendResponse({ body: { success: true, response: response.data }, statusCode: 200 });
-    })
     .catch(error => {
-      sendResponse({ body: { error: error.message }, statusCode: 500 });
+      sendResponse({ body: { status: "error", error: error.message, step: "deleteAssociation" }, statusCode: 200 });
     })
-
-  // sendResponse({ body: { groupId, contactId, config }, statusCode: 200 })
-  
+    .then(() => {
+      const data = {
+        "emailId": 136441277755,
+        "message": {
+          "to": `${contactEmail}`,
+          "bcc": [
+            "23169086@bcc.hubspot.com"
+          ]
+        },
+        "contactProperties": {
+          "firstname": `${firstname}`,
+          "email": `${contactEmail}`
+        },
+        "customProperties": {
+          "groupUrl": `${groupUrl}`,
+          "groupName": `${groupName}`,
+          "groupBannerUrl": `${groupBannerUrl}`
+        } 
+      }      
+      const emailEndpoint = `https://api.hubapi.com/marketing/v3/transactional/single-email/send`;
+      return axios.post( emailEndpoint, data, config );
+    })
+    .catch((error) => {
+      sendResponse({ body: { status: "error", error: error.message, step: "sendEmail" }, statusCode: 200 });
+    })
+    .then(response => {
+      sendResponse({ body: { status: "success", response: response.data, step: "sendEmail" }, statusCode: 200 });
+    })  
 };
