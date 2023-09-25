@@ -6,6 +6,8 @@
 <html lang="{{ html_lang }}" {{ html_lang_dir }}>
   <head>
     <meta charset="utf-8">
+    {# TODO: REMOVE WHEN READY TO PUBLISH #}
+    <meta name="robots.txt" content="noindex, nofollow">
     <title>{{ page_meta.html_title }}</title>
     {% if site_settings.favicon_src %}<link rel="shortcut icon" href="{{ site_settings.favicon_src }}" />{% endif %}
     <meta name="description" content="{{ page_meta.meta_description }}">
@@ -24,11 +26,7 @@
     <div class="body-wrapper {{ builtin_body_classes }}">
       <header class="header">
         <div class="header__container">
-          {% if request_contact.is_logged_in %}
-            <div>Logged In Header</div>
-          {% else %}
-            {% module "global_header_v2" path="../../modules/Portal - Global Header v2", label="Global Header - Pro" %}
-          {% endif %}
+          {% module "global_header_v2" path="../../modules/Portal - Global Header v2.module", label="Global Header - Pro" %}
         </div>
       </header>
       <main id="main-content">

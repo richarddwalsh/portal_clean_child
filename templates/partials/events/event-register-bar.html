@@ -2,6 +2,17 @@
   templateType: global_partial
   label: Events Details Registration Bar
 -->
+{% macro contactInitials(firstname, lastname) %}
+  {% set initials = "" %}
+  {% if firstname|length>0 %}
+    {% set initials = initials ~ truncate(firstname, 1, false, "") %}
+  {% endif %}
+  {% if lastname|length>0 %}
+    {% set initials = initials ~ truncate(lastname, 1, false, "") %}
+  {% endif %}
+  {{ initials }}
+{% endmacro %}
+
 <div class="mb-3@sm px-2 action-drawer d-f ai-c jc-sb action-bar">
 	<div data-turbolinks="false">
 		<div class="c-tint2 fs-13 f-1 mr-2 lh-1.5">
@@ -12,11 +23,58 @@
 	<div class="ta-r">
 		{% if event.registration_status == "Open" %}
 				{% if request_contact.is_logged_in %}
-					{# TODO: Trigger Popup #}
-					<a class="btn" href="/registrations/events/1297980/logins/new?return=https://one-online.churchcenter.com/registrations/events/1297980/registrations/new">Register</a>
+					<a class="btn modal-trigger" data-target="register-modal">Register</a>
 				{% else %}
 					<a class="btn" href="/_hcms/mem/login">Register</a>
 				{% endif %}			
 		{% endif %}
+	</div>
+</div>
+<div id="register-modal" class="modal" data-focus-lock-disabled="false">
+	<div>
+		<div data-reach-alert-dialog-overlay="true" data-reach-dialog-overlay="">
+			<div aria-describedby="alert-dialog-description--1" aria-labelledby="alert-dialog--1" aria-modal="true" data-reach-alert-dialog-content="true" data-reach-alert-dialong-content="true" data-reach-dialog-content="" role="alertdialog" tabindex="-1">
+				<div class="mb-1" data-reach-alert-dialog-label="true" id="alert-dialog--1">
+					{{ group.name }}
+				</div>
+				<div data-reach-alert-dialog-description="true" id="alert-dialog-description--1">
+					<div class="mb-2">
+						<h2 class="lh-1.333 c-tint0 fs-3 fw-600">Select Participants</h2>
+						<form data-endpoint="https://{{ request.domain }}/_hcms/api/group/join" method="POST">
+							<div class="d-f ai-c jc-sb action-drawer mt-2 mb-2">
+								<div class="d-f">
+									<div class="avatar w-6 h-6 mr-2">
+										{{ contactInitials(contact.firstname, contact.lastname) }}
+									</div>
+									<div class="d-f fd-c">
+										<div>
+											{{ contact.firstname ~ " " ~ contact.lastname }}
+										</div>
+										<div class="fs-13 c-tint2">
+											{{ contact.email }}
+										</div>
+									</div>
+								</div>
+							</div>
+							<div>
+								<div>
+									<div class="ta-c ta-r@md">
+										<button class="minor-btn secondary-btn btn">
+											<div style="font-size: 9px; margin-right: 4px;">
+												<svg role="img" class="symbol">
+													<use xlink:href="/registrations/packs/f3e5f8382d7bf5da1d0942ffd3165e11.svg#plus"></use>
+												</svg>
+											</div>
+											Add someone else
+										</button>
+									</div>
+								</div>
+							</div>
+							<button class="btn" type="button">Next: Details</button>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
 </div>

@@ -2,6 +2,7 @@
   templateType: page
   isAvailableForNewContent: true
   label: Portal - Group Details
+  dataQueryPath: ../data-queries/contact_info
 -->
 {% extends "./layouts/base.html" %}
 
@@ -9,6 +10,19 @@
 <main class="body-container-wrapper group-details-template">
   {% if dynamic_page_crm_object %}
     {% set group = dynamic_page_crm_object %}
+    {% set enrolled = false %}
+    {% if request_contact.is_logged_in %}
+      {% set contact = data_query.data.CRM.contact %}
+      {% set contact_id = contact._metadata.id %}
+      {% set my_groups = crm_associations(contact_id, "USER_DEFINED", 118, "").results %}
+      {% set group_ids = [] %}
+      {% for group_item in my_groups %}
+        {% set group_ids = group_ids.append(group_item.id) %}
+      {% endfor %}
+      {% if group.id in group_ids %}
+        {% set enrolled = true %}
+      {% endif %}
+    {% endif %}
     {# TODO: Convert to 2 queries, past and upcomming #}
     {% set event_query = "limit=200&orderBy=starts_at" %}
     {% set events = crm_associations(group.id, "USER_DEFINED", 219, event_query, "name, description, starts_at, starts_at_time, ends_at, ends_at_time").results %}

@@ -1,0 +1,27 @@
+# label: "Contact info page"
+# description: "Show a contact's name and email"
+# $contact_id: "{{request.contact.contact_vid }}"
+query contact_info($contact_id: String!) {
+  CRM {
+    contact(uniqueIdentifier: "id", uniqueIdentifierValue: $contact_id) {
+      _metadata {
+        id
+      }
+      firstname
+      lastname
+      email
+      phone
+      mobilephone
+      address
+      city
+      state
+      zip
+      country
+      medical_notes
+      marital_status
+      birthday
+      gender
+      anniversary
+    }
+  }
+}

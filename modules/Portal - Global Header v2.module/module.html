@@ -676,81 +676,64 @@
         </div>
       </div>
     
-    <div class="hhs-nav-grid__menu
-                main-nav">
-              {% macro render_link_item(link,depth)%}
-                {% if link != [] && link.label %}
-                  <li class="hs-menu-item hs-menu-depth-{{depth}}
-                             {{'hs-item-has-children' if link.children}}
-                             {{'active' if link.activeNode}}
-                             {{'sub-active' if sublink.activeNode}}
-                             {{'active-branch' if link.activeBranch}}" 
-                      {{'aria-haspopup="true"' if link.children}}>
-                    <a href="{{link.url if link.url else '#'}}"
-                       target="{{link.linkTarget}}">
-                      {{link.label}}
-                    </a>
-                    {% if link.children %}
-                    <ul class="hs-menu-children-wrapper">
-                      {% set depth = depth + 1 %}
-                      {% for sublink in link.children %}
-                        {{ render_link_item(sublink,depth) }}
-                      {% endfor %}
-                    </ul>
-                    {% endif %}
-                  </li>
-                {% endif %}
-              {% endmacro %}
+    <div class="hhs-nav-grid__menu main-nav">
+      {% macro render_link_item(link,depth)%}
+        {% if link != [] && link.label %}
+          <li data-label="{{ link.label }}" class="hs-menu-item hs-menu-depth-{{depth}} {{'hs-item-has-children' if link.children}} {{'active' if link.activeNode}} {{'sub-active' if sublink.activeNode}} {{'active-branch' if link.activeBranch}}" {{'aria-haspopup="true"' if link.children}}>
+            {% if link.label == "Login" && request_contact.is_logged_in %}
+              <a href="/_hcms/mem/logout" target="{{link.linkTarget}}">
+                Logout
+              </a>
+            {% else %}
+              <a href="{{link.url if link.url else '#'}}" target="{{link.linkTarget}}">
+                {{link.label}}
+              </a>
+            {% endif %}
+            {% if link.children %}
+            <ul class="hs-menu-children-wrapper">
+              {% set depth = depth + 1 %}
+              {% for sublink in link.children %}
+                {{ render_link_item(sublink,depth) }}
+              {% endfor %}
+            </ul>
+            {% endif %}
+          </li>
+        {% endif %}
+      {% endmacro %}
               
-              {% if module.menu.translate %}
-                {% for item in module.menu.translated_menus %}
-                  {% if item.lang_url == i18n_getlanguage() %}
-                  <nav class="sc-site-header__menu
-                              sc-site-header__menu--{{ item.adv_menu_translated }}
-                              hs-menu-wrapper active-branch
-                              flyouts
-                              hs-menu-flow-horizontal"
-                       aria-label="{{menu_name}} menu">
-                      {% set menu = menu(item.adv_menu_translated , "site_root").children %}
-                      <ul class="hhs-nav-links">
-                        {% for link in menu %}
-                          {{ render_link_item(link,1) }}
-                        {% endfor %}
-                      </ul>
-                  </nav>
-                  {% endif %}
+      {% if module.menu.translate %}
+        {% for item in module.menu.translated_menus %}
+          {% if item.lang_url == i18n_getlanguage() %}
+            <nav class="sc-site-header__menu sc-site-header__menu--{{ item.adv_menu_translated }} hs-menu-wrapper active-branch flyouts hs-menu-flow-horizontal" aria-label="{{menu_name}} menu">
+              {% set menu = menu(item.adv_menu_translated , "site_root").children %}
+              <ul class="hhs-nav-links">
+                {% for link in menu %}
+                  {{ render_link_item(link,1) }}
                 {% endfor %}
-                {% if i18n_getlanguage() == module.menu.default_lang_url or i18n_getlanguage() == module.menu.default_lang_url_blog %}
-                <nav class="sc-site-header__menu
-                            sc-site-header__menu--{{ module.menu.adv_menu_default }}
-                            hs-menu-wrapper active-branch
-                            flyouts
-                            hs-menu-flow-horizontal"
-                     aria-label="{{menu_name}} menu">
-                    {% set menu = menu(module.menu.adv_menu_default , "site_root").children %}
-                    <ul class="hhs-nav-links">
-                      {% for link in menu %}
-                        {{ render_link_item(link,1) }}
-                      {% endfor %}
-                    </ul>
-                </nav> 
-                {% endif %}
-              {% else %}
-                <nav class="sc-site-header__menu
-                            sc-site-header__menu--{{ module.menu.adv_menu_default }}
-                            hs-menu-wrapper
-                            active-branch
-                            flyouts
-                            hs-menu-flow-horizontal"
-                     aria-label="{{menu_name}} menu">
-                    {% set menu = menu(module.menu.adv_menu_default , "site_root").children %}
-                    <ul class="hhs-nav-links">
-                      {% for link in menu %}
-                        {{render_link_item(link,1)}}
-                      {% endfor %}
-                    </ul>
-                </nav>
-              {% endif %}
+              </ul>
+            </nav>
+          {% endif %}
+        {% endfor %}
+        {% if i18n_getlanguage() == module.menu.default_lang_url or i18n_getlanguage() == module.menu.default_lang_url_blog %}
+          <nav class="sc-site-header__menu sc-site-header__menu--{{ module.menu.adv_menu_default }} hs-menu-wrapper active-branch flyouts hs-menu-flow-horizontal" aria-label="{{menu_name}} menu">
+            {% set menu = menu(module.menu.adv_menu_default , "site_root").children %}
+            <ul class="hhs-nav-links">
+              {% for link in menu %}
+                {{ render_link_item(link,1) }}
+              {% endfor %}
+            </ul>
+          </nav> 
+        {% endif %}
+      {% else %}
+        <nav class="sc-site-header__menu sc-site-header__menu--{{ module.menu.adv_menu_default }} hs-menu-wrapper active-branch flyouts hs-menu-flow-horizontal" aria-label="{{menu_name}} menu">
+          {% set menu = menu(module.menu.adv_menu_default , "site_root").children %}
+          <ul class="hhs-nav-links">
+            {% for link in menu %}
+              {{render_link_item(link,1)}}
+            {% endfor %}
+          </ul>
+        </nav>
+      {% endif %}
     </div>
     <div class="hhs-nav-grid__extras">
       {% if content.translated_content.values()|selectattr('published')|length || is_listing_view && group.translations %}
@@ -849,7 +832,7 @@
                 {% endfor %}
                 {% if i18n_getlanguage() == module.menu.default_lang_url or i18n_getlanguage() == module.menu.default_lang_url_blog %}
                   <span class="hhs-head-cta-1">
-                     {% set href = module.menu.std_btn_1.link_field.url.href %}
+                    {% set href = module.menu.std_btn_1.link_field.url.href %}
                       {% if module.menu.std_btn_1.link_field.url.type is equalto "EMAIL_ADDRESS" %}
                         {% set href = "mailto:" + href %}
                       {% endif %}
@@ -879,45 +862,40 @@
                 {% endif %}
               {% else %}
                 <span class="hhs-head-cta-1">
-                     {% set href = module.menu.std_btn_1.link_field.url.href %}
-                      {% if module.menu.std_btn_1.link_field.url.type is equalto "EMAIL_ADDRESS" %}
-                        {% set href = "mailto:" + href %}
-                      {% endif %}
-                      <a href="{{ href }}"
-                        class="{{ module.menu.std_btn_1.style }}" 
-                        {% if module.menu.std_btn_1.link_field.open_in_new_tab %}target="_blank"{% endif %}
-                        {% if module.menu.std_btn_1.link_field.rel %}rel="{{ module.menu.std_btn_1.link_field.rel }}"{% endif %}
-                        >
-                        {{ module.menu.std_btn_1.btn_label }}
-                      </a>
-                  </span> 
-                  {% if module.menu.std_btn_2.btn_label %}
-                    <span class="hhs-head-cta-2">
-                      {% set href = module.menu.std_btn_2.link_field.url.href %}
-                      {% if module.menu.std_btn_2.link_field.url.type is equalto "EMAIL_ADDRESS" %}
-                        {% set href = "mailto:" + href %}
-                      {% endif %}
-                      <a href="{{ href }}"
-                        class="{{ module.menu.std_btn_2.style }}" 
-                        {% if module.menu.std_btn_2.link_field.open_in_new_tab %}target="_blank"{% endif %}
-                        {% if module.menu.std_btn_2.link_field.rel %}rel="{{ module.menu.std_btn_2.link_field.rel }}"{% endif %}
-                        >
-                        {{ module.menu.std_btn_2.btn_label }}
-                      </a>
-                    </span>
+                  {% set href = module.menu.std_btn_1.link_field.url.href %}
+                  {% if module.menu.std_btn_1.link_field.url.type is equalto "EMAIL_ADDRESS" %}
+                    {% set href = "mailto:" + href %}
                   {% endif %}
+                  <a href="{{ href }}"
+                    class="{{ module.menu.std_btn_1.style }}" 
+                    {% if module.menu.std_btn_1.link_field.open_in_new_tab %}target="_blank"{% endif %}
+                    {% if module.menu.std_btn_1.link_field.rel %}rel="{{ module.menu.std_btn_1.link_field.rel }}"{% endif %}
+                    >
+                    {{ module.menu.std_btn_1.btn_label }}
+                  </a>
+                </span> 
+                {% if module.menu.std_btn_2.btn_label %}
+                  <span class="hhs-head-cta-2">
+                    {% set href = module.menu.std_btn_2.link_field.url.href %}
+                    {% if module.menu.std_btn_2.link_field.url.type is equalto "EMAIL_ADDRESS" %}
+                      {% set href = "mailto:" + href %}
+                    {% endif %}
+                    <a href="{{ href }}"
+                      class="{{ module.menu.std_btn_2.style }}" 
+                      {% if module.menu.std_btn_2.link_field.open_in_new_tab %}target="_blank"{% endif %}
+                      {% if module.menu.std_btn_2.link_field.rel %}rel="{{ module.menu.std_btn_2.link_field.rel }}"{% endif %}
+                      >
+                      {{ module.menu.std_btn_2.btn_label }}
+                    </a>
+                  </span>
+                {% endif %}
               {% endif %}
               </div>
             {% endif %}
           </div>          
         {% endif %}
-        <div class="hhs-menu-toggle
-                    {{ 'hhs-menu-toggle--always-show' if module.menu.side_menu.use_extras_menu }}">
-          <button class="hhs-menu-button
-                         hamburger-icon
-                         js-toggle-main-nav"
-                  id="hamburger-icon"
-                  aria-label="Toggle Side Menu">
+        <div class="hhs-menu-toggle {{ 'hhs-menu-toggle--always-show' if module.menu.side_menu.use_extras_menu }}">
+          <button class="hhs-menu-button hamburger-icon js-toggle-main-nav" id="hamburger-icon" aria-label="Toggle Side Menu">
             <span class="line line-1"></span>
             <span class="line line-2"></span>
             <span class="line line-3"></span>
@@ -1123,35 +1101,32 @@
         {% endif %}
   <div class="hhs-side-menu__mobile"> 
     {% macro render_sidebar_link_item(link,depth)%}
-    {% if link != [] && link.label %}
-    <li class="hs-menu-item hs-menu-depth-{{depth}}
-               {{'hs-item-has-children' if link.children}}
-               {{'active' if link.activeNode}}
-               {{'sub-active' if sublink.activeNode}}
-               {{'active-branch' if link.activeBranch}}" 
-        {{'aria-haspopup="true"' if link.children}}>
-      <a href="{{link.url if link.url else '#'}}"
-         target="{{link.linkTarget}}"  
-		 class="{{ link.url is string_startingwith '#' ? 'hs-menu-item__quicklink' : '' }} ">
-        {{link.label}}
-        {% if link.children %}
-        <button class="hhs-sidebar-nav-toggle
-                       js-sidebar-nav-toggle"
-                aria-label="Toggle Menu">
-          <i class="fa fa-plus"><span class="screen-reader-text">Toggle Menu</span></i>
-        </button>
+      {% if link != [] && link.label %}
+        {% if link.label == "Login" && request_contact.is_logged_in %}
+          {% set link.label = "Logout" %}
+          {% set link.url = "/_hcms/mem/logout" %}
         {% endif %}
-      </a>
-      {% if link.children %}
-      <ul class="hs-menu-children-wrapper">
-        {% set depth = depth + 1 %}
-        {% for sublink in link.children %}
-        {{ render_sidebar_link_item(sublink,depth) }}
-        {% endfor %}
-      </ul>
+        <li class="hs-menu-item hs-menu-depth-{{depth}} {{'hs-item-has-children' if link.children}} {{'active' if link.activeNode}} {{'sub-active' if sublink.activeNode}} {{'active-branch' if link.activeBranch}}" {{'aria-haspopup="true"' if link.children}}>
+        <a href="{{link.url if link.url else '#'}}" target="{{link.linkTarget}}" class="{{ link.url is string_startingwith '#' ? 'hs-menu-item__quicklink' : '' }} ">
+            {{link.label}}
+            {% if link.children %}
+            <button class="hhs-sidebar-nav-toggle js-sidebar-nav-toggle" aria-label="Toggle Menu">
+              <i class="fa fa-plus">
+                <span class="screen-reader-text">Toggle Menu</span>
+              </i>
+            </button>
+          {% endif %}
+        </a>
+        {% if link.children %}
+        <ul class="hs-menu-children-wrapper">
+          {% set depth = depth + 1 %}
+          {% for sublink in link.children %}
+          {{ render_sidebar_link_item(sublink,depth) }}
+          {% endfor %}
+        </ul>
+        {% endif %}
+      </li>
       {% endif %}
-    </li>
-    {% endif %}
     {% endmacro %}
 
     {% if module.menu.translate %}

@@ -1,7 +1,7 @@
 <!--
   templateType: page
   isAvailableForNewContent: true
-  label: Portal - My Group Details
+  label: Portal - My Event Details
   dataQueryPath: ../data-queries/contact_info
 -->
 
@@ -15,13 +15,9 @@
     {% set contact = data_query.data.CRM.contact %}
     {% set contact_id = contact._metadata.id %}
     {% set memberships = request_contact.list_memberships %}
+    {% set registrations = crm_associations(contact_id, "USER_DEFINED", 324).results %}
   {% endif %}
   {% if dynamic_page_crm_object_type_fqn %}
-    {% set fields = "name,featured_image,dynamic_page_slug,contact_name,schedule" %}
-    {% set my_leadership_groups = crm_associations(contact_id, "USER_DEFINED", 229, "", fields).results %}
-    {% set my_membership_groups = crm_associations(contact_id, "USER_DEFINED", 306, "", fields).results %}
-    {% set my_groups = crm_associations(contact_id, "USER_DEFINED", 118, "", fields).results %}
-    {% set groups = my_leadership_groups|union(my_membership_groups)|union(my_groups) %}
     <nav aria-label="Breadcrumb" class="breadcrumbs">
       <div class="breadcrumbs__layout container">
         <a aria-label="Me" class="breadcrumbs__page" href="/me">
@@ -37,8 +33,8 @@
             <path d="M13.75 8.045L5.80002 16L4.02802 14.233L10.215 8.045L4.02802 1.859L5.80002 0.0910034L13.75 8.045Z"></path>
           </svg>
         </span>
-        <a aria-label="My groups" class="breadcrumbs__page" href="/my/groups">
-          <span class="text">My groups</span><span class="icon">
+        <a aria-label="My registrations" class="breadcrumbs__page" href="/my/registrations">
+          <span class="text">My registrations</span><span class="icon">
             <svg class="symbol" id="three-dots" viewBox="0 0 16 16">
               <path d="M4.10149 7.99901C4.10169 8.40455 3.98155 8.80103 3.75629 9.13831C3.53103 9.47558 3.21076 9.73849 2.83599 9.89377C2.46123 10.0491 2.04881 10.0897 1.65091 10.0107C1.25301 9.9316 0.887512 9.73634 0.60065 9.44958C0.313788 9.16282 0.118453 8.79746 0.0393566 8.3997C-0.0397399 8.00195 0.000955969 7.58968 0.156296 7.21505C0.311636 6.84042 0.57464 6.52026 0.912036 6.29508C1.24943 6.0699 1.64606 5.94981 2.05174 5.95001C2.59537 5.95001 3.11673 6.16589 3.50113 6.55015C3.88553 6.93441 4.10149 7.45558 4.10149 7.99901ZM8.001 5.95001C7.5956 5.95001 7.1993 6.07018 6.86222 6.29533C6.52515 6.52048 6.26242 6.84049 6.10728 7.21489C5.95214 7.5893 5.91155 8.00129 5.99064 8.39875C6.06973 8.79622 6.26495 9.16132 6.55161 9.44787C6.83827 9.73443 7.2035 9.92958 7.60111 10.0086C7.99873 10.0877 8.41086 10.0471 8.7854 9.89204C9.15994 9.73696 9.48007 9.47433 9.7053 9.13738C9.93053 8.80042 10.0507 8.40427 10.0507 7.99901C10.0507 7.72993 9.99773 7.46349 9.89472 7.21489C9.79171 6.9663 9.64072 6.74042 9.45039 6.55015C9.26005 6.35988 9.03409 6.20896 8.7854 6.10598C8.53672 6.00301 8.27018 5.95001 8.001 5.95001ZM13.9503 5.95001C13.5449 5.95001 13.1486 6.07018 12.8115 6.29533C12.4744 6.52048 12.2117 6.84049 12.0565 7.21489C11.9014 7.5893 11.8608 8.00129 11.9399 8.39875C12.019 8.79622 12.2142 9.16132 12.5009 9.44787C12.7875 9.73443 13.1528 9.92958 13.5504 10.0086C13.948 10.0877 14.3601 10.0471 14.7347 9.89204C15.1092 9.73696 15.4293 9.47433 15.6546 9.13738C15.8798 8.80042 16 8.40427 16 7.99901C16 7.45558 15.784 6.93441 15.3996 6.55015C15.0152 6.16589 14.4939 5.95001 13.9503 5.95001Z"></path>
             </svg>
@@ -50,72 +46,79 @@
       <div class="f-1 container">
         <div tabindex="-1" style="outline: none;">
           <div tabindex="-1" style="outline: none;">
-            <section id="groups_collection pt-4 pb-4">
+            <section id="events_collection pt-4 pb-4">
               <div class="mb-2">
-                <h1 class="lh-1.333 c-tint0 fs-2 fw-600">My groups</h1>
+                <h1 class="lh-1.333 c-tint0 fs-2 fw-600">Upcoming & Active</h1>
               </div>
               <div>
-                {% for group in groups %}
-                <article class="d-f mb-2">
-                  <div class="mr-2">
-                    <a href="{{ request.path }}/{{ group.dynamic_page_slug }}">
-                      <div class="profile-item__image">
-                        <img src="{{ group.featured_image }}" alt="Logo for {{ group.name }}">
-                      </div>
-                    </a>
-                  </div>
-                  <div class="f-1 d-f@sm jc-sb g-1">
+                {% for registration in registrations %}
+                  {% set event_fields = "name,banner_image" %}
+                  {% set events = crm_associations(registration.id, "USER_DEFINED", 325, "", event_fields).results %}
+                  {% set participant_fields = "firstname, lastname" %}
+                  {% set participants = crm_associations(registration.id, "USER_DEFINED", 323, "", participant_fields).results %}
+                  {% for event in events %}
+                  <article class="d-f mb-2">
+                    <div class="mr-2">
+                      <a class="d-b" href="{{ request.path }}/{{ registration.id }}">
+                        <div class="profile-item__image">
+                          <img alt="{{ event.name }} logo image" src="{{ event.banner_image }}">
+                        </div>
+                      </a>
+                    </div>
                     <div class="f-1">
                       <div class="lh-1.25">
-                        <a href="{{ request.path }}/{{ group.dynamic_page_slug }}" style="color: inherit;">{{ group.name }}</a>
-                        <span class="badge ml-4p open-badge tt-c">open</span>
+                        {{ event.name }}
                       </div>
                       <div class="fs-4 lh-1.5 c-tint2">
-                        <div>
-                          <span class="c-secondary">Leader:&nbsp;</span>{{ group.contact_name }}
+                        Participants: {% for participant in participants %}{{ participant.firstname ~ ' ' ~ participant.lastname }}{{ ', ' if !loop.last }}{% endfor %}
+                      </div>
+                      <div class="fs-4 lh-1.5 c-tint2"></div>
+                      <div>
+                        <div class="dropdown mt-1" style="min-width: 180px;">
+                          <button class="destroy-btn secondary-btn minor-btn btn" data-dropdown-toggle="true">
+                            <span class="mr-4p p-r t-1p" style="margin-left: -3px">
+                              <svg aria-labelledby="desc-exclamation-triangle-1b03" class="symbol" role="img">
+                                <desc id="desc-exclamation-triangle-1b03">exclamation icon</desc>
+                                <use xlink:href="/registrations//assets/@planningcenter/icons/sprites/general-dd391937b5b62c0a9444f516305e27b214b71b8fb529af5e9c6354627750c34e.svg#exclamation-triangle">
+                                </use>
+                              </svg>
+                            </span> Needs attention 
+                            <span class="dropdown-trigger__icon ml-1 p-r t-1p">
+                                <svg aria-labelledby="desc-down-caret-7495" class="symbol" role="img">
+                                  <desc id="desc-down-caret-7495">down caret icon</desc>
+                                  <use xlink:href="/registrations//assets/@planningcenter/icons/sprites/general-dd391937b5b62c0a9444f516305e27b214b71b8fb529af5e9c6354627750c34e.svg#down-caret"></use>
+                                </svg>
+                            </span>
+                          </button>
+                          <div class="dropdown__menu fs-4 mt-4p">
+                            <div class="dropdown__item">
+                              <a href="https://one-online.churchcenter.com/registrations/registrations/41659873">Complete missing forms</a>
+                            </div>
+                            <div class="dropdown__item">
+                              <div data-react-cache-id="Components.AppProvider-0" data-react-class="Components.AppProvider" data-react-props="{&quot;text&quot;:&quot;Delete registration&quot;,&quot;className&quot;:&quot;c-ruby&quot;,&quot;url&quot;:&quot;https://one-online.churchcenter.com/registrations/registrations/41659873?bypass_visit=true&quot;,&quot;method&quot;:&quot;DELETE&quot;,&quot;confirm&quot;:{&quot;type&quot;:&quot;warning&quot;,&quot;title&quot;:&quot;Remove incomplete registration?&quot;,&quot;text&quot;:&quot;This can't be undone.&quot;,&quot;confirmButtonText&quot;:&quot;Yes, delete it!&quot;,&quot;cancelButtonText&quot;:&quot;Nevermind&quot;,&quot;showCancelButton&quot;:true,&quot;closeOnConfirm&quot;:true},&quot;component&quot;:&quot;Components.Link&quot;,&quot;children&quot;:null}">
+                                <div class="tapestry-react-reset tapestry-react-reset tapestry-react-nvyvxf" data-tapestry-react-theme-provider-registrations="true">
+                                  <a class="c-ruby" href="https://one-online.churchcenter.com/registrations/registrations/41659873?bypass_visit=true">Delete registration</a>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       </div>
-                      <div class="fs-4 lh-1.5 c-tint2">
-                        <div>Schedule: {{ group.schedule }}</div>
-                      </div>
                     </div>
-                    <button class="mt-1 mt-0@sm destroy-btn secondary-btn minor-btn btn modal-trigger" data-id="{{ group.id }}" data-target="modal-{{group.id}}">Leave this group</button>
-                  </div>
-                </article>
+                  </article>
+                  {% endfor %}
                 {% endfor %}
               </div>
             </section>
-            {% for group in groups %}
-              <div id="modal-{{ group.id }}" class="modal" data-focus-lock-disabled="false" style="display:none">
-                <div>
-                  <div data-reach-alert-dialog-overlay="true" data-reach-dialog-overlay="">
-                    <div aria-describedby="alert-dialog-description--{{ group.id }}" aria-labelledby="alert-dialog--{{ group.id }}" aria-modal="true" data-reach-alert-dialog-content="true" data-reach-alert-dialong-content="true" data-reach-dialog-content="" role="alertdialog" tabindex="-1">
-                      <div class="mb-1" data-reach-alert-dialog-label="true" id="alert-dialog--{{ group.id }}">
-                        Leave {{ group.name }}
-                      </div>
-                      <div data-reach-alert-dialog-description="true" id="alert-dialog-description--{{ group.id }}">
-                        <div class="mb-2">
-                          <span>Are you sure you would like to leave {{ group.name }}?</span>
-                        </div>
-                        <form data-endpoint="https://{{ request.domain }}/_hcms/api/group/leave">
-                          <div class="d-f jc-fe mt-3">
-                            <input type="hidden" name="groupId" value="{{ group.id }}">
-                            <input type="hidden" name="contactId" value="{{ contact_id }}">
-                            <button class="btn text-btn mr-2 cancel-btn">Cancel</button>
-                            <button class="btn" type="submit">Yes, leave group</button>
-                          </div>
-                        </form>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            {% endfor %}
           </div>
         </div>
       </div>
     </div>
   {% elif dynamic_page_crm_object %}
+    {% set event_fields = "name,banner_image" %}
+    {% set event = crm_associations(dynamic_page_crm_object.id, "USER_DEFINED", 325, "", event_fields).results[0] %}
+    {% set participant_fields = "firstname, lastname" %}
+    {% set participants = crm_associations(dynamic_page_crm_object.id, "USER_DEFINED", 323, "", participant_fields).results %}
     <nav aria-label="Breadcrumb" class="breadcrumbs container">
       <div class="breadcrumbs__layout">
         <a aria-label="Me" class="breadcrumbs__page" href="/me">
@@ -131,8 +134,8 @@
             <path d="M13.75 8.045L5.80002 16L4.02802 14.233L10.215 8.045L4.02802 1.859L5.80002 0.0910034L13.75 8.045Z"></path>
           </svg>
         </span>
-        <a aria-label="My groups" class="breadcrumbs__page" href="/my/groups">
-          <span class="text">My groups</span><span class="icon">
+        <a aria-label="My registrations" class="breadcrumbs__page" href="/my/registrations">
+          <span class="text">My registrations</span><span class="icon">
             <svg class="symbol" id="three-dots" viewBox="0 0 16 16">
               <path d="M4.10149 7.99901C4.10169 8.40455 3.98155 8.80103 3.75629 9.13831C3.53103 9.47558 3.21076 9.73849 2.83599 9.89377C2.46123 10.0491 2.04881 10.0897 1.65091 10.0107C1.25301 9.9316 0.887512 9.73634 0.60065 9.44958C0.313788 9.16282 0.118453 8.79746 0.0393566 8.3997C-0.0397399 8.00195 0.000955969 7.58968 0.156296 7.21505C0.311636 6.84042 0.57464 6.52026 0.912036 6.29508C1.24943 6.0699 1.64606 5.94981 2.05174 5.95001C2.59537 5.95001 3.11673 6.16589 3.50113 6.55015C3.88553 6.93441 4.10149 7.45558 4.10149 7.99901ZM8.001 5.95001C7.5956 5.95001 7.1993 6.07018 6.86222 6.29533C6.52515 6.52048 6.26242 6.84049 6.10728 7.21489C5.95214 7.5893 5.91155 8.00129 5.99064 8.39875C6.06973 8.79622 6.26495 9.16132 6.55161 9.44787C6.83827 9.73443 7.2035 9.92958 7.60111 10.0086C7.99873 10.0877 8.41086 10.0471 8.7854 9.89204C9.15994 9.73696 9.48007 9.47433 9.7053 9.13738C9.93053 8.80042 10.0507 8.40427 10.0507 7.99901C10.0507 7.72993 9.99773 7.46349 9.89472 7.21489C9.79171 6.9663 9.64072 6.74042 9.45039 6.55015C9.26005 6.35988 9.03409 6.20896 8.7854 6.10598C8.53672 6.00301 8.27018 5.95001 8.001 5.95001ZM13.9503 5.95001C13.5449 5.95001 13.1486 6.07018 12.8115 6.29533C12.4744 6.52048 12.2117 6.84049 12.0565 7.21489C11.9014 7.5893 11.8608 8.00129 11.9399 8.39875C12.019 8.79622 12.2142 9.16132 12.5009 9.44787C12.7875 9.73443 13.1528 9.92958 13.5504 10.0086C13.948 10.0877 14.3601 10.0471 14.7347 9.89204C15.1092 9.73696 15.4293 9.47433 15.6546 9.13738C15.8798 8.80042 16 8.40427 16 7.99901C16 7.45558 15.784 6.93441 15.3996 6.55015C15.0152 6.16589 14.4939 5.95001 13.9503 5.95001Z"></path>
             </svg>
@@ -143,8 +146,8 @@
             <path d="M13.75 8.045L5.80002 16L4.02802 14.233L10.215 8.045L4.02802 1.859L5.80002 0.0910034L13.75 8.045Z"></path>
           </svg>
         </span>
-        <a aria-label="Interest: Crafting and Conversations" class="breadcrumbs__page breadcrumbs__current-page" href="/my/groups/{{ group.dynamic_page_slug }}">
-          <span class="text">{{ group.name }}</span>
+        <a aria-label="Interest: Crafting and Conversations" class="breadcrumbs__page breadcrumbs__current-page" href="/my/registrations/{{ registration.id }}">
+          <span class="text">{{ event.name }}</span>
           <span class="icon">
             <svg class="symbol" id="three-dots" viewBox="0 0 16 16">
               <path d="M4.10149 7.99901C4.10169 8.40455 3.98155 8.80103 3.75629 9.13831C3.53103 9.47558 3.21076 9.73849 2.83599 9.89377C2.46123 10.0491 2.04881 10.0897 1.65091 10.0107C1.25301 9.9316 0.887512 9.73634 0.60065 9.44958C0.313788 9.16282 0.118453 8.79746 0.0393566 8.3997C-0.0397399 8.00195 0.000955969 7.58968 0.156296 7.21505C0.311636 6.84042 0.57464 6.52026 0.912036 6.29508C1.24943 6.0699 1.64606 5.94981 2.05174 5.95001C2.59537 5.95001 3.11673 6.16589 3.50113 6.55015C3.88553 6.93441 4.10149 7.45558 4.10149 7.99901ZM8.001 5.95001C7.5956 5.95001 7.1993 6.07018 6.86222 6.29533C6.52515 6.52048 6.26242 6.84049 6.10728 7.21489C5.95214 7.5893 5.91155 8.00129 5.99064 8.39875C6.06973 8.79622 6.26495 9.16132 6.55161 9.44787C6.83827 9.73443 7.2035 9.92958 7.60111 10.0086C7.99873 10.0877 8.41086 10.0471 8.7854 9.89204C9.15994 9.73696 9.48007 9.47433 9.7053 9.13738C9.93053 8.80042 10.0507 8.40427 10.0507 7.99901C10.0507 7.72993 9.99773 7.46349 9.89472 7.21489C9.79171 6.9663 9.64072 6.74042 9.45039 6.55015C9.26005 6.35988 9.03409 6.20896 8.7854 6.10598C8.53672 6.00301 8.27018 5.95001 8.001 5.95001ZM13.9503 5.95001C13.5449 5.95001 13.1486 6.07018 12.8115 6.29533C12.4744 6.52048 12.2117 6.84049 12.0565 7.21489C11.9014 7.5893 11.8608 8.00129 11.9399 8.39875C12.019 8.79622 12.2142 9.16132 12.5009 9.44787C12.7875 9.73443 13.1528 9.92958 13.5504 10.0086C13.948 10.0877 14.3601 10.0471 14.7347 9.89204C15.1092 9.73696 15.4293 9.47433 15.6546 9.13738C15.8798 8.80042 16 8.40427 16 7.99901C16 7.45558 15.784 6.93441 15.3996 6.55015C15.0152 6.16589 14.4939 5.95001 13.9503 5.95001Z"></path>
@@ -167,22 +170,7 @@
           <div style="outline: none;" tabindex="-1">
             <div style="outline: none;" tabindex="-1">
               <div class="d-f@md">
-                <nav class="sub-navigation mr-4 d-n d-b@md">  
-                  <a class="sub-navigation__link {{ 'is-active-link' if request.query_dict.tab == "messages" }}" href="{{ request.path_and_query }}&tab=messages">Messaging</a>
-                  <a class="sub-navigation__link {{ 'is-active-link' if request.query_dict.tab == "events" }}" href="{{ request.path_and_query }}&tab=events">Events</a>
-                  <a class="sub-navigation__link {{ 'is-active-link' if request.query_dict.tab == "resources" }}" href="{{ request.path_and_query }}&tab=resources">Resources</a>
-                  <a class="sub-navigation__link {{ 'is-active-link' if request.query_dict.tab == "members" }}" href="{{ request.path_and_query }}&tab=members">Members</a>
-                </nav>
-                <button aria-controls="menu--1" aria-expanded="false" aria-haspopup="true" class="d-n@md mb-2 ta-l select" data-reach-menu-button="" id="menu-button--menu--1" type="button">Messaging</button>
-                {% if request.query_dict.tab == "events" %}
-                  {% include "./partials/groups/tabs/group-events.html" %}
-                {% elif request.query_dict.tab == "resources" %}
-                  {% include "./partials/groups/tabs/group-resources.html" %}
-                {% elif request.query_dict.tab == "members" %}
-                  {% include "./partials/groups/tabs/group-members.html" %}
-                {% else %}
-                  {% include "./partials/groups/tabs/group-messages.html" %}
-                {% endif %}
+                TODO: ADD REGISTRATION FORM HERE?
               </div>
             </div>
           </div>

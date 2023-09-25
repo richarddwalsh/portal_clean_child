@@ -1,0 +1,22 @@
+{
+  "runtime": "nodejs18.x",
+  "version": "1.0",
+  "environment": {},
+  "secrets": [
+    "portal_token"
+  ],
+  "endpoints": {
+    "group/join": {
+      "method": "POST",
+      "file": "group/join.js"
+    },
+    "group/message": {
+      "method": "POST",
+      "file": "group/message.js"
+    },
+    "group/leave": {
+      "method": "POST",
+      "file": "group/leave.js"
+    }
+  }
+}

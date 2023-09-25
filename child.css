@@ -14,6 +14,11 @@ body {
     font-family: Poppins, sans-serif;
 }
 
+.body-container-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: var(--window-inner-height);
+}
 
 :root {
     --reach-dialog: 1
@@ -3162,7 +3167,8 @@ html.modal--open--but-on-html-for-mobile-scroll-bugz,html.modal--open--but-on-ht
     margin: 140px auto 0;
     position: relative;
     width: 480px;
-    z-index: 1100
+    z-index: 1100;
+    padding: unset;
 }
 
 @media (max-width: 600px) {
@@ -14765,4 +14771,18 @@ _:-moz-tree-row(hover) {
     padding: 12px 16px;
     width: 100%;
     transition: all 0.2s ease 0s;
+}
+
+.css-1i611ju {
+    border: 2px solid var(--color-tint5);
+    width: 64px;
+    height: 64px;
+    border-radius: 32px;
+    outline: none;
+    padding: 0px;
+}
+
+.css-1xi1s4b {
+    background-color: var(--color-tint6);
+    border-radius: 12px;
 }
