@@ -27,7 +27,6 @@
     {% endif %}
     {% set events = crm_objects(dynamic_page_crm_object_type_fqn, queryparams, "name,description,dynamic_page_slug,banner_image,featured,registration_status,include_on_signup_page,starts_at,starts_at_time,campus,category").results %}
     {% include "./partials/events/event-list.html" %}
-    {{ require_js(get_asset_url("/PORTAL_Clean_Child/js/events-list.js"), { position: 'footer'}) }}
   {% elif dynamic_page_crm_object %}
     {% set event = dynamic_page_crm_object %}
     {% include "./partials/events/event-detail.html" %}

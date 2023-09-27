@@ -11,7 +11,6 @@
     {% include "./partials/groups/group-category-list.html" %}
   {% elif dynamic_page_crm_object %}
     {% include "./partials/groups/group-category.html" %}
-    {{ require_js(get_asset_url("/PORTAL_Clean_Child/js/group-category.js"), { position: 'footer'}) }}
   {% endif %}
 </main>
 {% endblock body %}

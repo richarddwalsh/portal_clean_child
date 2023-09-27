@@ -59,12 +59,12 @@
       </svg>
     </span>
     <div class="breadcrumbs__page breadcrumbs__current-page" aria-current="location" >
-      <button aria-expanded="false" aria-haspopup="true" aria-controls="menu--1" class="select breadcrumbs__btn" data-reach-menu-button="" type="button" id="menu-button--menu--1" style="margin-left: auto">
+      <button aria-expanded="false" aria-haspopup="true" aria-controls="menu--1" class="select breadcrumbs__btn" data-reach-menu-button="" type="button" id="menu-button--menu--category" style="margin-left: auto">
         {{ category.name }}
       </button>
       
       <div data-reach-popover="" data-reach-menu="" data-reach-menu-popover="">
-        <div aria-labelledby="menu-button--menu--1" role="menu" id="menu--1" data-reach-menu-list="" data-reach-menu-items="" tabindex="-1">
+        <div aria-labelledby="menu-button--menu--category" role="menu" id="menu--1" data-reach-menu-list="" data-reach-menu-items="" tabindex="-1">
         {% for category in categories.results %}
           <div role="none" tabindex="-1">
             <a role="menuitem" href="/groups/{{ category.dynamic_page_slug }}" data-reach-menu-link="" data-reach-menu-item="" data-valuetext="{{ category.name }}" tabindex="-1" id="option-0--menu--{{ category.id }}">{{ category.name }}</a>

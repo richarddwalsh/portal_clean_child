@@ -679,6 +679,11 @@
     <div class="hhs-nav-grid__menu main-nav">
       {% macro render_link_item(link,depth)%}
         {% if link != [] && link.label %}
+          {% if link.label == "Login" && request_contact.is_logged_in %}
+            <li class="hs-menu-item hs-menu-depth-1 {{'active' if link.activeNode}} {{'active-branch' if link.activeBranch}}">
+              <a href="https://{{ request.domain }}/me">My Profile</a>
+            </li>
+          {% endif %}
           <li data-label="{{ link.label }}" class="hs-menu-item hs-menu-depth-{{depth}} {{'hs-item-has-children' if link.children}} {{'active' if link.activeNode}} {{'sub-active' if sublink.activeNode}} {{'active-branch' if link.activeBranch}}" {{'aria-haspopup="true"' if link.children}}>
             {% if link.label == "Login" && request_contact.is_logged_in %}
               <a href="/_hcms/mem/logout" target="{{link.linkTarget}}">
@@ -1100,23 +1105,29 @@
           </div>          
         {% endif %}
   <div class="hhs-side-menu__mobile"> 
-    {% macro render_sidebar_link_item(link,depth)%}
+    {% macro render_sidebar_link_item(link,depth) %}
       {% if link != [] && link.label %}
         {% if link.label == "Login" && request_contact.is_logged_in %}
-          {% set link.label = "Logout" %}
-          {% set link.url = "/_hcms/mem/logout" %}
+          <li class="hs-menu-item hs-menu-depth-1 {{'active' if link.activeNode}} {{'active-branch' if link.activeBranch}}">
+            <a href="https://{{ request.domain }}/me">My Profile</a>
+          </li>
         {% endif %}
         <li class="hs-menu-item hs-menu-depth-{{depth}} {{'hs-item-has-children' if link.children}} {{'active' if link.activeNode}} {{'sub-active' if sublink.activeNode}} {{'active-branch' if link.activeBranch}}" {{'aria-haspopup="true"' if link.children}}>
-        <a href="{{link.url if link.url else '#'}}" target="{{link.linkTarget}}" class="{{ link.url is string_startingwith '#' ? 'hs-menu-item__quicklink' : '' }} ">
-            {{link.label}}
-            {% if link.children %}
-            <button class="hhs-sidebar-nav-toggle js-sidebar-nav-toggle" aria-label="Toggle Menu">
-              <i class="fa fa-plus">
-                <span class="screen-reader-text">Toggle Menu</span>
-              </i>
-            </button>
+          {% if link.label == "Login" && request_contact.is_logged_in %}
+            <a href="/_hcms/mem/logout" target="{{link.linkTarget}}" class="{{ link.url is string_startingwith '#' ? 'hs-menu-item__quicklink' : '' }} ">
+              Logout
+          {% else %}
+            <a href="{{link.url if link.url else '#'}}" target="{{link.linkTarget}}" class="{{ link.url is string_startingwith '#' ? 'hs-menu-item__quicklink' : '' }} ">
+              {{link.label}}
           {% endif %}
-        </a>
+              {% if link.children %}
+              <button class="hhs-sidebar-nav-toggle js-sidebar-nav-toggle" aria-label="Toggle Menu">
+                <i class="fa fa-plus">
+                  <span class="screen-reader-text">Toggle Menu</span>
+                </i>
+              </button>
+            {% endif %}
+          </a>
         {% if link.children %}
         <ul class="hs-menu-children-wrapper">
           {% set depth = depth + 1 %}

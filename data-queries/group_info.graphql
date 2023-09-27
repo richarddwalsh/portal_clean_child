@@ -1,7 +1,8 @@
 # label: "Contact info page"
 # description: "Show a contact's name and email"
 # $contact_id: "{{request.contact.contact_vid }}"
-query contact_info($contact_id: String!) {
+# $group_id: "{{ dynamic_page_crm_object_type || '' }}"
+query contact_and_group_info($contact_id: String!, $group_id: String!) {
   CRM {
     contact(uniqueIdentifier: "id", uniqueIdentifierValue: $contact_id) {
       _metadata {
@@ -24,6 +25,12 @@ query contact_info($contact_id: String!) {
       anniversary
       pushpay_payer_link
       pushpay_customer_id
+    }
+    p_groups(uniqueIdentifier: "id", uniqueIdentifierValue: $group_id) {
+      _metadata {
+        id
+      }
+      name
     }
   }
 }

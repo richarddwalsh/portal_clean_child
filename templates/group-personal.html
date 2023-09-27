@@ -7,6 +7,22 @@
 
 {% extends "./layouts/base.html" %}
 
+{% set base_url = request.path %}
+{% set current_tab = request.query_dict.tab %}
+
+{% macro generate_tab_url(tab) %}
+  {% if current_tab %}
+    {% set updated_url = base_url + '?tab=' + tab %}
+  {% else %}
+    {% if '?' in base_url %}
+        {% set updated_url = base_url + '&tab=' + tab %}
+    {% else %}
+        {% set updated_url = base_url + '?tab=' + tab %}
+    {% endif %}
+  {% endif %}
+  {{ updated_url }}
+{% endmacro %}
+
 {% block body %}
 <main class="body-container-wrapper my-group-template">
   {% set group = dynamic_page_crm_object %}
@@ -156,7 +172,7 @@
             </svg>
           </span>
         </a>
-        <button aria-controls="menu--103" aria-expanded="false" aria-haspopup="true" class="minor-btn secondary-btn btn" data-reach-menu-button="" id="menu-button--menu--{{ group.id }}" style="margin-left: auto;" type="button">
+        <button aria-controls="menu--103" aria-expanded="false" aria-haspopup="true" class="minor-btn secondary-btn btn" data-reach-menu-button="" id="menu-button--menu--actions" style="margin-left: auto;" type="button">
           Actions
           <span class="fs-6 pl-4p dropdown-trigger__icon">
             <svg class="symbol" id="down-chevron" viewBox="0 0 16 16">
@@ -165,10 +181,20 @@
           </span>
         </button>
         <div data-reach-popover="" data-reach-menu="" data-reach-menu-popover="" style="position: absolute;">
-          <div aria-labelledby="menu-button--menu--{{ group.id }}" role="menu" id="menu--{{ group.id }}" data-reach-menu-list="" data-reach-menu-items="" tabindex="-1">
+          <div aria-labelledby="menu-button--menu--actions" role="menu" id="menu--actions" data-reach-menu-list="" data-reach-menu-items="" tabindex="-1">
+            {# TODO: Add email group option for admins
             <div role="none" tabindex="-1">
-              <a role="menuitem" href="/groups/{{ group.dynamic_page_slug }}" data-reach-menu-link="" data-reach-menu-item="" data-valuetext="View public group page" tabindex="-1" id="option-0--menu--{{ group.id }}">View public group page</a>
+              <a role="menuitem" href="javacsript:void(0)" data-reach-menu-link="" data-reach-menu-item="" data-valuetext="Email Group" tabindex="-1" id="option-0--menu--{{ group.id }}">Email Group</a>
+            </div> 
+            #}
+            <div role="none" tabindex="-1">
+              <a role="menuitem" href="/group/{{ group.dynamic_page_slug }}" data-reach-menu-link="" data-reach-menu-item="" data-valuetext="View public group page" tabindex="-1" id="option-1--menu--{{ group.id }}">View public group page</a>
             </div>
+            {# TODO: Add manage group option for admins
+            <div role="none" tabindex="-1">
+              <a role="menuitem" href="javacsript:void(0)" data-reach-menu-link="" data-reach-menu-item="" data-valuetext="Email Group" tabindex="-1" id="option-0--menu--{{ group.id }}">Email Group</a>
+            </div> 
+            #}
             <div 
               role="menuitem" 
               class="dropdown__item" 
@@ -185,7 +211,7 @@
               data-domain="https://{{ request.domain }}"
               data-return-url="https://{{ request.domain }}/my/groups"
               tabindex="-1" 
-              id="option-1--menu--{{ group.id }}">Leave group…</div>
+              id="option-2--menu--{{ group.id }}">Leave group…</div>
           </div>
         </div>
       </div>
@@ -197,17 +223,17 @@
             <div style="outline: none;" tabindex="-1">
               <div class="d-f@md">
                 <nav class="sub-navigation mr-4 d-n d-b@md">  
-                  <a class="sub-navigation__link {{ 'is-active-link' if request.query_dict.tab == "messages" }}" href="{{ request.path_and_query }}&tab=messages">Messaging</a>
-                  <a class="sub-navigation__link {{ 'is-active-link' if request.query_dict.tab == "events" }}" href="{{ request.path_and_query }}&tab=events">Events</a>
-                  <a class="sub-navigation__link {{ 'is-active-link' if request.query_dict.tab == "resources" }}" href="{{ request.path_and_query }}&tab=resources">Resources</a>
-                  <a class="sub-navigation__link {{ 'is-active-link' if request.query_dict.tab == "members" }}" href="{{ request.path_and_query }}&tab=members">Members</a>
+                  <a class="sub-navigation__link {{ 'is-active-link' if current_tab == "messages" or not current_tab }}" href="{{ generate_tab_url('messages') }}">Messaging</a>
+                  <a class="sub-navigation__link {{ 'is-active-link' if current_tab == "events" }}" href="{{ generate_tab_url('events') }}">Events</a>
+                  <a class="sub-navigation__link {{ 'is-active-link' if current_tab == "resources" }}" href="{{ generate_tab_url('resources') }}">Resources</a>
+                  <a class="sub-navigation__link {{ 'is-active-link' if current_tab == "members" }}" href="{{ generate_tab_url('members') }}">Members</a>
                 </nav>
-                <button aria-controls="menu--1" aria-expanded="false" aria-haspopup="true" class="d-n@md mb-2 ta-l select" data-reach-menu-button="" id="menu-button--menu--1" type="button">Messaging</button>
-                {% if request.query_dict.tab == "events" %}
+                <button aria-controls="menu--1" aria-expanded="false" aria-haspopup="true" class="d-n@md mb-2 ta-l select" data-reach-menu-button="" id="menu-button--menu--messaging" type="button">Messaging</button>
+                {% if current_tab == "events" %}
                   {% include "./partials/groups/tabs/group-events.html" %}
-                {% elif request.query_dict.tab == "resources" %}
+                {% elif current_tab == "resources" %}
                   {% include "./partials/groups/tabs/group-resources.html" %}
-                {% elif request.query_dict.tab == "members" %}
+                {% elif current_tab == "members" %}
                   {% include "./partials/groups/tabs/group-members.html" %}
                 {% else %}
                   {% include "./partials/groups/tabs/group-messages.html" %}

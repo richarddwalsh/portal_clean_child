@@ -76,7 +76,8 @@
 							</div>
 						</div>
 						<div class="d-f jc-fe mt-3">
-							<button class="btn text-btn mr-2">Cancel</button><button class="btn" disabled type="submit">Send message</button>
+							<button class="btn text-btn mr-2">Cancel</button>
+							<button class="btn" disabled type="submit">Send message</button>
 						</div>
 					</form>
 				</div>
@@ -121,7 +122,12 @@
 							<input type="hidden" name="firstname" value="{{ contact.firstname }}">
 							<input type="hidden" name="contactEmail" value="{{ contact.email }}">
 							<button class="btn text-btn mr-2">Cancel</button>
-							<button class="btn" type="submit">Join group</button>
+							<button class="btn" type="submit">
+								<span>Join group</span>
+								<svg class="progress-circle" height="25" width="25">
+									<circle cx="12.5" cy="12.5" r="6.25"></circle>
+								</svg>
+							</button>
 						</div>
 					</form>
 				</div>

@@ -23,39 +23,39 @@
 	</div>
 	<div>
 	<div data-testid="grid" class="filter-buttons grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
-		<button aria-expanded="false" aria-haspopup="true" aria-controls="menu--8" class="select truncate ta-l" data-reach-menu-button="" type="button" id="menu-button--menu--8">Schedule</button>
+		<button aria-expanded="false" aria-haspopup="true" aria-controls="menu--schedule" class="select truncate ta-l" data-reach-menu-button="" type="button" id="menu-button--menu--schedule">Schedule</button>
 		<div data-reach-popover="" data-reach-menu="" data-reach-menu-popover="">
-			<div aria-labelledby="menu-button--menu--8" role="menu" id="menu--8" data-reach-menu-list="" data-reach-menu-items="" tabindex="-1" style="max-height: 15.5rem; max-width: 13rem; overflow: auto;">
-				<div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="(any)" tabindex="-1" id="option-0--menu--8">(any)</div>
+			<div aria-labelledby="menu-button--menu--schedule" role="menu" id="menu--schedule" data-reach-menu-list="" data-reach-menu-items="" tabindex="-1" style="max-height: 15.5rem; max-width: 13rem; overflow: auto;">
+				<div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="(any)" tabindex="-1" id="option-0--menu--schedule">(any)</div>
 				{% for option in schedule_filter.options %}
-					<div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="{{ option.value }}" tabindex="-1" id="option-{{loop.index}}--menu--8">{{ option.label }}</div>
+					<div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="{{ option.value }}" tabindex="-1" id="option-{{loop.index}}--menu--schedule">{{ option.label }}</div>
 				{% endfor %}
 			</div>
 		</div>
-		<button aria-expanded="false" aria-haspopup="true" aria-controls="menu--9" class="select truncate ta-l" data-reach-menu-button="" type="button" id="menu-button--menu--9">Location</button>
+		<button aria-expanded="false" aria-haspopup="true" aria-controls="menu--location" class="select truncate ta-l" data-reach-menu-button="" type="button" id="menu-button--menu--location">Location</button>
 		<div data-reach-popover="" data-reach-menu="" data-reach-menu-popover="">
-			<div aria-labelledby="menu-button--menu--9" role="menu" id="menu--8" data-reach-menu-list="" data-reach-menu-items="" tabindex="-1" style="max-height: 15.5rem; max-width: 13rem; overflow: auto;">
-				<div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="(any)" tabindex="-1" id="option-0--menu--9">(any)</div>
+			<div aria-labelledby="menu-button--menu--location" role="menu" id="menu--schedule" data-reach-menu-list="" data-reach-menu-items="" tabindex="-1" style="max-height: 15.5rem; max-width: 13rem; overflow: auto;">
+				<div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="(any)" tabindex="-1" id="option-0--menu--location">(any)</div>
 				{% for option in location_filter.options %}
-					<div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="{{ option.value }}" tabindex="-1" id="option-{{loop.index}}--menu--9">{{ option.label }}</div>
+					<div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="{{ option.value }}" tabindex="-1" id="option-{{loop.index}}--menu--location">{{ option.label }}</div>
 				{% endfor %}
 			</div>
 		</div>
-		<button aria-expanded="false" aria-haspopup="true" aria-controls="menu--10" class="select truncate ta-l" data-reach-menu-button="" type="button" id="menu-button--menu--10">Requires Experience</button>
+		<button aria-expanded="false" aria-haspopup="true" aria-controls="menu--experience" class="select truncate ta-l" data-reach-menu-button="" type="button" id="menu-button--menu--experience">Requires Experience</button>
 		<div data-reach-popover="" data-reach-menu="" data-reach-menu-popover="">
-			<div aria-labelledby="menu-button--menu--10" role="menu" id="menu--8" data-reach-menu-list="" data-reach-menu-items="" tabindex="-1" style="max-height: 15.5rem; max-width: 13rem; overflow: auto;">
-				<div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="(any)" tabindex="-1" id="option-0--menu--10">(any)</div>
+			<div aria-labelledby="menu-button--menu--experience" role="menu" id="menu--schedule" data-reach-menu-list="" data-reach-menu-items="" tabindex="-1" style="max-height: 15.5rem; max-width: 13rem; overflow: auto;">
+				<div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="(any)" tabindex="-1" id="option-0--menu--experience">(any)</div>
 				{% for option in experience_filter.options %}
-					<div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="{{ option.value }}" tabindex="-1" id="option-{{loop.index}}--menu--10">{{ option.label }}</div>
+					<div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="{{ option.value }}" tabindex="-1" id="option-{{loop.index}}--menu--experience">{{ option.label }}</div>
 				{% endfor %}
 			</div>
 		</div>
-		<button aria-expanded="false" aria-haspopup="true"aria-controls="menu--11" class="select truncate ta-l" data-reach-menu-button="" type="button" id="menu-button--menu--11">Requires Background Check</button>
+		<button aria-expanded="false" aria-haspopup="true"aria-controls="menu--background" class="select truncate ta-l" data-reach-menu-button="" type="button" id="menu-button--menu--background">Requires Background Check</button>
 		<div data-reach-popover="" data-reach-menu="" data-reach-menu-popover="">
-			<div aria-labelledby="menu-button--menu--11" role="menu" id="menu--8" data-reach-menu-list="" data-reach-menu-items="" tabindex="-1" style="max-height: 15.5rem; max-width: 13rem; overflow: auto;">
-				<div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="(any)" tabindex="-1" id="option-0--menu--11">(any)</div>
+			<div aria-labelledby="menu-button--menu--background" role="menu" id="menu--schedule" data-reach-menu-list="" data-reach-menu-items="" tabindex="-1" style="max-height: 15.5rem; max-width: 13rem; overflow: auto;">
+				<div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="(any)" tabindex="-1" id="option-0--menu--background">(any)</div>
 				{% for option in background_filter.options %}
-					<div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="{{ option.value }}" tabindex="-1" id="option-{{loop.index}}--menu--11">{{ option.label }}</div>
+					<div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="{{ option.value }}" tabindex="-1" id="option-{{loop.index}}--menu--background">{{ option.label }}</div>
 				{% endfor %}
 			</div>
 		</div>
