@@ -2,48 +2,20 @@
   templateType: global_partial
   label: Event Card
 -->
-{% macro parse_date(date, time) %}
-  {% if date %}
-    {# Existing date parsing logic #}
-    {% set dateStr = date %}
-    {% set dateArr = dateStr|split("/", 1000) %}
-    {% set useDate = [
-        (dateArr[2]|int + 2000),
-        (dateArr[0]|length == 1 ? '0' + dateArr[0] : dateArr[0]),
-        (dateArr[1]|length == 1 ? '0' + dateArr[1] : dateArr[1])
-      ]
-    %}
-    
-    {# Initialize default time values #}
-    {% set hour = "00" %}
-    {% set minute = "00" %}
-    
-    {# New time parsing logic, if time is not null #}
-    {% if time %}
-      {% set timeArr = time|split(" ", 1000) %}
-      {% set hourMinute = timeArr[0]|split(":", 1000) %}
-      {% set hour = hourMinute[0]|int %}
-      {% set minute = hourMinute[1] %}
-      {% set ampm = timeArr[1] %}
-      
-      {# Convert to 24-hour format #}
-      {% if ampm == 'PM' and hour != 12 %}
-        {% set hour = hour + 12 %}
-      {% endif %}
-      {% if ampm == 'AM' and hour == 12 %}
-        {% set hour = 0 %}
-      {% endif %}
-    {% endif %}
-    
-    {# Combine date and time #}
-    {% set f_date = (useDate[0] + "-" + useDate[1] + "-" + useDate[2] + "T" + hour|string + ":" + minute + ":00+0530")|strtodate("yyyy-MM-dd'T'HH:mm:ssZ")  %}
-    
-    {{ f_date }}
-  {% endif %}
-{% endmacro %}
+{% set dateStr = event.starts_at %}
+{% set dateArr = dateStr|split("/", 1000) %}
+{% set useDate = [
+    (dateArr[2]|int + 2000),
+    (dateArr[0]|length == 1 ? '0' + dateArr[0] : dateArr[0]),
+    (dateArr[1]|length == 1 ? '0' + dateArr[1] : dateArr[1])
+  ]
+%}
+{% if event.starts_at %}
+{% set start_date = (useDate[0] + "-" + useDate[1] + "-" + useDate[2] + "T14:31:30+0530")|strtotime("yyyy-MM-dd'T'HH:mm:ssZ")  %}
+{% endif %}
 
 <article class="d-b">
-	<a class="card-list-item__wrapper-link" href="/registrations/{{ event.id }}">
+	<a class="card-list-item__wrapper-link" href="/registrations/{{ event.hs_object_id }}">
     <div class="card-list-item__image">
       <img alt="{{ event.name }} logo" loading="lazy" src="{{ event.banner_image }}">
     </div>
@@ -61,8 +33,9 @@
         </span>
         {% endif %}
       </div>
-      {% set start = parse_date(event.starts_at, event.starts_at_time) %}
-      <div class="card-list-item__details">{{ start }}</div>
+      <div class="card-list-item__details">
+        {{ event.starts_at|datetimeformat('%A, %B %e, %Y') }}, {{ event.starts_at_time.value }} {{ "- " ~ event.ends_at_time.value if event.ends_at_time }} {{ event.timezone }}
+      </div>
     </div>
   </a>
 </article>

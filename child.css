@@ -24,6 +24,11 @@ body {
     --reach-dialog: 1
 }
 
+a:focus,
+a:hover {
+    color: var(--color-brand);
+}
+
 [data-reach-dialog-overlay] {
     background: rgba(0,0,0,0.33);
     position: fixed;
@@ -3145,6 +3150,29 @@ textarea {
     font-size: 32px
 }
 
+/* .modal {
+    background: unset;
+    -webkit-border-radius: unset;
+    -moz-border-radius: unset;
+    -o-border-radius: unset;
+    -ms-border-radius: unset;
+    border-radius: unset;
+    -webkit-box-shadow: unset;
+    -moz-box-shadow: unset;
+    -o-box-shadow: unset;
+    -ms-box-shadow: unset;
+    box-shadow: unset;
+    box-sizing: unset;
+    display: unset;
+    max-width: unset;
+    padding: unset;
+    position: unset;
+    text-align: unset;
+    vertical-align: unset;
+    width: unset;
+    z-index: unset;
+} */
+
 html.modal--open--but-on-html-for-mobile-scroll-bugz,html.modal--open--but-on-html-for-mobile-scroll-bugz>body {
     min-height: 100%;
     overflow-y: scroll;
@@ -3159,7 +3187,7 @@ html.modal--open--but-on-html-for-mobile-scroll-bugz,html.modal--open--but-on-ht
     display: block
 }
 
-.modal {
+/* .modal {
     background: var(--color-tint10);
     box-shadow: 0 0 25px rgba(0,0,0,0.3);
     border-radius: 6px;
@@ -3169,7 +3197,7 @@ html.modal--open--but-on-html-for-mobile-scroll-bugz,html.modal--open--but-on-ht
     width: 480px;
     z-index: 1100;
     padding: unset;
-}
+} */
 
 @media (max-width: 600px) {
     .modal {
@@ -4467,6 +4495,10 @@ pre {
     padding-top: 1rem
 }
 
+.pagination .page {
+    padding: 0 0.75rem
+}
+
 .pagination .page a {
     border-radius: 4px;
     display: block;
@@ -4477,7 +4509,8 @@ pre {
 }
 
 .pagination .page a:hover {
-    background: var(--color-tint6)
+    background: var(--color-tint6);
+    color: var(--color-brand);
 }
 
 .pagination .page.current {
@@ -4488,7 +4521,15 @@ pre {
     display: block;
     font-size: 0.875rem;
     line-height: 2.25;
-    padding: 0 0.75rem
+    padding: 0 0.5rem
+}
+
+.pagination .page.current a {
+    color: var(--color-tint10);
+}
+
+.pagination .page.current a:hover {
+    background: transparent;
 }
 
 .pagination__previous-link,.pagination__next-link {
@@ -5166,6 +5207,15 @@ a:focus-visible,button:focus-visible,*[tabindex="0"]:focus-visible,*[role=button
 
 .form-field__input--full .form-field__input {
     width: 100%
+}
+
+.form-field > label {
+    font-size: 0.625rem;
+    font-weight: 500;
+    color: var(--color-tint2);
+    padding-bottom: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.125em;
 }
 
 @media (max-width: 959px) {
@@ -14817,4 +14867,8 @@ _:-moz-tree-row(hover) {
         stroke: var(--color-tint5);
         transform: rotateZ(720deg)
     }
+}
+
+#register-modal [data-reach-dialog-content] {
+    width: 630px;
 }

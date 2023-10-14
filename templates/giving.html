@@ -17,46 +17,6 @@
   {{ initials }}
 {% endmacro %}
 
-{% macro parse_date(date, time) %}
-  {% if date %}
-    {# Existing date parsing logic #}
-    {% set dateStr = date %}
-    {% set dateArr = dateStr|split("/", 1000) %}
-    {% set useDate = [
-        (dateArr[2]|int + 2000),
-        (dateArr[0]|length == 1 ? '0' + dateArr[0] : dateArr[0]),
-        (dateArr[1]|length == 1 ? '0' + dateArr[1] : dateArr[1])
-      ]
-    %}
-    
-    {# Initialize default time values #}
-    {% set hour = "00" %}
-    {% set minute = "00" %}
-    
-    {# New time parsing logic, if time is not null #}
-    {% if time %}
-      {% set timeArr = time|split(" ", 1000) %}
-      {% set hourMinute = timeArr[0]|split(":", 1000) %}
-      {% set hour = hourMinute[0]|int %}
-      {% set minute = hourMinute[1] %}
-      {% set ampm = timeArr[1] %}
-      
-      {# Convert to 24-hour format #}
-      {% if ampm == 'PM' and hour != 12 %}
-        {% set hour = hour + 12 %}
-      {% endif %}
-      {% if ampm == 'AM' and hour == 12 %}
-        {% set hour = 0 %}
-      {% endif %}
-    {% endif %}
-    
-    {# Combine date and time #}
-    {% set f_date = (useDate[0] + "-" + useDate[1] + "-" + useDate[2] + "T" + hour|string + ":" + minute + ":00+0530")|strtodate("yyyy-MM-dd'T'HH:mm:ssZ")  %}
-    
-    {{ f_date }}
-  {% endif %}
-{% endmacro %}
-
 {% block body %}
 <main class="body-container-wrapper profile-template">
   <nav aria-label="Breadcrumb" class="breadcrumbs">
@@ -88,15 +48,66 @@
     <div class="f-1 container">
       <div tabindex="-1" style="outline: none;">
         <div tabindex="-1" style="outline: none;">
+          {% macro parse_year(date) %}
+            {% set dateStr = date %}
+            {% set dateArr = dateStr|split("/", 1000) %}
+            {% set useDate = [
+                (dateArr[2]|int + 2000),
+                (dateArr[0]|length == 1 ? '0' + dateArr[0] : dateArr[0]),
+                (dateArr[1]|length == 1 ? '0' + dateArr[1] : dateArr[1])
+              ]
+            %}
+            {{ useDate[0] }}
+          {% endmacro %}
           {% if request_contact.is_logged_in %}
+            {% set base_url = request.path %}
+            {% set current_page = 0 %}
             {% set contact = data_query.data.CRM.contact %}
             {% set contact_id = contact._metadata.id %}
             {% set contact_id = "356038" %}
-            {{ contact.pushpay_payer_link }}
-            {% set donations = crm_associations(contact_id, "HUBSPOT_DEFINED", 4, "", "dealname,amount,closedate,dealstage,pipeline,pushpay_account,pushpay_merchant_payment_link,pushpay_payment_campus,pushpay_payment_created,pushpay_payment_currency,pushpay_payment_link,pushpay_payment_method,pushpay_payment_transaction_id").results %}
+            {% set donation_fields = "dealname,amount,closedate,dealstage,pipeline,pushpay_account,pushpay_merchant_payment_link,pushpay_payment_campus,pushpay_payment_created,pushpay_payment_currency,pushpay_payment_link,pushpay_payment_method,pushpay_payment_transaction_id" %}
+            {% set last_donation = crm_associations(contact_id, "HUBSPOT_DEFINED", 4, "limit=1&orderBy=pushpay_payment_created", donation_fields, true).results[0] %}
+            {% set current_year = local_dt|datetimeformat('%Y') %}
+            {% set limit = 25 %}
+            {% set start_year = parse_year(last_donation.pushpay_payment_created)|int %}
+            {% set queryparams = "limit=" ~ limit ~ "&orderBy=-pushpay_payment_created" %}
+            {% if request.query_dict.page %}
+              {% set current_page = request.query_dict.page %}
+              {% set offset = limit * (current_page - 1) %}
+              {% set queryparams = queryparams ~ "&offset=" ~ offset %}
+            {% endif %}
+            {{ queryparams }}
+            {% set donations = crm_associations(contact_id, "HUBSPOT_DEFINED", 4, queryparams, donation_fields) %}
             <div class="mb-4">
-              <div class="d-f ai-c jc-sb mb-2">
+              <div class="d-f ai-c jc-sb mb-4">
                 <h2 class="lh-1.333 c-tint0 fs-2 fw-600">Giving History</h2>
+              </div>
+              <div data-testid="grid" class="filter-buttons grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 mb-4">
+                {# <button aria-expanded="false" aria-haspopup="true" aria-controls="menu--8" class="select truncate ta-l" data-reach-menu-button="" type="button" id="menu-button--menu--filter_fiscal_year">Fiscal Year</button>
+                <div data-reach-popover="" data-reach-menu="" data-reach-menu-popover="">
+                  <div aria-labelledby="menu-button--menu--filter_fiscal_year" role="menu" id="menu--filter_fiscal_year" data-reach-menu-list="" data-reach-menu-items="" tabindex="-1" style="max-height: 15.5rem; max-width: 13rem; overflow: auto;">
+                    <div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="(any)" tabindex="-1" id="option-0--menu--filter_fiscal_year">(any)</div>
+                    {% for year in range(start_year|int, (current_year|int + 1))|sort(true, false) %}
+                    <div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="Fiscal Year {{ year }}" tabindex="-1" id="option-1--menu--filter_fiscal_year">{{ year }}</div>
+                    {% endfor %}
+                  </div>
+                </div> #}
+                <button aria-expanded="false" aria-haspopup="true" aria-controls="menu--8" class="select truncate ta-l" data-reach-menu-button="" type="button" id="menu-button--menu--sort_by_date">Sort by Date</button>
+                <div data-reach-popover="" data-reach-menu="" data-reach-menu-popover="">
+                  <div aria-labelledby="menu-button--menu--sort_by_date" role="menu" id="menu--sort_by_date" data-reach-menu-list="" data-reach-menu-items="" tabindex="-1" style="max-height: 15.5rem; max-width: 13rem; overflow: auto;">
+                    <div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="(any)" tabindex="-1" id="option-0--menu--sort_by">(any)</div>
+                    <div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="Newest First" tabindex="-1" id="option-1--menu--sort_by">Newest First</div>
+                    <div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="Oldest First" tabindex="-1" id="option-2--menu--sort_by">Oldest First</div>
+                  </div>
+                </div>
+                <button aria-expanded="false" aria-haspopup="true" aria-controls="menu--8" class="select truncate ta-l" data-reach-menu-button="" type="button" id="menu-button--menu--sort_by_transaction">Sort by Transaction</button>
+                <div data-reach-popover="" data-reach-menu="" data-reach-menu-popover="">
+                  <div aria-labelledby="menu-button--menu--sort_by_transaction" role="menu" id="menu--sort_by_transaction" data-reach-menu-list="" data-reach-menu-items="" tabindex="-1" style="max-height: 15.5rem; max-width: 13rem; overflow: auto;">
+                    <div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="(any)" tabindex="-1" id="option-0--menu--sort_by_transaction">(any)</div>
+                    <div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="Newest First" tabindex="-1" id="option-1--menu--sort_by_transaction">Newest First</div>
+                    <div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="Oldest First" tabindex="-1" id="option-2--menu--sort_by_transaction">Oldest First</div>
+                  </div>
+                </div>
               </div>
               <div class="action-drawer mb-1 mt-2">
                 <div class="grid grid-cols-5">
@@ -107,10 +118,19 @@
                   <div style="color: var(--color-tint0); font-weight: 600">Amount</div>
                 </div>
               </div>
-              {% for donation in donations %}
+              {% for donation in donations.results %}
+                {% set dateStr = donation.pushpay_payment_created %}
+                {% set dateArr = dateStr|split("/", 1000) %}
+                {% set useDate = [
+                    (dateArr[2]|int + 2000),
+                    (dateArr[0]|length == 1 ? '0' + dateArr[0] : dateArr[0]),
+                    (dateArr[1]|length == 1 ? '0' + dateArr[1] : dateArr[1])
+                  ]
+                %}
+                {% set payment_date = (useDate[0] + "-" + useDate[1] + "-" + useDate[2] + "T00:00:00+0530")|strtotime("yyyy-MM-dd'T'HH:mm:ssZ")  %}
               <div class="action-drawer mb-1 mt-2">
                 <a href="{{ donation.pushpay_payment_link }}" target="_blank" class="grid grid-cols-5">
-                  <div style="color: var(--color-tint0)">{{ parse_date(donation.pushpay_payment_created) }}</div>
+                  <div style="color: var(--color-tint0)">{{ payment_date|datetimeformat('%B %e, %Y') }}</div>
                   <div style="color: var(--color-tint0)">{{ donation.pushpay_payment_transaction_id }}</div>
                   <div style="color: var(--color-tint0)">{{ donation.pushpay_payment_method }}</div>
                   <div style="color: var(--color-tint0)">{{ donation.dealstage }}</div>
@@ -119,6 +139,31 @@
               </div>
               {% endfor %}
             </div>
+            {% if donations.has_more %}
+              {% macro generate_page_link(page) %}
+                {% if current_page %}
+                  {% set updated_url = base_url ~ '?page=' ~ page) %}
+                {% else %}
+                  {% if '?' in base_url %}
+                      {% set updated_url = base_url ~ '&page=' ~ page %}
+                  {% else %}
+                      {% set updated_url = base_url ~ '?page=' ~ page %}
+                  {% endif %}
+                {% endif %}
+                {{ updated_url }}
+              {% endmacro %}
+              {% set pages = (donations.total / limit)|round(0,"int") %}
+              <div class="ta-c container">
+                <nav class="pagination">  
+                {% for index in range(0, pages) %}
+                  {% set page = index + 1 %}
+                    <div class="page {{ 'current' if current_page == page }}">
+                      <a class="" href="{{ generate_page_link(page) }}">{{ page }}</a>
+                    </div>
+                {% endfor %}
+                </nav>
+              </div>
+            {% endif %}
           {% else %}
             <div class="ta-c c-tint2 fs-2" style="">
               <svg class="symbol" id="groups-o" viewBox="0 0 16 16">

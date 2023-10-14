@@ -1,0 +1,124 @@
+# label: "Events"
+# description: "get all event data"
+# $offset: "{{ request.query_dict.page | default: 0 }}"
+# $campus: "{{ request.query_dict.campus | default: 'All' }}"
+# $category: "{{ request.query_dict.category | default: 'All' }}"
+# $start: "{{ local_dt|datetimeformat('%j') }}"
+query events($offset: Int = 0, $campus: HS_Enum, $category: HS_Enum, $start: Date) {
+  CRM {
+    list_all_events: p_events_collection(limit: 10, offset: $offset, filter: {campus__eq: $campus, category__eq: $category, starts_at__gte: $start}) {
+      items {
+        hs_object_id
+        name
+        starts_at
+        starts_at_time
+        ends_at
+        ends_at_time
+        banner_image
+        campus
+        category
+        include_on_signup_page
+        allow_guest_registrations
+        announcement
+        attendance_requests_enabled
+        attendance_submitter
+        automated_reminder_enabled
+        automatically_hide_from_signups_page
+        canceled
+        canceled_at
+        canelled_at_time
+        close_registration_automatically
+        close_registration_date
+        close_registration_time
+        confirmation_message
+        congregants_can_cancel_their_own_registrations
+        description
+        dynamic_page_slug
+        events_visibility
+        featured
+        hide_from_sign_up_page_date
+        hide_from_sign_up_page_time
+        include_on_sign_up_page_date
+        include_on_sign_up_page_time
+        location
+        location_latitude
+        location_longitude
+        location_name
+        location_type
+        location_type_preference
+        membership_count
+        multi_day
+        people_can_register
+        registration_open_date
+        registration_open_time
+        registration_status
+        reminders_sent
+        reminders_sent_at
+        reminders_sent_at_time
+        repeating
+        schedule
+        street_address
+        unit__room__building
+        virtual_location_url
+        visitors_count
+      }
+    }
+    list_registerable_events: p_events_collection(limit: 10, offset: $offset, filter: {campus__eq: $campus, category__eq: $category, include_on_signup_page__neq: "Do not include (direct link only)", starts_at__gte: $start}) {
+      items {
+        hs_object_id
+        name
+        starts_at
+        starts_at_time
+        ends_at
+        ends_at_time
+        banner_image
+        campus
+        category
+        include_on_signup_page
+        allow_guest_registrations
+        announcement
+        attendance_requests_enabled
+        attendance_submitter
+        automated_reminder_enabled
+        automatically_hide_from_signups_page
+        canceled
+        canceled_at
+        canelled_at_time
+        close_registration_automatically
+        close_registration_date
+        close_registration_time
+        confirmation_message
+        congregants_can_cancel_their_own_registrations
+        description
+        dynamic_page_slug
+        events_visibility
+        featured
+        hide_from_sign_up_page_date
+        hide_from_sign_up_page_time
+        include_on_sign_up_page_date
+        include_on_sign_up_page_time
+        location
+        location_latitude
+        location_longitude
+        location_name
+        location_type
+        location_type_preference
+        membership_count
+        multi_day
+        people_can_register
+        registration_open_date
+        registration_open_time
+        registration_status
+        reminders_sent
+        reminders_sent_at
+        reminders_sent_at_time
+        repeating
+        schedule
+        street_address
+        unit__room__building
+        virtual_location_url
+        visitors_count
+      }
+    }
+  }
+}

@@ -1,0 +1,14 @@
+# label: "Teams"
+# description: "get all team data"
+# $offset: "{{ request.query_dict.page | default: 0 }}"
+query teams($offset: Int = 0) {
+  CRM {
+    list_all_teams: p_teams_collection(limit: 10, offset: $offset) {
+      items {
+        hs_object_id
+        team_name
+        featured_image
+      }
+    }
+  }
+}

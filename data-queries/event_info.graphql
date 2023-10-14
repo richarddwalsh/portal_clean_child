@@ -1,0 +1,49 @@
+# label: "Events Data"
+# description: "Show a list of events"
+query GroupsData {
+  __typename
+  CRM {
+    p_groups(uniqueIdentifier: "", uniqueIdentifierValue: "") {
+      hs_object_id
+      name
+      featured_image
+      description
+      description_html
+      enrollment_strategy
+      dynamic_page_slug
+      enrollment_open
+      schedule
+      visibility
+      frequency
+      events_visibility
+      group_type
+      leader_name
+      leader_email
+      leader_name_2
+      leader_email_2
+      leader_name_3
+      leader_email_3
+      location_type_preference
+      send_reminder_emails
+      reminder_email_frequency
+      target_audience
+      time_of_day
+      time_zone
+      virtual_location_url
+      associations {
+        leaders: contact_collection__group_lead {
+          items {
+            firstname
+            lastname
+            email
+          }
+        },
+        resources: note_collection__group_to_note(filter: {hs_attachment_ids__null: false}) {
+          items {
+            hs_attachment_ids
+          }
+        }
+      }
+    }
+  }
+}

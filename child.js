@@ -177,10 +177,13 @@ function hideAllSubmenus(event) {
 function showActionMenu(event) {
   event.stopPropagation();
 
-  hideAllSubmenus();
-
   const button = event.currentTarget;
   const buttonId = button.id;
+
+  if (buttonId === 'add-participant-btn') return;
+
+  hideAllSubmenus();
+
   const subMenuId = `${buttonId.split('--')[1]}--${buttonId.split('--')[2]}`;
   console.log(buttonId, subMenuId)
   const subMenu = document.getElementById(subMenuId);
@@ -374,4 +377,16 @@ modalForms.forEach((form) => {
 
 window.addEventListener('DOMContentLoaded', () => {
   updateButtonsFromUrlParams();
+});
+
+const addParticipantBtn = document.getElementById('add-participant-btn');
+addParticipantBtn.addEventListener('click', (event) => {
+  const button = event.currentTarget;
+  const participantContainer = document.getElementById('participant-container');
+  const template = document.getElementById('participant-template');
+  console.log(template.content, participantContainer);
+  // First We Need To Clone The Template DOM
+  const clone = template.content.cloneNode(true);
+  // Then we need to add the clone to the container
+  participantContainer.appendChild(clone);
 });

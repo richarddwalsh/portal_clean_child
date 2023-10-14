@@ -1,6 +1,6 @@
 # label: "Contact info page"
 # description: "Show a contact's name and email"
-# $contact_id: "{{request.contact.contact_vid }}"
+# $contact_id: "{{request.contact.contact_vid }}"    
 query contact_info($contact_id: String!) {
   CRM {
     contact(uniqueIdentifier: "id", uniqueIdentifierValue: $contact_id) {
@@ -24,6 +24,52 @@ query contact_info($contact_id: String!) {
       anniversary
       pushpay_payer_link
       pushpay_customer_id
+      associations {
+        registrations: p_registrations_collection__participant {
+          items {
+            hs_object_id
+          }
+        }
+        groups: p_groups_collection__group_to_contact {
+          items {
+            hs_object_id
+            name
+          }
+        }
+        teams: p_teams_collection__volunteer_team_to_contact {
+          items {
+            hs_object_id
+            team_name
+            featured_image
+          }
+        }
+        events: p_events_collection__event_to_contact {
+          items {
+            hs_object_id
+            name
+          }
+        }
+        households: p_households_collection__type_2_17952728_to_contact(limit: 1) {
+          items {
+            hs_object_id
+            family_name
+            associations {
+              members: contact_collection__type_2_17952728_to_contact {
+                items {
+                  hs_object_id
+                  firstname
+                  lastname
+                  email
+                  gender
+                  date_of_birth
+                  email
+                  phone
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 }

@@ -1,6 +1,6 @@
 <!--
   templateType: global_partial
-  label: Group Members Tab
+  label: team Members Tab
 -->
 {% macro contactInitials(firstname, lastname) %}
   {% set initials = "" %}
@@ -13,10 +13,21 @@
   {{ initials }}
 {% endmacro %}
 
-{% set member_fields = "firstname,lastname,email,phone,birthday"%}
-{% set group_leaders = crm_associations(group.id, "USER_DEFINED", 229, "", member_fields).results %}
-{% set group_members = crm_associations(group.id, "USER_DEFINED", 305, "", member_fields).results %}
-{% set members = group_leaders|union(group_members) %}
+{% set member_fields = "firstname,lastname,email,phone,birthday,completed_one_fam,background_check_status"%}
+{% set team_leaders = crm_associations(team.id, "USER_DEFINED", 345, "", member_fields).results %}
+{% set new_team_leaders = []	%}
+{% for leader in team_leaders %}
+	{% do leader.update({"leader": true, "association": 345}) %}
+{% endfor %}
+{% set team_members = crm_associations(team.id, "USER_DEFINED", 215, "", member_fields).results %}
+{% for member in team_members %}
+	{% if member.id != contact_id %}
+		{% do member.update({"leader": false, "association": 215 }) %}
+	{% else %}
+		{% do team_members.pop(loop.index0)%}
+	{% endif %}
+{% endfor %}
+{% set members = team_leaders|union(team_members)|unique %}
 {% set member_count = members|length %}
 <div class="f-1">
 	<div class="d-f jc-sb mt-1 mb-2">
@@ -24,9 +35,8 @@
 		<div class="d-f" style="gap: 0.5rem;">
 		</div>
 	</div>
-
 	<div>
-		<a href="/my/groups/{{ group.dynamic_page_slug }}">
+		<a href="/my/teams/{{ team.dynamic_page_slug }}">
 			<article class="d-f ai-c mb-2 pb-2 my-member__row">
 				<div class="avatar w-8 h-8 mr-2">
 					{{ contactInitials(contact.firstname, contact.lastname) }}
@@ -39,42 +49,33 @@
 				</div>
 			</article>
 		</a>
-		{% for leader in group_leaders %}
-			{% if leader.id != contact_id %}
-			<a id="leader-{{leader.id}}" class="member-modal-btn modal-trigger" data-id="{{ leader.id }}" href="javascript:void(0);" data-target="modal-{{leader.id}}">
-				<article class="d-f ai-c mb-2">
-					<div class="avatar w-8 h-8 mr-2">
-						{{ contactInitials(leader.firstname, leader.lastname) }}
-					</div>
-					<div class="f-1 d-f jc-sb ai-c">
-						<div class="d-f fd-c ai-fs">
-							<h3 class="lh-1.333 c-tint0 fs-3 fw-600">{{ leader.firstname ~ " " ~ leader.lastname }}</h3>
-							<span class="fs-13 lh-1.5 c-brand">Member info</span>
-						</div>
-						<div>
-							<span class="badge">Leader</span>
-						</div>
-					</div>
-				</article>
-			</a>
-			{% endif %}
-		{% endfor %}
-		{% for member in group_members %}
-			{% if member.id != contact_id %}
+		{% for member in members %}
 			<a id="member-{{member.id}}" class="member-modal-btn modal-trigger" data-id="{{ member.id }}" href="javascript:void(0);" data-target="modal-{{member.id}}">
 				<article class="d-f ai-c mb-2">
-					<div class="w-8 h-8 mr-2">
-						<img alt="avatar" src="https://avatars.planningcenteronline.com/uploads/initials/BS.png?background_color=EEE&amp;color=9E9E9E" style="border-radius: 50%; width: 100%; height: 100%; object-fit: cover;">
+					<div class="avatar w-8 h-8 mr-2">
+						{{ contactInitials(member.firstname, member.lastname) }}
 					</div>
 					<div class="f-1 d-f jc-sb ai-c">
 						<div class="d-f fd-c ai-fs">
-							<h3 class="lh-1.333 c-tint0 fs-3 fw-600">{{ member.firstname ~ " " ~ member.lastname }}</h3>
-							<span class="fs-13 lh-1.5 c-brand">Member info</span>
+							{% set status = "" %}
+							{% set contact_team_activites = crm_associations(member.id, "USER_DEFINED", 212, "", "name,status").results %}
+							{% for activity in contact_team_activites %}
+								{% set activity_team = crm_associations(activity.id, "USER_DEFINED", 209, "").results[0] %}
+								{% if team.id == activity_team.id %}
+									{% do member.update({"status": activity.status }) %}
+								{% endif %}
+							{% endfor %}
+							<h3 class="lh-1.333 c-tint0 fs-3 fw-600">{{ member.firstname ~ " " ~ member.lastname }}{% if member.status %}<span class="badge ml-2">{{ member.status }}</span>{% endif %}</h3>
+							{% if is_admin %}
+							<span class="fs-13 lh-1.5 c-brand">Team Member Profile</span>
+							{% endif %}
+						</div>
+						<div>
+							<span class="badge">{{ 'Team Leader' if member.leader else 'Team Member' }}</span>
 						</div>
 					</div>
 				</article>
 			</a>
-			{% endif %}
 		{% endfor %}
 	</div>
 </div>
@@ -109,15 +110,31 @@
 								<div data-testid="grid" class="grid grid-cols-1 w-100%">
 									<div class="form-field mb-2">
 										<label>Email</label>
-										<a href="mailto:{{member.email}}" target="_blank">
 										<input class="form-field__input--full" type="email" name="email" value="{{ member.email }}" readonly />
-										</a>
 									</div>
 								</div>
 								<div data-testid="grid" class="grid grid-cols-1 w-100%">
 									<div class="form-field mb-2">
 										<label>Phone</label>
 										<input class="form-field__input--full" type="text" name="phone" value="{{ member.phone }}" readonly />
+									</div>
+								</div>
+								<div data-testid="grid" class="grid grid-cols-1 w-100%">
+									<div class="form-field mb-2">
+										<label>Birthday</label>
+										<input class="form-field__input--full" type="text" name="birthday" value="{{ member.birthday }}" readonly />
+									</div>
+								</div>
+								<div data-testid="grid" class="grid grid-cols-1 w-100%">
+									<div class="form-field mb-2">
+										<label>ONE Fam Status</label>
+										<input class="form-field__input--full" type="text" name="completed_one_fam" value="{{ member.completed_one_fam }}" readonly />
+									</div>
+								</div>
+								<div data-testid="grid" class="grid grid-cols-1 w-100%">
+									<div class="form-field mb-2">
+										<label>Background Check Status</label>
+										<input class="form-field__input--full" type="text" name="background_check_status" value="{{ member.background_check_status }}" readonly />
 									</div>
 								</div>
 							</div>
@@ -131,6 +148,8 @@
 									<input type="hidden" name="firstname" value="{{ contact.firstname }}">
 									<input type="hidden" name="contactEmail" value="{{ contact.email }}">
 									<button class="btn text-btn mr-2 cancel-btn">Close</button>
+									{# TODO: SWITCH BASEURL BEFORE LAUNCH #}
+									<a href="https://share.hsforms.com/1Xe7Y5xryTd6ycasCOFRQTwdsldq?firstname={{member.firstname}}&lastname={{member.lastname}}&email={{member.email}}&2-12312453/team_name-{{team.team_name}}" class="btn" target="_blank">Change Volunteer Status</a>
 								</div>
 							</div>
 						</div>

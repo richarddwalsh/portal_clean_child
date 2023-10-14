@@ -49,7 +49,7 @@
                 </div>
               </a>
               <div class="fs-13 lh-1.5 c-tint2">
-                <time>{{ start_date|datetimeformat('%A, %B %e, %Y') }}, 4–6:30pm PDT</time>
+                <time>{{ start_date|datetimeformat('%A, %B %e, %Y') }}, {{ event.starts_at_time }} – {{ event.ends_at_time }} {{ event.timezone }}</time>
               </div>
             </div>
           </article>

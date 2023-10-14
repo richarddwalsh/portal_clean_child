@@ -1,6 +1,7 @@
 <!--
   templateType: "none"
   isAvailableForNewContent: false
+  dataQueryPath: ../data-queries/contact_info
 -->
 <!doctype html>
 <html lang="{{ html_lang }}" {{ html_lang_dir }}>
@@ -12,7 +13,7 @@
     {% if site_settings.favicon_src %}<link rel="shortcut icon" href="{{ site_settings.favicon_src }}" />{% endif %}
     <meta name="description" content="{{ page_meta.meta_description }}">
     {{ require_css(get_asset_url("/@marketplace/Helpful_Hero/CLEAN-6-1-theme/css/main-head.css")) }}
-    {{ require_css(get_asset_url("/@marketplace/Helpful_Hero/CLEAN-6-1-theme/css/main-foot.css"), { async: true }) }}
+    {# {{ require_css(get_asset_url("/@marketplace/Helpful_Hero/CLEAN-6-1-theme/css/main-foot.css"), { async: true }) }} #}
     {{ require_js(get_asset_url("/@marketplace/Helpful_Hero/CLEAN-6-1-theme/js/clean-pro.js"), { position: 'footer'}) }}
     {{ require_js(get_asset_url("/@marketplace/Helpful_Hero/CLEAN-6-1-theme/js/jquery-modal-min.js"), { position: 'footer', defer:true }) }}
     {{ require_js(get_asset_url("../../child.js")) }}
@@ -42,5 +43,7 @@
       </footer>
     </div>
     {{ standard_footer_includes }}
+    {% block footer_includes %}
+    {% endblock footer_includes %}
   </body>
 </html>

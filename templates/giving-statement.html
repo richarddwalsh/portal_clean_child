@@ -1,0 +1,120 @@
+<!--
+  templateType: page
+  isAvailableForNewContent: true
+  label: Portal - Giving Statement
+  dataQueryPath: ../data-queries/contact_info
+-->
+<!doctype html>
+<html lang="{{ html_lang }}" {{ html_lang_dir }}>
+  <head>
+    <meta charset="utf-8">
+    {# TODO: REMOVE WHEN READY TO PUBLISH #}
+    <meta name="robots.txt" content="noindex, nofollow">
+    <title>{{ page_meta.html_title }}</title>
+    {% if site_settings.favicon_src %}<link rel="shortcut icon" href="{{ site_settings.favicon_src }}" />{% endif %}
+    {{ require_css(get_public_template_url("../child.css")) }}
+    {{ standard_header_includes }}
+    <link rel="preconnect" href="https://cdn2.hubspot.net" crossorigin>
+    <link rel="preconnect" href="https://js.hs-analytics.net" crossorigin>
+    <link rel="preconnect" href="https://js.hs-banner.com" crossorigin>
+  </head>
+  <body data-color-scheme="light" data-contrast="low" data-background-color="">
+    {% if !request_contact.is_logged_in %}
+      <h1>Sorry You Must Be Logged In to View this Page</h1>
+    {% else %}
+      {% if !request.query_dict.from && !request.query_dict.to %}
+        <h1>Sorry You Must Provide a Date Range for this report</h1>
+      {% else %}
+        {% set from_date = request.query_dict.from %}
+        {% set to_date = request.query_dict.to %}
+        <div class="body-wrapper {{ builtin_body_classes }} container">
+          <header class="header">
+            <div>
+              <h1>Sep 2020 Giving Statement</h1>
+              <table>
+                <tr>
+                  <th>Period:</th>
+                  <td>
+                    <div>{{ from_date }} - {{ to_date }}</div>
+                    <div>Sep 1, 2020 - Sep 30, 2020</div>
+                  </td>
+                </tr>
+                <tr>
+                  <th>Issued:</th>
+                  <td>Oct 29, 2020 3:37 PM</td>
+                </tr>
+                <tr>
+                  <th>Version:</th>
+                  <td>1</td>
+                </tr>
+              </table>
+              <div>
+                <strong>{{ contact.firstname ~ " " ~ contact.lastname }}</strong>
+              </div>
+            </div>
+            <div>
+              Logo & Details
+            </div>
+          </header>
+          <main>
+            <section>
+              <div>
+                <h2>Total tax-deductable</h2>
+                <div>
+                  $450.00
+                </div>
+                <div>
+                  <p>No goods or services were given in exhange for the listed contributions other tha intangible religious benefits.</p>
+                </div>
+              </div>
+              <div>
+                <h2>Tax-deductable funds</h2>
+                <div>
+                  <table>
+                    <tr>
+                      <th>Fund</th>
+                      <th>Amount</th>
+                    </tr>
+                    <tr>
+                      <td>General Giving</td>
+                      <td>$450.00</td>
+                    </tr>
+                  </table>
+                </div>
+              </div>
+            </section>
+            <section>
+              <div>
+                <h2>Tax-deductable contributions for Sep 1 - Sep 30, 2020</h2>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Method</th>
+                      <th>Fund</th>
+                      <th>Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>9/30/2020</td>
+                      <td>Online</td>
+                      <td>General Giving</td>
+                      <td>$450.00</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          </main>
+          <footer class="footer">
+            
+          </footer>
+        </div>
+      
+      {% endif %}
+  {% endif %}
+    
+    {{ standard_footer_includes }}
+  </body>
+</html>
