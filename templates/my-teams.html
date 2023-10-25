@@ -5,7 +5,7 @@
   dataQueryPath: ../data-queries/contact_info
 -->
 
-{% extends "./layouts/base.html" %}
+{% extends "./layouts/base-portal.html" %}
 
 {% set base_url = request.path %}
 {% set current_tab = request.query_dict.tab %}
@@ -26,6 +26,7 @@
 {% block body %}
 <main class="body-container-wrapper my-teams-template">
   {% set team = dynamic_page_crm_object %}
+  {% set objectFQN = "teams" %}
   {% set admin_list_id = 717 %}
   {% if request_contact.is_logged_in %}
     {% set contact = data_query.data.CRM.contact %}
@@ -216,33 +217,47 @@
         </div>
       </div>
     </nav>
-    <div class="f-1 page-content" id="main_page_content">
+    <div class="f-1 page-content" id="main_page_content" data-is-admin="{{ is_admin }}" v-cloak>
+      <script type="application/json" id="json-data">
+        {
+          "objectFQN": "{{ objectFQN }}",
+          "teamData": {{ team|tojson }},
+          "userData": {{ contact|tojson }},
+          "options": {
+            "schedule": {{ crm_property_definition(objectFQN, "serve_schedule").options|tojson }},
+            "location": {{ crm_property_definition(objectFQN, "location").options|tojson }},
+            "requires_experience": {{ crm_property_definition(objectFQN, "requires_experience").options|tojson }},
+            "require_background_check": {{ crm_property_definition(objectFQN, "require_background_check").options|tojson }},
+            "communication_enabled": {{ crm_property_definition(objectFQN, "communication_enabled").options|tojson }},
+            "members_can_create_forum_topics": {{ crm_property_definition(objectFQN, "members_can_create_forum_topics").options|tojson }}
+          },
+          "resources": []
+        }
+      </script>
       <div class="f-1 container">
         <div style="outline: none;" tabindex="-1">
           <div style="outline: none;" tabindex="-1">
             <div style="outline: none;" tabindex="-1">
               <div class="d-f@md">
                 <nav class="sub-navigation mr-4 d-n d-b@md">  
-                  <a class="sub-navigation__link {{ 'is-active-link' if current_tab == "messages" or not current_tab }}" href="{{ generate_tab_url('messages') }}">Messaging</a>
-                  <a class="sub-navigation__link {{ 'is-active-link' if current_tab == "events" }}" href="{{ generate_tab_url('events') }}">Events</a>
-                  <a class="sub-navigation__link {{ 'is-active-link' if current_tab == "resources" }}" href="{{ generate_tab_url('resources') }}">Resources</a>
-                  <a class="sub-navigation__link {{ 'is-active-link' if current_tab == "members" }}" href="{{ generate_tab_url('members') }}">Members</a>
-                  {% if is_admin %}
-                  <a class="sub-navigation__link {{ 'is-active-link' if current_tab == "settings" }}" href="{{ generate_tab_url('settings') }}">Settings</a>
-                  {% endif %}
+                  <a :class="{ 'is-active-link': tab.active }" class="sub-navigation__link" v-for="tab in tabs" v-on:click="setActiveTab(tab)" v-if="showTab(tab)">[[tab.label]]</a>
                 </nav>
                 <button aria-controls="menu--1" aria-expanded="false" aria-haspopup="true" class="d-n@md mb-2 ta-l select" data-reach-menu-button="" id="menu-button--menu--messaging" type="button">Messaging</button>
-                {% if current_tab == "events" %}
-                  {% include "./partials/volunteers/tabs/team-events.html" %}
-                {% elif current_tab == "resources" %}
-                  {% include "./partials/volunteers/tabs/team-resources.html" %}
-                {% elif current_tab == "members" %}
-                  {% include "./partials/volunteers/tabs/team-members.html" %}
-                {% elif current_tab == "settings" %}
-                  {% include "./partials/volunteers/tabs/team-settings.html" %}
-                {% else %}
+                <div class="f-1" v-if="activeTab.id == 'messaging' && showTab">
                   {% include "./partials/volunteers/tabs/team-messages.html" %}
-                {% endif %}
+                </div>
+                <div class="f-1" v-if="activeTab.id == 'events'">
+                  {% include "./partials/volunteers/tabs/team-events.html" %}
+                </div>
+                <div class="f-1" v-if="activeTab.id == 'resources'">
+                  {% include "./partials/volunteers/tabs/team-resources.html" %}
+                </div>
+                <div class="f-1" v-if="activeTab.id == 'members'">
+                  {% include "./partials/volunteers/tabs/team-members.html" %}
+                </div>
+                <div class="f-1" v-if="activeTab.id == 'settings'">
+                  {% include "./partials/volunteers/tabs/team-settings.html" %}
+                </div>
               </div>
             </div>
           </div>
@@ -252,3 +267,13 @@
   {% endif %}
 </main>
 {% endblock body %}
+
+{% block footer_includes %}
+  {{ require_js("https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js", { position: 'footer' }) }}
+  {{ require_js("https://cdn.jsdelivr.net/npm/vue@2", { position: 'footer'}) }}
+  {% if dynamic_page_crm_object_type_fqn %}
+    {{ require_js(get_asset_url("../js/lib/my/teams.js"), { position: 'footer'}) }}
+  {% elif dynamic_page_crm_object %}
+    {{ require_js(get_asset_url("../js/lib/my/team.js"), { position: 'footer'}) }}
+  {% endif %}
+{% endblock footer_includes%}

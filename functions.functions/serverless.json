@@ -17,6 +17,14 @@
     "group/leave": {
       "method": "POST",
       "file": "group/leave.js"
+    },
+    "getAdministrators": {
+      "method": "POST",
+      "file": "getAdministrators.js"
+    },
+    "updateObject": {
+      "method": "POST",
+      "file": "updateObject.js"
     }
   }
 }

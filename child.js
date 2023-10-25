@@ -155,8 +155,8 @@ function triggerAction(event) {
 }
 
 // Function to hide all submenus
-function hideAllSubmenus(event) {
-  console.log(event);
+function hideAllSubmenus() {
+  console.log("Hide all submenus");
   submenus.forEach((submenu) => {
     const subMenuElement = submenu;
     subMenuElement.style.display = 'none';
@@ -185,7 +185,6 @@ function showActionMenu(event) {
   hideAllSubmenus();
 
   const subMenuId = `${buttonId.split('--')[1]}--${buttonId.split('--')[2]}`;
-  console.log(buttonId, subMenuId)
   const subMenu = document.getElementById(subMenuId);
   
   const buttonRect = button.getBoundingClientRect();
@@ -305,6 +304,8 @@ if (buttons.length === submenus.length) {
   });
 } else {
   console.error('Number of buttons and submenus do not match.');
+  console.log(buttons);
+  console.log(submenus);
 }
 
 actionBtns.forEach((button) => {
@@ -380,13 +381,14 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 const addParticipantBtn = document.getElementById('add-participant-btn');
-addParticipantBtn.addEventListener('click', (event) => {
-  const button = event.currentTarget;
-  const participantContainer = document.getElementById('participant-container');
-  const template = document.getElementById('participant-template');
-  console.log(template.content, participantContainer);
-  // First We Need To Clone The Template DOM
-  const clone = template.content.cloneNode(true);
-  // Then we need to add the clone to the container
-  participantContainer.appendChild(clone);
-});
+if (addParticipantBtn) {
+  addParticipantBtn.addEventListener('click', () => {
+    const participantContainer = document.getElementById('participant-container');
+    const template = document.getElementById('participant-template');
+    console.log(template.content, participantContainer);
+    // First We Need To Clone The Template DOM
+    const clone = template.content.cloneNode(true);
+    // Then we need to add the clone to the container
+    participantContainer.appendChild(clone);
+  });
+}

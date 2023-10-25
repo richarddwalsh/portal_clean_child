@@ -5,27 +5,15 @@
   dataQueryPath: ../data-queries/contact_info
 -->
 
-{% extends "./layouts/base.html" %}
+{% extends "./layouts/base-portal.html" %}
 
 {% set base_url = request.path %}
-{% set current_tab = request.query_dict.tab %}
-
-{% macro generate_tab_url(tab) %}
-  {% if current_tab %}
-    {% set updated_url = base_url + '?tab=' + tab %}
-  {% else %}
-    {% if '?' in base_url %}
-        {% set updated_url = base_url + '&tab=' + tab %}
-    {% else %}
-        {% set updated_url = base_url + '?tab=' + tab %}
-    {% endif %}
-  {% endif %}
-  {{ updated_url }}
-{% endmacro %}
 
 {% block body %}
 <main class="body-container-wrapper my-group-template">
   {% set group = dynamic_page_crm_object %}
+  {% set group_categories = crm_objects("group_categories", "limit=100").results %}
+  {% set group_cagtegory = crm_associations(group.id, "USER_DEFINED", 303, "limit=1", "name").results[0] %}
   {% set admin_list_id = 717 %}
   {% if request_contact.is_logged_in %}
     {% set contact = data_query.data.CRM.contact %}
@@ -138,6 +126,12 @@
       </div>
     </div>
   {% elif dynamic_page_crm_object %}
+    {% set current_dt = unixtimestamp( local_dt ) %}
+    {% set event_fields = "name,description,starts_at,starts_at_time,ends_at,ends_at_time,include_on_signup_page,repeating" %}
+    {% set upcoming_events_query = "limit=200&starts_at__gte=" ~ current_dt ~ "&orderBy=starts_at" %}
+    {% set upcoming_events = crm_associations(group.id, "USER_DEFINED", 219, upcoming_events_query, event_fields).results %}
+    {% set past_events_query = "limit=200&starts_at__lt=" ~ current_dt ~ "orderBy=starts_at" %}
+    {% set past_events = crm_associations(group.id, "USER_DEFINED", 219, "", event_fields).results %}
     <nav aria-label="Breadcrumb" class="breadcrumbs container">
       <div class="breadcrumbs__layout">
         <a aria-label="Me" class="breadcrumbs__page" href="/me">
@@ -191,15 +185,10 @@
             <div role="none" tabindex="-1">
               <a role="menuitem" href="/group/{{ group.dynamic_page_slug }}" data-reach-menu-link="" data-reach-menu-item="" data-valuetext="View public group page" tabindex="-1" id="option-1--menu--{{ group.id }}">View public group page</a>
             </div>
-            {# TODO: Add manage group option for admins
-            <div role="none" tabindex="-1">
-              <a role="menuitem" href="javacsript:void(0)" data-reach-menu-link="" data-reach-menu-item="" data-valuetext="Email Group" tabindex="-1" id="option-0--menu--{{ group.id }}">Email Group</a>
-            </div> 
-            #}
             <div 
-              role="menuitem" 
+              {# role="menuitem" 
               class="dropdown__item" 
-              data-reach-menu-item=""
+              data-reach-menu-item="" #}
               data-endpoint="https://{{ request.domain }}/_hcms/api/group/leave"
               data-valuetext="Leave group…" 
               data-group-id="{{ group.id }}" 
@@ -212,38 +201,65 @@
               data-domain="https://{{ request.domain }}"
               data-return-url="https://{{ request.domain }}/my/groups"
               tabindex="-1" 
-              id="option-2--menu--{{ group.id }}">Leave group…</div>
+              id="option-2--menu--{{ group.id }}"
+              v-on:click="leaveGroup()"
+              >Leave group…</div>
           </div>
         </div>
       </div>
     </nav>
-    <div class="f-1 page-content" id="main_page_content">
+    <div class="f-1 page-content" id="main_page_content" data-is-admin="{{ is_admin }}" data-group-data="{{ group|jsonencode|raw }}" v-cloak>
+      <script type="application/json" id="json-data">
+        {
+          "categoryData": {{ group_cagtegory|tojson }},
+          "groupData": {{ group|tojson }},
+          "pastEventsData": {{ past_events|tojson }},
+          "upcomingEventsData": {{ upcoming_events|tojson }},
+          "userData": {{ contact|tojson }},
+          "groupCategories": {{ group_categories|tojson }},
+          "groupTypes": {{ crm_property_definition("groups", "group_type").options|tojson }},
+          "locationTypePreferences": {{ crm_property_definition("groups", "location_type_preference").options|tojson }},
+          "targetAudiences": {{ crm_property_definition("groups", "target_audience").options|tojson }},
+          "neighborhoodAreas": {{ crm_property_definition("groups", "neighborhood___area").options|tojson }},
+          "timeZones": {{ crm_property_definition("groups", "time_zone").options|tojson }},
+          "daysOfWeek": {{ crm_property_definition("groups", "day_of_week").options|tojson }},
+          "timesOfDay": {{ crm_property_definition("groups", "time_of_day").options|tojson }},
+          "frequencies": {{ crm_property_definition("groups", "frequency").options|tojson }},
+          "enrollmentStrategies": {{ crm_property_definition("groups", "enrollment_strategy").options|tojson }},
+          "reminderEmailFrequencies": {{ crm_property_definition("groups", "reminder_email_frequency").options|tojson }},
+          "meetingScheduleFrequencies": {{ crm_property_definition("groups", "meeting_schedule_frequency").options|tojson }},
+          "meetingScheduleFrequencyCounts": {{ crm_property_definition("groups", "meeting_schedule_frequency_count").options|tojson }},
+          "meetingScheduleFrequencyDays": {{ crm_property_definition("groups", "meeting_schedule_frequency_day").options|tojson }},
+          "meetingScheduleFrequencyMonths": {{ crm_property_definition("groups", "meeting_schedule_frequency_month").options|tojson }},
+          "meetingScheduleFrequenciesWeekdays": {{ crm_property_definition("groups", "meeting_schedule_frequency_weekday").options|tojson }},
+          "meetingScheduleStartTimes": {{ crm_property_definition("groups", "meeting_start_time").options|tojson }},
+          "meetingScheduleEndTimes": {{ crm_property_definition("groups", "meeting_end_time").options|tojson }}
+        }
+      </script>
       <div class="f-1 container">
         <div style="outline: none;" tabindex="-1">
           <div style="outline: none;" tabindex="-1">
             <div style="outline: none;" tabindex="-1">
               <div class="d-f@md">
                 <nav class="sub-navigation mr-4 d-n d-b@md">  
-                  <a class="sub-navigation__link {{ 'is-active-link' if current_tab == "messages" or not current_tab }}" href="{{ generate_tab_url('messages') }}">Messaging</a>
-                  <a class="sub-navigation__link {{ 'is-active-link' if current_tab == "events" }}" href="{{ generate_tab_url('events') }}">Events</a>
-                  <a class="sub-navigation__link {{ 'is-active-link' if current_tab == "resources" }}" href="{{ generate_tab_url('resources') }}">Resources</a>
-                  <a class="sub-navigation__link {{ 'is-active-link' if current_tab == "members" }}" href="{{ generate_tab_url('members') }}">Members</a>
-                  {% if is_admin %}
-                  <a class="sub-navigation__link {{ 'is-active-link' if current_tab == "settings" }}" href="{{ generate_tab_url('settings') }}">Settings</a>
-                  {% endif %}
+                  <a :class="{ 'is-active-link': tab.active }" class="sub-navigation__link" v-for="tab in tabs" v-on:click="setActiveTab(tab)" v-if="showTab(tab)">[[tab.label]]</a>
                 </nav>
-                <button aria-controls="menu--1" aria-expanded="false" aria-haspopup="true" class="d-n@md mb-2 ta-l select" data-reach-menu-button="" id="menu-button--menu--messaging" type="button">Messaging</button>
-                {% if current_tab == "events" %}
-                  {% include "./partials/groups/tabs/group-events.html" %}
-                {% elif current_tab == "resources" %}
-                  {% include "./partials/groups/tabs/group-resources.html" %}
-                {% elif current_tab == "members" %}
-                  {% include "./partials/groups/tabs/group-members.html" %}
-                {% elif current_tab == "settings" %}
-                  {% include "./partials/groups/tabs/group-settings.html" %}
-                {% else %}
+                {# <button aria-controls="menu--1" aria-expanded="false" aria-haspopup="true" class="d-n@md mb-2 ta-l select" data-reach-menu-button="" id="menu-button--menu--messaging" type="button">Messaging</button> #}
+                <div class="f-1" v-if="activeTab.id == 'messaging' && showTab">
                   {% include "./partials/groups/tabs/group-messages.html" %}
-                {% endif %}
+                </div>
+                <div class="f-1" v-if="activeTab.id == 'events'">
+                  {% include "./partials/groups/tabs/group-events.html" %}
+                </div>
+                <div class="f-1" v-if="activeTab.id == 'resources'">
+                  {% include "./partials/groups/tabs/group-resources.html" %}
+                </div>
+                <div class="f-1" v-if="activeTab.id == 'members'">
+                  {% include "./partials/groups/tabs/group-members.html" %}
+                </div>
+                <div class="f-1" v-if="activeTab.id == 'settings'">
+                  {% include "./partials/groups/tabs/group-settings.html" %}
+                </div>
               </div>
             </div>
           </div>
@@ -253,3 +269,13 @@
   {% endif %}
 </main>
 {% endblock body %}
+
+{% block footer_includes %}
+  {{ require_js("https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js", { position: 'footer' }) }}
+  {{ require_js("https://cdn.jsdelivr.net/npm/vue@2", { position: 'footer'}) }}
+  {% if dynamic_page_crm_object_type_fqn %}
+    {{ require_js(get_asset_url("../js/lib/my/groups.js"), { position: 'footer'}) }}
+  {% elif dynamic_page_crm_object %}
+    {{ require_js(get_asset_url("../js/lib/my/group.js"), { position: 'footer'}) }}
+  {% endif %}
+{% endblock footer_includes%}

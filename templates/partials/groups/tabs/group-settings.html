@@ -1,12 +1,285 @@
-<div data-testid="grid" class="grid grid-cols-1 md:grid-cols-2 gap-2 w-100%">
-  <div>
-    <div class="form-field mb-2">
-      <label>Group name</label>
-      <input class="form-field__input--full" type="text" name="name" value="{{ group.name }}" />
-    </div>
-    <div class="form-field mb-2">
-      <label>Group type</label>
-      <input class="form-field__input--full" type="text" name="name" value="{{ group.name }}" />
+<div class="f-1">
+  <div class="object-settings object-settings--flex settings">
+    <section class="object-settings__col">
+      <header class="object-settings__header">
+        <div>
+          <h1 class="group-settings__header-title">Set up group</h1>
+          <p class="group-settings__header-subtitle">Establish core settings, such as enabling messaging and leader access.</p>
+        </div>
+        <a class="sm-btn destroy-btn btn" data-remote="true" v-on:click="archive()">Archive or Delete...</a>
+      </header>
+    </section>
+    <section :id="section.id" class="object-settings__col mb-4" v-for="section in sections">
+      <div class="object-settings__row">
+        <div class="object-settings__col">
+          <header class="object-settings__header" v-if="section.title">
+            <div>
+              <h1 class="group-settings__header-title">[[ section.title ]]</h1>
+              <p class="group-settings__header-subtitle" v-if="section.subtitle">[[ section.subtitle ]]</p>
+            </div>
+            <a class="sm-btn btn quiet-btn" data-remote="true" v-on:click="save()" v-if="section.showSave">Update</a>
+          </header>
+        </div>
+      </div>
+      <div class="object-settings__row" v-for="row in section.rows">
+        <div class="object-settings__col" v-for="column in row.columns">
+          <div v-for="pane in column.panes">
+            <h3 class="object-settings__title mb-2">[[ pane.title ]]</h3>
+            <div class="pane mb-0">
+              <div :id="pane.id">
+                <div
+                  :class="{ 
+                    'p-4': field.type !== 'hidden', 
+                    'p-0': field.type === 'hidden', 
+                    'line': index !== 0 && field.type !== 'hidden' 
+                  }"
+                  :key="name"
+                  v-for="(field, index) in pane.fields"
+                  v-if="field.visibility === undefined || evaluateCondition(field.visibility)"
+                >
+                  <!-- Common label for input, select, textarea -->
+                  <label
+                    :for="field.name"
+                    v-if="['input', 'select', 'textarea'].includes(field.type) && field.label"
+                    :class="field.labelClass"
+                  >[[ field.label ]]</label>
+
+                  <!-- Input types -->
+                  <input
+                    :id="field.name"
+                    :name="field.name"
+                    type="hidden"
+                    v-if="field.type === 'hidden'"
+                    v-model="form.group[field.name]"
+                    :disabled="field.disabled"
+                  >
+                  <input
+                    :id="field.name"
+                    :name="field.name"
+                    :placeholder="field.placeholder"
+                    type="date"
+                    :value="formatDateIfNeeded(field.name, form.group[field.name])" @input="form.group[field.name] = $event.target.value" v-if="field.type === 'input' && field.format === 'date'"
+                    :disabled="field.disabled"
+                  >
+                  <input
+                    :id="field.name"
+                    :name="field.name"
+                    :placeholder="field.placeholder"
+                    :type="field.format"
+                    v-model="form.group[field.name]"
+                    v-if="field.type === 'input' && field.format !== 'date'"
+                    :disabled="field.disabled"
+                  >
+                  <textarea
+                    :id="field.name"
+                    :name="field.name"
+                    :placeholder="field.placeholder"
+                    v-model="form.group[field.name]"
+                    v-if="field.type === 'textarea'"
+                    :disabled="field.disabled"
+                  ></textarea>
+                  <select
+                    :id="field.name"
+                    :name="field.name"
+                    v-model="form.group[field.name]"
+                    @change="setSelect(field.name, $event.target.value)"
+                    v-if="field.type === 'select'"
+                    :disabled="field.disabled"
+                  >
+                    <option disabled value="">-- Please Select --</option>
+                    <option
+                      v-for="option in field.options"
+                      :key="option.label"
+                      :value="option.value"
+                    >[[ option.label ]]</option>
+                  </select>
+
+                  <!-- Checkbox -->
+                  <div v-if="field.type === 'checkbox'">
+                    <input
+                      :id="field.name"
+                      class="checkbox"
+                      type="checkbox"
+                      value="1"
+                      :name="field.name"
+                      v-model="form.group[field.name]"
+                      :disabled="field.disabled"
+                    >
+                    <label
+                      :for="field.name"
+                      class="checkbox-label"
+                    >[[ field.label ]]</label>
+                  </div>
+
+                  <!-- Radio -->
+                  <div v-if="field.type === 'radio'">
+                    <label class="mb-0" v-if="!field.cols">[[ field.label ]]</label>
+                    <div
+                      class="d-f"
+                      :class="{ 'p-2 d-f jc-sb ai-c btw-0': field.cols == 2 }">
+                      <label class="mb-0 f-1" v-if="field.cols == 2">[[ field.label ]]</label>
+                      <div 
+                        v-for="(option, index) in field.options"
+                        :key="index"
+                        class="mr-2"
+                      >
+                        <input
+                          class="radio"
+                          type="radio"
+                          :id="option.id"
+                          :value="option.value"
+                          :name="field.name"
+                          v-model="form.group[field.name]"
+                          :disabled="field.disabled"
+                        >
+                        <label
+                          :for="option.id"
+                          class="radio-label"
+                        >[[ option.label ]]</label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Radio Detail -->
+                  <div v-if="field.type === 'radio-detail'">
+                    <div class="d-f fd-c gap-1 ">
+                      <div v-for="(option, index) in field.options">
+                        <input
+                          class="radio"
+                          type="radio"
+                          :id="option.id"
+                          :value="option.value"
+                          :name="field.name"
+                          v-model="form.group[field.name]"
+                          :disabled="field.disabled"
+                        >
+                        <label
+                          :for="option.id"
+                          class="radio-label push-radio-2p d-f fd-c gap-4p"
+                        >
+                          <div class="d-f fd-r gap-8">
+                            <strong class="c-dark fw-600">[[option.label]]</strong>
+                            <div
+                              class="alert sm-alert mb-0"
+                              :class="option.class"
+                              v-if="option.badge"
+                            >
+                              <span>[[option.badge]]</span>
+                            </div>
+                          </div>
+                          <p class="m-0 fs-5" v-if="option.hint">[[option.hint]]</p>
+                        </label>
+                      </div>
+                    </div>  
+                  </div>
+
+                  <!-- Action -->
+                  <div v-if="field.type === 'action'">
+                    <div class="p-2 d-f fd-c">
+                      <div class="d-f jc-sb ai-c gap-1">
+                        <h4 class="fw-500">[[field.title]]</h4>
+                        <button type="button" class="sm-btn quiet-btn btn" @click="callDynamicMethod(field.method)">[[field.label]]</button>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- Upload -->
+                  <div v-if="field.type === 'upload'">
+                    <div class="d-f ai-c mb-1">
+                      <label class="mb-0 c-d">[[field.label]]</label>
+                    </div>
+                    <div id="header_image_form_group_2198690">
+                      <div>
+                        <div class="w-100% table-loading-overlay" style="position: relative;">
+                          <div class="group-image-dropzone group-image-dropzone-empty" aria-disabled="false" style="position: relative; cursor: pointer;">
+                            <div class="d-f ai-c w-100% group-image-dropzone--dragging">
+                              <div class="ta-c f-1 fs-16p">
+                                <i class="fs-32p">
+                                  <svg role="img" class="symbol" id="to-cloud-arrow" viewBox="0 0 16 16">
+                                    <path d="M9.333 8.66701V11.333H6.667V8.66701H4.667L8 5.33301L11.333 8.66701H9.333ZM12.9 6.69301C12.6992 5.67742 12.1877 4.74932 11.4364 4.03707C10.6851 3.32482 9.73101 2.86362 8.70615 2.71724C7.68128 2.57086 6.63626 2.74654 5.71559 3.21999C4.79493 3.69343 4.04412 4.44125 3.567 5.36001C2.55571 5.47786 1.62742 5.97691 0.971317 6.75544C0.315213 7.53398 -0.0193224 8.53341 0.0358892 9.55004C0.0911007 10.5667 0.531904 11.524 1.26846 12.2269C2.00502 12.9298 2.98189 13.3254 4 13.333H12.667C13.5288 13.3337 14.3572 12.9996 14.9775 12.4012C15.5977 11.8028 15.9613 10.9869 15.9915 10.1256C16.0217 9.26428 15.7162 8.4249 15.1395 7.78451C14.5627 7.14411 13.7598 6.75277 12.9 6.69301Z"></path>
+                                  </svg>
+                                </i>
+                                <br>Drop a new image here
+                              </div>
+                            </div>
+                            <input accept="image/jpg,image/jpeg,image/gif,image/png,image/bmp,image/jfif,image/webp" type="file" autocomplete="off" style="position: absolute; inset: 0px; opacity: 1e-05; pointer-events: none;">
+                          </div>
+                        </div>
+                        <div class="mt-2">
+                          <div class="d-f">
+                            <button class="sm-btn quiet-btn btn f-1" type="button">
+                              <span>Upload image</span>
+                            </button>
+                            <button class="sm-btn quiet-btn btn f-1 ml-1" type="button">Free photos</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Alert -->
+                  <div class="alert alert--small mt-4 mb-0"
+                :class="field.noticeType" v-if="field.notice">[[ field.notice ]]</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+<div :id="modal.id" class="modal--open" v-for="modal in modals" v-if="modal.visible">
+  <div class="modal-layer">
+    <div class="modal">
+      <div class="modal__header">
+        <h1 class="modal-title">[[ modal.status === 'new' ? modal.newTitle : modal.editTitle ]]</h1>
+        <h2 class="modal-sub-title">[[ modal.subtitle ]] [[ group.name ]]</h2>
+      </div>
+      <div 
+        class="modal__body"
+        :class="{'has-modal-footer': modal.hasFooter}"
+      >
+        <div class="grid grid-cols-1 gap-2">
+          <div class="d-flex gap-2 ai-c" v-for="row in modal.form.rows" v-if="evaluateCondition(row.visibility)">
+            <div :class="{'f-1': column.type === 'field'}" v-for="column in row.columns">
+              <label
+                class="mb-0 pb-0"
+                v-if="column.type === 'label'"
+              >[[ column.text ]]</label>
+              <div class="f-1" v-if="column.type === 'field'">
+                <select
+                  :id="column.name"
+                  :name="column.name"
+                  v-model="form.group[column.name]"
+                  @change="setSelect(column.name, $event.target.value)"
+                  v-if="lookupModalField(column.name, modal.id).type === 'select'"
+                  :disabled="lookupModalField(column.name, modal.id).disabled"
+                >
+                  <option disabled value="">-- Please Select --</option>
+                  <option 
+                    v-for="option in lookupModalField(column.name, modal.id).options"
+                    :key="option.label"
+                    :value="option.value"
+                  >[[ option.label ]]</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal__footer d-f" v-if="modal.hasFooter">
+        <button
+          type="button"
+          :id="button.id"
+          :class="button.class"
+          @click="callDynamicMethod(button.method)"
+          v-for="button in modal.footerActions"
+          :key="button.id"
+        >
+          <span>[[button.label]]</span>
+        </button>
+      </div>
     </div>
   </div>
 </div>
