@@ -1,4 +1,4 @@
-
+/* eslint-disable import/no-unresolved */
 // Require axios library to make API requests
 const axios = require('axios');
 
@@ -9,6 +9,7 @@ exports.main = ({ body }, sendResponse) => {
     sendResponse({ body: { status: "error", error: "No body provided.", step: "validateBody" }, statusCode: 500 });
   }
 
+  // eslint-disable-next-line no-unused-vars
   const { objectType, objectId, updateAssociation, associations, properties } = body;
   
   const config = {

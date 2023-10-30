@@ -11,12 +11,18 @@ new Vue({
   delimiters: ['[[', ']]'],
   el: '#main_page_content',
   data: {
+    loading: true,
     currentUser: dataset.userData,
     group: dataset.groupData,
     events: {
       upcoming: dataset.upcomingEventsData,
       past: dataset.pastEventsData,
     },
+    messages: dataset.messages.objects,
+    resources: dataset.resources.objects,
+    newEvent: {},
+    newReply: "",
+    showComposer: false,
     categoryData: dataset.categoryData,
     uneditableFields: [
       "id",
@@ -43,13 +49,13 @@ new Vue({
       { 
         id: 'messaging',
         label: "Messaging",
-        active: false,
+        active: true,
         requiresAdmin: false
       },
       {
         id: 'events',
         label: "Events",
-        active: true,
+        active: false,
         requiresAdmin: false
       },
       {
@@ -600,7 +606,8 @@ new Vue({
                   type: "field",
                   name: "meeting_schedule_frequency"
                 }
-              ]
+              ],
+              type: 'row'
             },
             {
               visibility: "form.group.meeting_schedule_frequency !== 'YEARLY' && form.group.meeting_schedule_frequency !== 'DAY_OF_WEEK' && form.group.meeting_schedule_frequency !== 'SPECIFIC_DAY'",
@@ -613,7 +620,8 @@ new Vue({
                   type: "field",
                   name: "meeting_schedule_frequency_weekday"
                 }
-              ]
+              ],
+              type: 'row'
             },
             {
               visibility: "form.group.meeting_schedule_frequency === 'DAY_OF_WEEK'",
@@ -630,7 +638,8 @@ new Vue({
                   type: "field",
                   name: "meeting_schedule_frequency_weekday"
                 }
-              ]
+              ],
+              type: 'row'
             },
             {
               visibility: "form.group.meeting_schedule_frequency === 'SPECIFIC_DAY'",
@@ -647,7 +656,8 @@ new Vue({
                   type: "label",
                   text: "of the month"
                 }
-              ]
+              ],
+              type: 'row'
             },
             {
               visibility: "form.group.meeting_schedule_frequency === 'YEARLY'",
@@ -685,7 +695,8 @@ new Vue({
                   type: "field",
                   name: "meeting_end_time"
                 }
-              ]
+              ],
+              type: 'row'
             }
           ],
           fields: [
@@ -746,7 +757,24 @@ new Vue({
         visible: false,
         title: "New Event",
         hasFooter: true,
-        footerActions: [],
+        footerActions: [
+          {
+            id: "create_event_modal_cancel",
+            label: "Cancel",
+            type: "button",
+            class: "btn text-btn mr-2",
+            method: "hideModal('create_event_modal')",
+            disabled: false
+          },
+          {
+            id: "create_event_modal_save",
+            label: "Save",
+            type: "button",
+            class: "btn create-btn",
+            method: "save('')",
+            disabled: false
+          }
+        ],
         form: {
           rows:[
             {
@@ -757,13 +785,173 @@ new Vue({
                   text: "Event name",
                 },
                 {
-                  type: "input",
+                  type: "field",
                   name: "event_name",
-                  placeholder: "Enter a name for your event",
-                  format: "text",
-                  value: ""
+                }
+              ],
+              type: 'column'
+            },
+            {
+              visibility: true,
+              columns: [
+                {
+                  type: "label",
+                  text: "Starts at",
+                },
+                {
+                  type: "field",
+                  name: "starts_at",
+                },
+                {
+                  type: "label",
+                  text: "Start Time",
+                },
+                {
+                  type: "field",
+                  name: "starts_at_time",
+                }
+              ],
+              type: 'row'
+            },
+            {
+              visibility: true,
+              columns: [
+                {
+                  type: "label",
+                  text: "Ends at",
+                },
+                {
+                  type: "field",
+                  name: "ends_at",
+                },
+                {
+                  type: "label",
+                  text: "End Time",
+                },
+                {
+                  type: "field",
+                  name: "ends_at_time",
+                }
+              ],
+              type: 'row'
+            },
+            {
+              visibility: true,
+              columns: [
+                {
+                  type: "label",
+                  text: "Repeat",
+                },
+                {
+                  type: "field",
+                  name: "repeating",
                 }
               ]
+            },
+            {
+              visibility: true,
+              columns: [
+                {
+                  type: "label",
+                  text: "Description",
+                },
+                {
+                  type: "field",
+                  name: "description",
+                }
+              ],
+              type: 'column'
+            },
+            {
+              visibility: true,
+              columns: [
+                {
+                  type: "label",
+                  text: "Location",
+                },
+                {
+                  type: "field",
+                  name: "location",
+                }
+              ],
+              type: 'column'
+            },
+            {
+              visibility: true,
+              columns: [
+                {
+                  type: "label",
+                  text: "Send reminder emails",
+                },
+                {
+                  type: "field",
+                  name: "send_reminder_emails",
+                }
+              ],
+              type: 'row'
+            }
+          ],
+          fields: [
+            {
+              label: "Event name",
+              name: "event_name",
+              type: "input",
+              format: "text",
+              placeholder: "Enter a name for your event",
+              disabled: false
+            },
+            {
+              label: "Start date",
+              name: "starts_at",
+              type: "input",
+              format: "date",
+              placeholder: "YYYY-MM-DD",
+            },
+            {
+              label: "Start time",
+              name: "starts_at_time",
+              type: "input",
+              format: "text",
+              placeholder: "HH:MM",
+            },
+            {
+              label: "End date",
+              name: "ends_at",
+              type: "input",
+              format: "date",
+              placeholder: "YYYY-MM-DD",
+            },
+            {
+              label: "End time",
+              name: "ends_at_time",
+              type: "input",
+              format: "text",
+              placeholder: "HH:MM",
+            },
+            {
+              label: "Repeat",
+              name: "repeating",
+              type: "checkbox",
+              disabled: false
+            },
+            {
+              label: "Description",
+              name: "description",
+              type: "textarea",
+              disabled: false
+            },
+            {
+              label: "Location",
+              name: "location",
+              type: "select",
+              options: [],
+              disabled: false
+            },
+            {
+              label:"Send reminder emails",
+              name: "send_reminder_emails",
+              type: "checkbox",
+              disabled: false
             }
           ]
         }
@@ -771,28 +959,17 @@ new Vue({
     ],
   },
   created() {
-    // console.log("Setting Up Data");
     this.group = dataset.groupData;
-    // console.log("Group", this.group);
     this.currentUser = dataset.userData;
-    // console.log("Current User", this.currentUser);
     this.form.group = dataset.groupData;
-    // console.log("Form", this.form.group);
     const categoryId = this.categoryData.id;
-    // console.log("Category", this.categoryData);
     this.sections[0].rows[0].columns[0].panes[0].fields[1].options = dataset.groupCategories.map(category => ({
       value: category.id,
       label: category.name,
       selected: category.id === categoryId
     }));
-    // console.log("Sections", this.sections);
-
-    // if (typeof this.group.meeting_schedule_frequency === 'undefined') {
-    //   this.form.group.meeting_schedule_frequency = 'WEEKLY';
-    // }
 
     this.form.group.group_category = categoryId;
-    // console.log("Form", this.form.group.group_category);
     $.ajax({
       type: 'POST',
       url: `${window.location.origin}/_hcms/api/getAdministrators`,
@@ -829,6 +1006,10 @@ new Vue({
     formattedAutoCloseDate() {
       return moment(Number(this.form.group.auto_close_date)).format('YYYY-MM-DD');
     },
+    filteredMessages() {
+      // We need to filter out the replies item.reply = 1
+      return this.messages.filter(message => message.reply === 0);
+    },
   },
   methods: {
     setActiveTab(selectedTab) {
@@ -839,7 +1020,11 @@ new Vue({
       }));
       this.tabs = updatedTabs;
     },
-    setSelect(fieldName, selectedValue) {
+    setSelect(fieldName, selectedValue, model) {
+      if (model) {
+        this.$set(this.form[model], fieldName, selectedValue);
+        return;
+      }
       // console.log(`set select ${fieldName} to ${selectedValue}`);
       this.$set(this.form.group, fieldName, selectedValue);
       // console.log(this.form.group);
@@ -869,11 +1054,37 @@ new Vue({
         return modal;
       });
     },
-    lookupModalField(fieldName, modalId) {
-      // Get the modal
-      const modal = this.modals.find(m => m.id === modalId);
-      // Get the field from modal.form.fields
-      return modal.form.fields.find(field => field.name === fieldName);
+    lookupField(fieldName, modalId) {
+      if (modalId) {
+        // Get the modal
+        const modal = this.modals.find(m => m.id === modalId);
+        // Get the field from modal.form.fields
+        return modal.form.fields.find(field => field.name === fieldName);
+      }
+
+      // Okay now we have to parse through sections to find this field which we have accomodate for columns,panes and rows
+      let field;
+
+      try {
+        this.sections.forEach(section => {
+          section.rows.forEach(row => {
+            row.columns.forEach(column => {
+              column.panes.forEach(pane => {
+                field = pane.fields.find(f => f.name === fieldName);
+                if (field) {
+                  throw new Error('Field found');
+                }
+              });
+            });
+          });
+        });
+      } catch (e) {
+        if (e.message !== 'Field found') {
+          throw e;
+        }
+      }
+
+      return field;
     },
     evaluateCondition(condition) {
       // console.log(`evaluating condition ${condition}`)
@@ -902,7 +1113,10 @@ new Vue({
         return moment(Number(fieldValue)).format('YYYY-MM-DD');
       }
       return fieldValue;
-    },      
+    },
+    formatDate(value, format) {
+      return moment(value).format(format);
+    },
     openEnrollment() {
       console.log("opening enrollment")
     },
@@ -1005,6 +1219,60 @@ new Vue({
         data: JSON.stringify(groupData),
         success: (response) => {
           console.log(response);
+        },
+        error: (error) => {
+          console.log(error);
+        }
+      });
+    },
+    createEvent() {
+      console.log("creating event")
+    },
+    cancelEvent(eventId) {
+      console.log(`cancelling event ${eventId}`)
+    },
+    getInitials(name) {
+      const names = name.split(' ');
+      let initials = '';
+      names.forEach(n => {
+        initials += n.charAt(0).toUpperCase();
+      });
+      return initials;
+    },
+    getMessageReplies(messageId) {
+      console.log(`getting replies for message ${messageId}`);
+      const replies = this.messages.filter(message => message.reply === 1 && message.original_id === messageId);
+      return replies.sort((a, b) => {
+        const aDate = new Date(a.date_added);
+        const bDate = new Date(b.date_added);
+        return bDate - aDate;
+      });
+    },
+    submitMessage(reply,originalId) {
+      const message = {
+        name: this.group.name,
+        originalId,
+        message: this.newReply,
+        reply,
+        // eslint-disable-next-line no-underscore-dangle
+        createdById: Number(this.currentUser._metadata.id),
+        createdByName: `${this.currentUser.firstname} ${this.currentUser.lastname}`,
+        createByEmail: this.currentUser.email,
+        objectType: 'groups',
+        objectId: this.group.id
+      };
+      
+      $.ajax({
+        type: 'POST',
+        url: `${window.location.origin}/_hcms/api/addMessage`,
+        contentType: 'application/json',
+        data: JSON.stringify(message),
+        success: (response) => {
+          console.log(response);
+          if (response.status === 'success') {
+            this.newReply = '';
+            this.messages.unshift(response.response.values);
+          }
         },
         error: (error) => {
           console.log(error);

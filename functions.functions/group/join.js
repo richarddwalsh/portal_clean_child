@@ -1,4 +1,4 @@
-
+/* eslint-disable import/no-unresolved */
 // Require axios library to make API requests
 const axios = require('axios');
 

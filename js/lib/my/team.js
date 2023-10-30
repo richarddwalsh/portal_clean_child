@@ -7,6 +7,27 @@ Vue.config.silent = false;
 const targetData = document.getElementById('json-data');
 const dataset = JSON.parse(targetData.textContent);
 
+const emptyEvent = {
+  event_name: '',
+  starts_at: '',
+  starts_at_time: '',
+  ends_at: '',
+  ends_at_time: '',
+  repeating: false,
+  description: '',
+  location: '',
+  send_reminder_emails: '',
+}
+
+const emptyResource = {
+  objectId: '',
+  objectType: '',
+  name: '',
+  description: '',
+  type: '',
+  binary: ''
+}
+
 new Vue({
   delimiters: ['[[', ']]'],
   el: '#main_page_content',
@@ -14,6 +35,13 @@ new Vue({
     currentUser: dataset.userData,
     team: dataset.teamData,
     administrators: [],
+    messages: dataset.messages.objects,
+    resources: dataset.resources.objects,
+    newEvent: emptyEvent,
+    newReply: "",
+    showComposer: false,
+    newResource: emptyResource,
+    fileInfoReady: false,
     form: {
       team: {
         team_name: '',
@@ -35,7 +63,8 @@ new Vue({
         id: 'messaging',
         label: "Messaging",
         active: false,
-        requiresAdmin: false
+        requiresAdmin: false,
+        visibility: "team.communication_enabled === true"
       },
       {
         id: 'events',
@@ -46,7 +75,7 @@ new Vue({
       {
         id: 'resources',
         label: "Resources",
-        active: false,
+        active: true,
         requiresAdmin: false
       },
       {
@@ -58,7 +87,7 @@ new Vue({
       {
         id: 'settings',
         label: "Settings",
-        active: true,
+        active: false,
         requiresAdmin: true
       }
     ],
@@ -255,6 +284,13 @@ new Vue({
       enrollmentStatusButton.label = "Close enrollment";
       enrollmentStatusButton.method = "closeEnrollment('')";
     }
+
+    // Check if tab is visible and if not, update the first tab available as active
+    const activeTab = this.tabs.find(tab => tab.active);
+    if (!this.showTab(activeTab)) {
+      const visibleTab = this.tabs.find(tab => this.showTab(tab));
+      this.setActiveTab(visibleTab);
+    }
   },
   computed: {
     isAdmin() {
@@ -265,6 +301,10 @@ new Vue({
       // console.log("Getting active tab")
       return this.tabs.find(tab => tab.active);
     },
+    filteredMessages() {
+      // We need to filter out the replies item.reply = 1
+      return this.messages.filter(message => message.reply === 0);
+    }
   },
   methods: {
     setActiveTab(selectedTab) {
@@ -274,6 +314,12 @@ new Vue({
         active: tab === selectedTab,
       }));
       this.tabs = updatedTabs;
+    },
+    enableCommunication() {
+      // console.log("enabling communication")
+      this.form.team.communication_enabled = true;
+      this.team.communication_enabled = true;
+      this.save();
     },
     setSelect(fieldName, selectedValue) {
       // console.log(`set select ${fieldName} to ${selectedValue}`);
@@ -285,7 +331,14 @@ new Vue({
       if (tab.requiresAdmin && !this.isAdmin) {
         return false
       }
-      return true;
+
+      if (tab.visibility && !this.isAdmin) {
+        // eslint-disable-next-line no-new-func
+        const result = new Function('form', `with(form) { return ${tab.visibility}; }`)(this.form);
+        return result
+      }
+
+      return true
     },
     showModal(modalId) {
       // console.log(`showing modal ${modalId}`);
@@ -364,6 +417,10 @@ new Vue({
         return moment(Number(fieldValue)).format('YYYY-MM-DD');
       }
       return fieldValue;
+    },
+    formatDate(value, format) {
+      console.log(value, format);
+      return moment(value).format(format);
     },      
     openEnrollment() {
       console.log("opening enrollment")
@@ -433,6 +490,130 @@ new Vue({
         data: JSON.stringify(teamData),
         success: (response) => {
           console.log(response);
+        },
+        error: (error) => {
+          console.log(error);
+        }
+      });
+    },
+    createEvent() {
+      console.log("creating event")
+    },
+    cancelEvent(eventId) {
+      console.log(`cancelling event ${eventId}`)
+    },
+    getInitials(name) {
+      const names = name.split(' ');
+      let initials = '';
+      names.forEach(n => {
+        initials += n.charAt(0).toUpperCase();
+      });
+      return initials;
+    },
+    getMessageReplies(messageId) {
+      console.log(`getting replies for message ${messageId}`);
+      const replies = this.messages.filter(message => message.reply === 1 && message.original_id === messageId);
+      return replies.sort((a, b) => {
+        const aDate = new Date(a.date_added);
+        const bDate = new Date(b.date_added);
+        return bDate - aDate;
+      });
+    },
+    submitMessage(reply,originalId) {
+      const message = {
+        name: this.team.team_name,
+        message: this.newReply,
+        reply,
+        // eslint-disable-next-line no-underscore-dangle
+        createdById: Number(this.currentUser._metadata.id),
+        createdByName: `${this.currentUser.firstname} ${this.currentUser.lastname}`,
+        createByEmail: this.currentUser.email,
+        objectType: 'teams',
+        objectId: this.team.id
+      };
+
+      if (originalId) {
+        message.original_id = originalId;
+      }
+      
+      $.ajax({
+        type: 'POST',
+        url: `${window.location.origin}/_hcms/api/addMessage`,
+        contentType: 'application/json',
+        data: JSON.stringify(message),
+        success: (response) => {
+          console.log(response);
+          if (response.status === 'success') {
+            this.newReply = '';
+            this.messages.unshift(response.response.values);
+          }
+        },
+        error: (error) => {
+          console.log(error);
+        }
+      });
+    },
+    convertFileToBinary(event) {
+      return new Promise((resolve, reject) => {
+        // Get the selected file from the input element
+        const file = event.target.files[0];
+
+        console.log(file);
+        
+        // Create a new FileReader instance
+        const reader = new FileReader();
+        
+        // Setup the FileReader
+        reader.onload = (e) => {
+          // Get the binary data once the file is loaded
+          const binaryString = e.target.result;
+    
+          // Create an object to hold the file information
+          const fileInfo = {
+            binary: binaryString,
+            type: file.type,
+            name: file.name
+          };
+
+          this.newResource.name = file.name;
+          this.newResource.type = file.type;
+          this.newResource.binary = binaryString;
+          
+          // Resolve the promise with the fileInfo
+          resolve(fileInfo);
+        };
+        
+        reader.onerror = () => {
+          reject(new Error("Failed to read file"));
+        };
+        
+        // Read the file as binary string
+        reader.readAsBinaryString(file);
+
+        this.fileInfoReady = true;
+      });
+    },    
+    addResource() {
+      console.log("creating resource");
+      const resourceData = {...this.newResource};
+      resourceData.objectId = this.team.id;
+      resourceData.objectType = 'teams';
+
+      // Send the resource to API
+      const endpoint = `${window.location.origin}/_hcms/api/addResource`;
+      $.ajax({
+        type: 'POST',
+        url: endpoint,
+        contentType: 'application/json',
+        data: JSON.stringify(resourceData),
+        success: (response) => {
+          console.log(response);
+          if (response.status === 'success') {
+            console.log(response);
+            // this.resources.unshift(response.response.values);
+            this.newResource = emptyResource;
+            this.fileInfoReady = false;
+          }
         },
         error: (error) => {
           console.log(error);

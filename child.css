@@ -1,8 +1,8 @@
 /** TODO: REMOVE BEFORE DEPLOY **/
 @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 
-v-cloak {
-    display: none;
+[v-cloak] {
+    display: none !important;
 }
 
 /***********************************************/
@@ -1657,9 +1657,9 @@ button.rbc-input::-moz-focus-inner {
     --color-tint8: var(--color-static-gray97);
     --color-tint9: var(--color-static-gray98);
     --color-tint10: var(--color-static-gray100);
-    --color-brand: var(--color-turquoise);
+    --color-brand: var(--color-tint0);
     --color-brand-gradient-start: var(--color-topaz);
-    --color-brand-gradient-end: var(--color-emerald)
+    --color-brand-gradient-end: var(--color-tint0)
 }
 
 html {
@@ -1702,15 +1702,15 @@ html {
     --color-tint8: var(--color-static-gray15);
     --color-tint9: var(--color-static-gray12);
     --color-tint10: var(--color-static-gray7);
-    --color-brand-dark: var(--color-turquoise);
-    --color-brand: var(--color-brand-dark);
+    --color-brand-dark: var(--color-tint0);
+    --color-brand: var(--color-tint0);
     --color-brand-gradient-start: var(--color-topaz);
-    --color-brand-gradient-end: var(--color-emerald);
+    --color-brand-gradient-end: var(--color-tint0);
     background-color: var(--color-tint10);
     color: var(--color-tint0);
     --badge--background-color: var(--color-tint8);
     --badge--color: var(--color-tint2);
-    --button--outline-variant--background-image: linear-gradient(var(--color-tint9), var(--color-tint9)), linear-gradient(135deg, var(--color-turquoise) 0%, var(--color-emerald) 100%);
+    --button--outline-variant--background-image: linear-gradient(var(--color-tint9), var(--color-tint9)), linear-gradient(135deg, var(--color-turquoise) 0%, var(--color-tint0) 100%);
     --select--background-image: url("data:image/svg+xml;utf-8,<svg version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' x='0px' y='0px' viewBox='0 0 32 32' enable-background='new 0 0 30 30' xml:space='preserve'><path fill='%23CFCFCF' d='M31.858 8.928l-3.54-4.034-12.442 14.142-12.194-13.9-3.54 4.036 15.734 17.934 15.982-18.178z'/></svg>");
     --error-badge--background-color: hsl(1, 84%, 45%);
     --success-badge--background-color: hsl(123, 38%, 37%);
@@ -1722,7 +1722,7 @@ html {
     --info-alert--secondary: var(--color-topaz);
     --info-alert--text: var(--color-tint10);
     --success-alert--primary: hsl(103, 28%, 70%);
-    --success-alert--secondary: var(--color-emerald);
+    --success-alert--secondary: var(--color-tint0);
     --success-alert--text: var(--color-tint1);
     --error-alert--primary: hsl(11, 44%, 70%);
     --error-alert--secondary: var(--color-ruby);
@@ -1767,15 +1767,15 @@ html {
     --color-tint8: var(--color-static-gray97);
     --color-tint9: var(--color-static-gray98);
     --color-tint10: var(--color-static-gray100);
-    --color-brand-light: var(--color-turquoise);
-    --color-brand: var(--color-brand-light);
-    --color-brand-gradient-start: var(--color-topaz);
-    --color-brand-gradient-end: var(--color-emerald);
+    --color-brand-light: var(--color-tint0);
+    --color-brand: var(--color-tint0);
+    --color-brand-gradient-start: var(--color-tint2);
+    --color-brand-gradient-end: var(--color-tint0);
     background-color: var(--color-tint10);
     color: var(--color-tint1);
     --badge--background-color: var(--color-tint7);
     --badge--color: var(--color-tint2);
-    --button--outline-variant--background-image: linear-gradient(white, white), linear-gradient(135deg, var(--color-turquoise) 0%, var(--color-emerald) 100%);
+    --button--outline-variant--background-image: linear-gradient(white, white), linear-gradient(135deg, var(--color-turquoise) 0%, var(--color-tint0) 100%);
     --select--background-image: url("data:image/svg+xml;utf-8,<svg version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' x='0px' y='0px' viewBox='0 0 32 32' enable-background='new 0 0 30 30' xml:space='preserve'><path fill='%23737373' d='M31.858 8.928l-3.54-4.034-12.442 14.142-12.194-13.9-3.54 4.036 15.734 17.934 15.982-18.178z'/></svg>");
     --action-drawer-footer--highlighted-background-color: #e2f1fd;
     --info-muted--background-color: #ecf6fe;
@@ -1789,7 +1789,7 @@ html {
     --info-alert--secondary: var(--color-topaz);
     --info-alert--text: var(--color-tint1);
     --success-alert--primary: hsl(103, 28%, 95%);
-    --success-alert--secondary: var(--color-emerald);
+    --success-alert--secondary: var(--color-tint0);
     --success-alert--text: var(--color-tint1);
     --error-alert--primary: hsl(11, 44%, 95%);
     --error-alert--secondary: var(--color-ruby);
@@ -1960,7 +1960,7 @@ img {
 }
 
 .action-drawer__progress-step {
-    background: var(--color-emerald);
+    background: var(--color-tint0);
     border-radius: 4px;
     height: 4px;
     margin-left: 4px;
@@ -1968,7 +1968,7 @@ img {
 }
 
 .action-drawer__progress-step.is-complete {
-    background: var(--color-emerald) !important
+    background: var(--color-tint0) !important
 }
 
 .action-drawer__progress-step.is-current {
@@ -2261,7 +2261,7 @@ button[disabled],button.disabled-btn,input[type=submit][disabled],input.disabled
 .btn {
     align-items: center;
     background: linear-gradient(135deg, var(--color-brand-gradient-start) 0%, var(--color-brand-gradient-end) 100%);
-    border-radius: 30px;
+    border-radius: 0px;
     border: 1px solid transparent;
     color: var(--button--filled-variant--color);
     cursor: pointer;
@@ -2858,8 +2858,8 @@ button[disabled],button.disabled-btn,input[type=submit][disabled],input.disabled
 }
 
 .checkbox:checked+.checkbox-label::before {
-    background-color: var(--color-emerald);
-    box-shadow: inset 0 0 0 1px var(--color-emerald)
+    background-color: var(--color-tint0);
+    box-shadow: inset 0 0 0 1px var(--color-tint0)
 }
 
 .checkbox:focus-visible+.checkbox-label::before {
@@ -3529,7 +3529,7 @@ input.number-spinner__input::-webkit-outer-spin-button,input.number-spinner__inp
 }
 
 .radio:checked+.radio-label:before {
-    background-color: var(--color-emerald);
+    background-color: var(--color-tint0);
     box-shadow: none
 }
 
@@ -4240,7 +4240,7 @@ pre {
 .ism-text-span {
     margin-left: -1px;
     text-indent: 32px;
-    background-color: var(--color-emerald);
+    background-color: var(--color-tint0);
     border-radius: 50px;
     height: 26px;
     color: #fff;
@@ -4262,7 +4262,7 @@ pre {
     stroke-width: 6;
     stroke: #fff;
     stroke-miterlimit: 10;
-    box-shadow: inset 0 0 0 var(--color-emerald);
+    box-shadow: inset 0 0 0 var(--color-tint0);
     animation: fill 0.4s ease-in-out 0.4s forwards
 }
 
@@ -4292,7 +4292,7 @@ pre {
     stroke-dashoffset: 166;
     stroke-width: 3;
     stroke-miterlimit: 10;
-    stroke: var(--color-emerald);
+    stroke: var(--color-tint0);
     fill: none;
     animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards
 }
@@ -4312,7 +4312,7 @@ pre {
 
 @keyframes fill {
     100% {
-        box-shadow: inset 0 0 0 30px var(--color-emerald)
+        box-shadow: inset 0 0 0 30px var(--color-tint0)
     }
 }
 
@@ -4398,7 +4398,7 @@ pre {
     justify-content: center;
     border-radius: 16px;
     padding: 4px;
-    background: var(--color-emerald);
+    background: var(--color-tint0);
     animation: fadeInLeft 0.4s ease-out forwards,fadeOutRight 0.4s 4s cubic-bezier(0.6, 0.14, 1, 0.69) forwards
 }
 
@@ -5174,7 +5174,7 @@ a:focus-visible,button:focus-visible,*[tabindex="0"]:focus-visible,*[role=button
 
 @keyframes fill-full {
     100% {
-        box-shadow: inset 0px 0px 0px 45px var(--color-emerald)
+        box-shadow: inset 0px 0px 0px 45px var(--color-tint0)
     }
 }
 
@@ -5213,13 +5213,13 @@ a:focus-visible,button:focus-visible,*[tabindex="0"]:focus-visible,*[role=button
 }
 
 .text-bubble.text-bubble--user {
-    background: var(--color-emerald);
+    background: var(--color-tint0);
     color: white
 }
 
 .text-bubble.text-bubble--user:after {
     border-width: 14px 0 0 14px;
-    border-color: transparent transparent transparent var(--color-emerald);
+    border-color: transparent transparent transparent var(--color-tint0);
     right: -4px;
     transform: rotate(16deg)
 }
@@ -5565,7 +5565,7 @@ a:focus-visible,button:focus-visible,*[tabindex="0"]:focus-visible,*[role=button
 }
 
 .reservation-step__status-icon.reservation-step__status-icon--completed {
-    color: var(--color-emerald)
+    color: var(--color-tint0)
 }
 
 .reservation-step__status-icon.reservation-step__status-icon--editing {
@@ -5910,7 +5910,7 @@ body.iframed.iframed--blessed-yes .iframed-content-for--blessed-yes {
     flex-direction: column-reverse
 }
 
-.iframed .ai-fs\@iframe {
+.iframed .ai-fs\@iframe {--color-emerald
     align-items: flex-start
 }
 
@@ -8037,7 +8037,7 @@ body.iframed.iframed--blessed-yes .iframed-content-for--blessed-yes {
 }
 
 .c-emerald {
-    color: var(--color-emerald)
+    color: var(--color-tint0)
 }
 
 .c-ruby {
@@ -8121,7 +8121,7 @@ body.iframed.iframed--blessed-yes .iframed-content-for--blessed-yes {
 }
 
 .gc-emerald {
-    background-color: var(--color-emerald)
+    background-color: var(--color-tint0)
 }
 
 .gc-ruby {
@@ -15601,4 +15601,25 @@ _:-moz-tree-row(hover) {
 .modal .form-group .d-flex label{
     margin-bottom: 0;
     padding-bottom: 0;
+}
+
+.message-card {
+    padding: 1.5rem;
+    display: grid;
+    columns: 1;
+    gap: 1rem;
+}
+
+.message-card--author {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.message-card textarea {
+    min-height: 45px;
+}
+
+.message-card--content {
+    white-space: pre-wrap;
 }

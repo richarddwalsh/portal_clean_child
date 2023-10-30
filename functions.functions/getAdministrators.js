@@ -1,6 +1,7 @@
+/* eslint-disable import/no-unresolved */
 const axios = require('axios');
 
-exports.main = ({ context }, sendResponse) => {
+exports.main = (_, sendResponse) => {
   
   const config = {
     headers: {

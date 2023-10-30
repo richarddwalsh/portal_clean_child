@@ -10,13 +10,13 @@
       "method": "POST",
       "file": "group/join.js"
     },
-    "group/message": {
-      "method": "POST",
-      "file": "group/message.js"
-    },
     "group/leave": {
       "method": "POST",
       "file": "group/leave.js"
+    },
+    "team/leave": {
+      "method": "POST",
+      "file": "team/leave.js"
     },
     "getAdministrators": {
       "method": "POST",
@@ -25,6 +25,14 @@
     "updateObject": {
       "method": "POST",
       "file": "updateObject.js"
+    },
+    "addMessage": {
+      "method": "POST",
+      "file": "addMessage.js"
+    },
+    "addResource": {
+      "method": "POST",
+      "file": "addResource.js"
     }
   }
 }

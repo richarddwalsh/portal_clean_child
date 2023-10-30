@@ -132,6 +132,9 @@
     {% set upcoming_events = crm_associations(group.id, "USER_DEFINED", 219, upcoming_events_query, event_fields).results %}
     {% set past_events_query = "limit=200&starts_at__lt=" ~ current_dt ~ "orderBy=starts_at" %}
     {% set past_events = crm_associations(group.id, "USER_DEFINED", 219, "", event_fields).results %}
+    {# TODO: CHECK MESSAGE FILTER #}
+    {% set messages = hubdb_table_rows(7272351,"orderBy=-date_added&object_id=" ~ group.id) %}
+    {% set resources = hubdb_table_rows(7284336) %}
     <nav aria-label="Breadcrumb" class="breadcrumbs container">
       <div class="breadcrumbs__layout">
         <a aria-label="Me" class="breadcrumbs__page" href="/me">
@@ -216,6 +219,8 @@
           "pastEventsData": {{ past_events|tojson }},
           "upcomingEventsData": {{ upcoming_events|tojson }},
           "userData": {{ contact|tojson }},
+          "messages": {{ messages|tojson }},
+          "resources": {{ resources|tojson }},
           "groupCategories": {{ group_categories|tojson }},
           "groupTypes": {{ crm_property_definition("groups", "group_type").options|tojson }},
           "locationTypePreferences": {{ crm_property_definition("groups", "location_type_preference").options|tojson }},

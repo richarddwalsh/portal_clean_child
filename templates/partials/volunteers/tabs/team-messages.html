@@ -1,28 +1,97 @@
 <!--
   templateType: global_partial
-  label: Group Messages Tab
+  label: Team Messages Tab
 -->
 <div class="f-1">
   <div style="">
     <div class="d-f jc-sb ai-c mb-2">
       <h1 class="lh-1.333 c-tint0 fs-2 fw-600">Messaging</h1>
     </div>
-    {% if group.announcement %}
-      <article class="mb-1 message info-alert">
-        <div class="d-f">
-          <div class="f-1">
-            {{ group.announcement }}
+    <article class="mb-1 message info-alert" v-if="team.announcement">
+      <div class="d-f">
+        <div class="f-1">
+          <div v-html="team.announcement"></div>
+        </div>
+      </div>
+    </article>
+    <div class="f-1">
+      <div v-if="messages.length <= 0">
+        <p>There are currently no messages for this team please checkback later.</p>
+        <div v-if="isAdmin">
+          <div v-if="!team.communication_enabled">
+            <p>Team communication is currently disabled. You can enable it by clicking the button below.</p>
+            <button type="button" class="btn primary-btn" @click="enableCommunication">Enable Communication</button>
+          </div>
+          <div v-else>
+            <button type="button" class="btn primary-btn" @click="showComposer = !showComposer" v-if="!showComposer && messages.length <= 0">Start a Thread</button>
+            <div v-if="showComposer && messages.length <= 0">
+              <form>
+                  <textarea
+                  id="new_reply"
+                  class="w-100% fs-4 mb-2"
+                  placeholder="Write your message..."
+                  v-model="newReply"
+                ></textarea>
+                <button type="button" @click="submitMessage(0)" class="btn quite-btn fsh-0">Submit</button>
+              </form>
+            </div>
           </div>
         </div>
-      </article>
-    {% else %}
-      <article class="mb-1 message">
-        <div class="d-f">
-          <div class="f-1">
-            <p>There are currently no announcements regarding this group.</p>
+      </div>
+      <div
+        class="d-f fd-c gap-2"
+        v-for="item in filteredMessages"
+        :key="item.hs_id"
+      >
+        <div 
+          class="message-card"
+          v-if="!item.reply"
+        >
+          <div class="message-card--author">
+            <div class="p-r mr-2 w-4 h-4 o-h">
+              <div class="avatar w-100% h-100% fs-6">
+                [[ getInitials(item.created_by_name) ]]
+              </div>
+            </div>
+            <div class="fs-3 fw-600">[[ item.created_by_name ]]</div>
+          </div>
+          <div class="message-card--content" v-html="item.message"></div>
+          <div class="c-tint2 fs-4">
+            <span>[[ formatDate(item.date_added, "MMM D, YYYY h:mm a") ]]</span>
+          </div>
+          <div class="d-f fd-c gap-2 ai-fe">
+            <textarea
+              id="new_reply"
+              class="w-100% fs-4"
+              placeholder="Reply to this message"
+              v-model="newReply"
+            ></textarea>
+            <button type="button" @click="submitMessage(1,item.hs_id)" class="btn quite-btn fsh-0">Submit</button>
           </div>
         </div>
-      </article>
-    {% endif %}
+        <div
+          class="ml-6 f1" 
+          v-for="reply in getMessageReplies(item.hs_id)"
+        >
+          <div 
+            class="message-card gc-tint8 br-4p"
+            v-if="!item.reply"
+          >
+            <div class="message-card--author">
+              <div class="p-r mr-2 w-4 h-4 o-h">
+                <div class="avatar w-100% h-100% fs-6">
+                  [[ getInitials(reply.created_by_name) ]]
+                </div>
+              </div>
+              <div class="fs-3 fw-600">[[ reply.created_by_name ]]</div>
+            </div>
+            <div class="message-card--content" v-html="reply.message"></div>
+            <div class="c-tint2 fs-4">
+              <span>[[ formatDate(reply.date_added, "MMM D, YYYY h:mm a") ]]</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

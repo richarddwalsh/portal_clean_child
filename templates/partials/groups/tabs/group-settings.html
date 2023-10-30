@@ -48,28 +48,13 @@
                   <input
                     :id="field.name"
                     :name="field.name"
-                    type="hidden"
-                    v-if="field.type === 'hidden'"
-                    v-model="form.group[field.name]"
-                    :disabled="field.disabled"
-                  >
-                  <input
-                    :id="field.name"
-                    :name="field.name"
-                    :placeholder="field.placeholder"
-                    type="date"
-                    :value="formatDateIfNeeded(field.name, form.group[field.name])" @input="form.group[field.name] = $event.target.value" v-if="field.type === 'input' && field.format === 'date'"
-                    :disabled="field.disabled"
-                  >
-                  <input
-                    :id="field.name"
-                    :name="field.name"
                     :placeholder="field.placeholder"
                     :type="field.format"
-                    v-model="form.group[field.name]"
-                    v-if="field.type === 'input' && field.format !== 'date'"
+                    :value="formatDateIfNeeded(field.name, form.group[field.name])" @input="form.group[field.name] = $event.target.value" v-if="field.type === 'input' && field.format === 'date'"
+                    v-if="field.type === 'input'"
                     :disabled="field.disabled"
                   >
+
                   <textarea
                     :id="field.name"
                     :name="field.name"
@@ -78,6 +63,7 @@
                     v-if="field.type === 'textarea'"
                     :disabled="field.disabled"
                   ></textarea>
+
                   <select
                     :id="field.name"
                     :name="field.name"
@@ -253,12 +239,12 @@
                   :name="column.name"
                   v-model="form.group[column.name]"
                   @change="setSelect(column.name, $event.target.value)"
-                  v-if="lookupModalField(column.name, modal.id).type === 'select'"
-                  :disabled="lookupModalField(column.name, modal.id).disabled"
+                  v-if="lookupField(column.name, modal.id).type === 'select'"
+                  :disabled="lookupField(column.name, modal.id).disabled"
                 >
                   <option disabled value="">-- Please Select --</option>
                   <option 
-                    v-for="option in lookupModalField(column.name, modal.id).options"
+                    v-for="option in lookupField(column.name, modal.id).options"
                     :key="option.label"
                     :value="option.value"
                   >[[ option.label ]]</option>

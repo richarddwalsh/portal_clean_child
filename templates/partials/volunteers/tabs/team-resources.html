@@ -22,6 +22,26 @@
 	</div>
 
 	<div>
+		<div v-if="isAdmin">
+			<div class="form-group">
+				<label for="resource_name">Description</label>
+				<textarea id="resource_description" name="resource_description" v-model="newResource.description" class="w-100 mb-2" placeholder="Add a description"></textarea>
+			</div>
+			<div class="form-group">
+				<label for="resource_name">Upload File</label>
+				<input type="file" id="resource_file" ref="resource_file" multiple="false" @change="convertFileToBinary" />
+			</div>
+			<div class="form-actions">
+				<button
+					type="button"
+					:class="{'disabled': !fileInfoReady}"
+					class="btn btn-primary"
+					:disabled="!fileInfoReady"
+					@click.prevent="addResource"
+					accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.xls,.xlsx"
+				>Add Resource</button>
+			</div>
+		</div>
 		<ul class="unstyled">
 			{% for file in resources|sort(false, false, 'name') %}
 				<li class="mb-2">

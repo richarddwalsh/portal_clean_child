@@ -138,6 +138,13 @@
       </div>
     </div>
   {% elif dynamic_page_crm_object %}
+    {% set upcoming_events_query = "limit=200&starts_at__gte=" ~ current_dt ~ "&orderBy=starts_at" %}
+    {% set upcoming_events = crm_associations(group.id, "USER_DEFINED", 219, upcoming_events_query, event_fields).results %}
+    {% set past_events_query = "limit=200&starts_at__lt=" ~ current_dt ~ "orderBy=starts_at" %}
+    {% set past_events = crm_associations(group.id, "USER_DEFINED", 219, "", event_fields).results %}
+    {# TODO: CHECK MESSAGE FILTER #}
+    {% set messages = hubdb_table_rows(7272351,"orderBy=-date_added&object_id=" ~ team.id) %}
+    {% set resources = hubdb_table_rows(7284336, "object_id=" ~ team.id) %}
     <nav aria-label="Breadcrumb" class="breadcrumbs container">
       <div class="breadcrumbs__layout">
         <a aria-label="Me" class="breadcrumbs__page" href="/me">
@@ -223,6 +230,8 @@
           "objectFQN": "{{ objectFQN }}",
           "teamData": {{ team|tojson }},
           "userData": {{ contact|tojson }},
+          "messages": {{ messages|tojson }},
+          "resources": {{ resources|tojson }},
           "options": {
             "schedule": {{ crm_property_definition(objectFQN, "serve_schedule").options|tojson }},
             "location": {{ crm_property_definition(objectFQN, "location").options|tojson }},
@@ -230,8 +239,7 @@
             "require_background_check": {{ crm_property_definition(objectFQN, "require_background_check").options|tojson }},
             "communication_enabled": {{ crm_property_definition(objectFQN, "communication_enabled").options|tojson }},
             "members_can_create_forum_topics": {{ crm_property_definition(objectFQN, "members_can_create_forum_topics").options|tojson }}
-          },
-          "resources": []
+          }
         }
       </script>
       <div class="f-1 container">
@@ -246,16 +254,16 @@
                 <div class="f-1" v-if="activeTab.id == 'messaging' && showTab">
                   {% include "./partials/volunteers/tabs/team-messages.html" %}
                 </div>
-                <div class="f-1" v-if="activeTab.id == 'events'">
+                <div class="f-1" v-if="activeTab.id == 'events' && showTab">
                   {% include "./partials/volunteers/tabs/team-events.html" %}
                 </div>
-                <div class="f-1" v-if="activeTab.id == 'resources'">
+                <div class="f-1" v-if="activeTab.id == 'resources' && showTab">
                   {% include "./partials/volunteers/tabs/team-resources.html" %}
                 </div>
-                <div class="f-1" v-if="activeTab.id == 'members'">
+                <div class="f-1" v-if="activeTab.id == 'members' && showTab">
                   {% include "./partials/volunteers/tabs/team-members.html" %}
                 </div>
-                <div class="f-1" v-if="activeTab.id == 'settings'">
+                <div class="f-1" v-if="activeTab.id == 'settings' && showTab">
                   {% include "./partials/volunteers/tabs/team-settings.html" %}
                 </div>
               </div>

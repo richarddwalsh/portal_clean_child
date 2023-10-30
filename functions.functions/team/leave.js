@@ -1,3 +1,4 @@
+
 /* eslint-disable import/no-unresolved */
 // Require axios library to make API requests
 const axios = require('axios');
@@ -9,7 +10,7 @@ exports.main = ({ body }, sendResponse) => {
     sendResponse({ body: { status: "error", error: "No body provided.", step: "validateBody" }, statusCode: 500 });
   }
 
-  const { groupId, contactId, firstname, contactEmail, groupUrl, groupName, groupBannerUrl } = body;
+  const { teamId, contactId, firstname, contactEmail, teamUrl, teamName, teamBannerUrl } = body;
   
   const config = {
     headers: {
@@ -19,7 +20,7 @@ exports.main = ({ body }, sendResponse) => {
   }
   
 
-  const endpoint = `https://api.hubapi.com/crm/v4/objects/groups/${groupId}/associations/contacts/${contactId}`;
+  const endpoint = `https://api.hubapi.com/crm/v4/objects/teams/${teamId}/associations/contacts/${contactId}`;
 
   axios
     .delete(endpoint, config)
@@ -40,9 +41,9 @@ exports.main = ({ body }, sendResponse) => {
           "email": `${contactEmail}`
         },
         "customProperties": {
-          "groupUrl": `${groupUrl}`,
-          "groupName": `${groupName}`,
-          "groupBannerUrl": `${groupBannerUrl}`
+          "teamUrl": `${teamUrl}`,
+          "teamName": `${teamName}`,
+          "teamBannerUrl": `${teamBannerUrl}`
         } 
       }      
       const emailEndpoint = `https://api.hubapi.com/marketing/v3/transactional/single-email/send`;
