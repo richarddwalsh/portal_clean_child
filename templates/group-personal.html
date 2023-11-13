@@ -10,7 +10,7 @@
 {% set base_url = request.path %}
 
 {% block body %}
-<main class="body-container-wrapper my-group-template">
+<div id="app" class="body-container-wrapper my-group-template" v-cloak>
   {% set group = dynamic_page_crm_object %}
   {% set group_categories = crm_objects("group_categories", "limit=100").results %}
   {% set group_cagtegory = crm_associations(group.id, "USER_DEFINED", 303, "limit=1", "name").results[0] %}
@@ -20,6 +20,11 @@
     {% set contact_id = contact._metadata.id %}
     {% set memberships = request_contact.list_memberships %}
     {% set is_admin = admin_list_id in memberships %}
+    {% set member_fields = "firstname,lastname,email,phone,birthday"%}
+    {% set group_leaders = crm_associations(group.id, "USER_DEFINED", 229, "", member_fields).results %}
+    {% set group_members = crm_associations(group.id, "USER_DEFINED", 305, "", member_fields).results %}
+    {% set members = group_leaders|union(group_members) %}
+    {% set member_count = members|length %}
   {% endif %}
   {% if dynamic_page_crm_object_type_fqn %}
     {% set fields = "name,featured_image,dynamic_page_slug,contact_name,schedule" %}
@@ -52,6 +57,14 @@
       </div>
     </nav>
     <div class="f-1 pb-4 pt-4" id="main_page_content">
+      <script type="application/json" id="json-data">
+        {
+          "categoryData": {{ group_cagtegory|tojson }},
+          "groupsData": {{ groups|tojson }},
+          "userData": {{ contact|tojson }},
+          "messages": {{ messages|tojson }}
+        }
+      </script>
       <div class="f-1 container">
         <div tabindex="-1" style="outline: none;">
           <div tabindex="-1" style="outline: none;">
@@ -127,14 +140,32 @@
     </div>
   {% elif dynamic_page_crm_object %}
     {% set current_dt = unixtimestamp( local_dt ) %}
-    {% set event_fields = "name,description,starts_at,starts_at_time,ends_at,ends_at_time,include_on_signup_page,repeating" %}
-    {% set upcoming_events_query = "limit=200&starts_at__gte=" ~ current_dt ~ "&orderBy=starts_at" %}
-    {% set upcoming_events = crm_associations(group.id, "USER_DEFINED", 219, upcoming_events_query, event_fields).results %}
-    {% set past_events_query = "limit=200&starts_at__lt=" ~ current_dt ~ "orderBy=starts_at" %}
-    {% set past_events = crm_associations(group.id, "USER_DEFINED", 219, "", event_fields).results %}
+    {% set event_fields = "name,description,starts_at,starts_at_time,ends_at,ends_at_time,include_on_signup_page,repeating,timezone,description" %}
+    {% set events_query = "limit=200" ~ current_dt ~ "&orderBy=starts_at" %}
+    {% set events = crm_associations(group.id, "USER_DEFINED", 219, events_query, event_fields).results %}
     {# TODO: CHECK MESSAGE FILTER #}
     {% set messages = hubdb_table_rows(7272351,"orderBy=-date_added&object_id=" ~ group.id) %}
-    {% set resources = hubdb_table_rows(7284336) %}
+    {% set resources = hubdb_table_rows(7284336, "orderBy=name&object_id=" ~ group.id) %}
+    <div
+      id="editing_notice"
+      class="editing-notice"
+      v-if="editing"
+    >
+      <div class="container">
+        <div class="d-f ai-c jc-sb">
+          <div class="fs-4">There are unsaved changes on this page. Please save or discard your changes before leaving this page.</div>
+          <div>
+            <button
+              type="button"
+              class="btn btn-sm btn-quiet fs-4"
+              @click="save"
+            >
+              Save
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
     <nav aria-label="Breadcrumb" class="breadcrumbs container">
       <div class="breadcrumbs__layout">
         <a aria-label="Me" class="breadcrumbs__page" href="/me">
@@ -170,57 +201,68 @@
             </svg>
           </span>
         </a>
-        <button aria-controls="menu--103" aria-expanded="false" aria-haspopup="true" class="minor-btn secondary-btn btn" data-reach-menu-button="" id="menu-button--menu--actions" style="margin-left: auto;" type="button">
-          Actions
-          <span class="fs-6 pl-4p dropdown-trigger__icon">
-            <svg class="symbol" id="down-chevron" viewBox="0 0 16 16">
-              <path d="M16 6.07L8 14.07L0 6.07L1.782 4.293L8 10.514L14.22 4.293L16 6.07Z"></path>
-            </svg>
-          </span>
-        </button>
-        <div data-reach-popover="" data-reach-menu="" data-reach-menu-popover="" style="position: absolute;">
-          <div aria-labelledby="menu-button--menu--actions" role="menu" id="menu--actions" data-reach-menu-list="" data-reach-menu-items="" tabindex="-1">
-            {# TODO: Add email group option for admins
-            <div role="none" tabindex="-1">
-              <a role="menuitem" href="javacsript:void(0)" data-reach-menu-link="" data-reach-menu-item="" data-valuetext="Email Group" tabindex="-1" id="option-0--menu--{{ group.id }}">Email Group</a>
-            </div> 
-            #}
-            <div role="none" tabindex="-1">
-              <a role="menuitem" href="/group/{{ group.dynamic_page_slug }}" data-reach-menu-link="" data-reach-menu-item="" data-valuetext="View public group page" tabindex="-1" id="option-1--menu--{{ group.id }}">View public group page</a>
+        <div style="margin-left: auto;">
+          <button
+            class="minor-btn secondary-btn btn"
+            id="menu-button--menu--actions"
+            type="button"
+            @click="actionDrawers.primary = !actionDrawers.primary"
+          >
+            Actions
+            <span class="fs-6 pl-4p dropdown-trigger__icon">
+              <svg class="symbol" id="down-chevron" viewBox="0 0 16 16">
+                <path d="M16 6.07L8 14.07L0 6.07L1.782 4.293L8 10.514L14.22 4.293L16 6.07Z"></path>
+              </svg>
+            </span>
+          </button>
+          <div
+            style="position: absolute;"
+            v-if="actionDrawers.primary"
+            v-click-outside="closeActionDrawer"
+          >
+            <div aria-labelledby="menu-button--menu--actions" role="menu" id="menu--actions" data-reach-menu-list="" data-reach-menu-items="" tabindex="-1">
+              {# TODO: Add email group option for admins
+              <div role="none" tabindex="-1">
+                <a role="menuitem" href="javacsript:void(0)" data-reach-menu-link="" data-reach-menu-item="" data-valuetext="Email Group" tabindex="-1" id="option-0--menu--{{ group.id }}">Email Group</a>
+              </div> 
+              #}
+              <div role="none" tabindex="-1">
+                <a role="menuitem" href="/group/{{ group.dynamic_page_slug }}" data-reach-menu-link="" data-reach-menu-item="" data-valuetext="View public group page" tabindex="-1" id="option-1--menu--{{ group.id }}">View public group page</a>
+              </div>
+              <div 
+                role="menuitem" 
+                class="dropdown__item" 
+                data-reach-menu-item=""
+                data-endpoint="https://{{ request.domain }}/_hcms/api/group/leave"
+                data-valuetext="Leave group…" 
+                data-group-id="{{ group.id }}" 
+                data-group-name="{{ group.name }}" 
+                data-group-banner-url="{{ group.featured_image }}" 
+                data-group-url="https://{{ request.domain }}/my/groups/{{ group.dynamic_page_slug }}"
+                data-contact-id="{{ contact_id }}" 
+                data-firstname="{{ contact.firstname }}" 
+                data-contact-email="{{ contact.email }}" 
+                data-domain="https://{{ request.domain }}"
+                data-return-url="https://{{ request.domain }}/my/groups"
+                tabindex="-1" 
+                id="option-2--menu--{{ group.id }}"
+                v-on:click="leaveGroup()"
+                >Leave group…</div>
             </div>
-            <div 
-              {# role="menuitem" 
-              class="dropdown__item" 
-              data-reach-menu-item="" #}
-              data-endpoint="https://{{ request.domain }}/_hcms/api/group/leave"
-              data-valuetext="Leave group…" 
-              data-group-id="{{ group.id }}" 
-              data-group-name="{{ group.name }}" 
-              data-group-banner-url="{{ group.featured_image }}" 
-              data-group-url="https://{{ request.domain }}/my/groups/{{ group.dynamic_page_slug }}"
-              data-contact-id="{{ contact_id }}" 
-              data-firstname="{{ contact.firstname }}" 
-              data-contact-email="{{ contact.email }}" 
-              data-domain="https://{{ request.domain }}"
-              data-return-url="https://{{ request.domain }}/my/groups"
-              tabindex="-1" 
-              id="option-2--menu--{{ group.id }}"
-              v-on:click="leaveGroup()"
-              >Leave group…</div>
           </div>
         </div>
       </div>
     </nav>
-    <div class="f-1 page-content" id="main_page_content" data-is-admin="{{ is_admin }}" data-group-data="{{ group|jsonencode|raw }}" v-cloak>
+    <div class="f-1 page-content" id="main_page_content" data-is-admin="{{ is_admin }}" data-group-data="{{ group|jsonencode|raw }}">
       <script type="application/json" id="json-data">
         {
           "categoryData": {{ group_cagtegory|tojson }},
           "groupData": {{ group|tojson }},
-          "pastEventsData": {{ past_events|tojson }},
-          "upcomingEventsData": {{ upcoming_events|tojson }},
+          "eventsData": {{ events|tojson }},
           "userData": {{ contact|tojson }},
           "messages": {{ messages|tojson }},
           "resources": {{ resources|tojson }},
+          "members": {{ members|tojson }},
           "groupCategories": {{ group_categories|tojson }},
           "groupTypes": {{ crm_property_definition("groups", "group_type").options|tojson }},
           "locationTypePreferences": {{ crm_property_definition("groups", "location_type_preference").options|tojson }},
@@ -272,12 +314,15 @@
       </div>
     </div>
   {% endif %}
-</main>
+</div>
 {% endblock body %}
 
 {% block footer_includes %}
   {{ require_js("https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js", { position: 'footer' }) }}
+  {{ require_js("https://cdn.jsdelivr.net/npm/moment-timezone@0.5.43/moment-timezone.min.js", { position: 'footer' }) }}
   {{ require_js("https://cdn.jsdelivr.net/npm/vue@2", { position: 'footer'}) }}
+  {{ require_js(get_asset_url("../js/lib/shared/directives.js"), { position: 'footer'}) }}
+  {{ require_js(get_asset_url("../js/lib/shared/methods.js"), { position: 'footer'}) }}
   {% if dynamic_page_crm_object_type_fqn %}
     {{ require_js(get_asset_url("../js/lib/my/groups.js"), { position: 'footer'}) }}
   {% elif dynamic_page_crm_object %}

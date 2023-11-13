@@ -2,31 +2,104 @@
   templateType: global_partial
   label: Events Filter
 -->
-{% if dynamic_page_crm_object_type_fqn %}
-{% set campus_filter = crm_property_definition(dynamic_page_crm_object_type_fqn, "campus") %}
-{% set category_filter = crm_property_definition(dynamic_page_crm_object_type_fqn, "category") %}
-{% endif %}
-<div data-testid="grid" class="filter-buttons grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 action-drawer">
-	<div>
-		<button aria-expanded="false" aria-haspopup="true" aria-controls="menu--campus" class="select truncate ta-l" data-reach-menu-button="" type="button" id="menu-button--menu--campus">All Campuses</button>
-		<div data-reach-menu>
-			<div aria-labelledby="menu-button--menu--campus" role="menu" id="menu--campus" data-reach-menu-list="" data-reach-menu-items="" tabindex="-1" style="max-height: 15.5rem; max-width: 13rem; overflow: auto;">
-				<div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="(any)" tabindex="-1" id="option-0--menu--campus">(any)</div>
-				{% for option in campus_filter.options %}
-					<div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="{{ option.value }}" tabindex="-1" id="option-{{loop.index}}--menu--campus">{{ option.label }}</div>
-				{% endfor %}
-			</div>
-		</div>
-	</div>
-	<div>
-		<button aria-expanded="false" aria-haspopup="true" aria-controls="menu--category" class="select truncate ta-l" data-reach-menu-button="" type="button" id="menu-button--menu--category">All Campuses</button>
-		<div data-reach-menu>
-			<div aria-labelledby="menu-button--menu--category" role="menu" id="menu--category" data-reach-menu-list="" data-reach-menu-items="" tabindex="-1" style="max-height: 15.5rem; max-width: 13rem; overflow: auto;">
-				<div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="(any)" tabindex="-1" id="option-0--menu--category">(any)</div>
-				{% for option in category_filter.options %}
-					<div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="{{ option.value }}" tabindex="-1" id="option-{{loop.index}}--menu--category">{{ option.label }}</div>
-				{% endfor %}
-			</div>
-		</div>
-	</div>
+<div
+  data-testid="grid"
+  class="filter-buttons grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 action-drawer"
+>
+  <div>
+    <button
+      aria-expanded="false"
+      aria-haspopup="true"
+      aria-controls="menu--campus"
+      class="select truncate ta-l"
+      type="button"
+      id="menu-button--menu--campus"
+      @click.prevent="activeMenu = 'campus'"
+    >
+      [[ filterLabels.campus ]]
+    </button>
+    <div data-reach-menu v-if="activeMenu === 'campus'">
+      <div
+        aria-labelledby="menu-button--menu--campus"
+        role="menu"
+        id="menu--campus"
+        data-reach-menu-list=""
+        data-reach-menu-button=""
+        tabindex="-1"
+        style="max-height: 15.5rem; max-width: 13rem; overflow: auto"
+      >
+        <div
+          role="menuitem"
+          class="stripped-btn w-100% ta-l"
+          data-reach-menu-item=""
+          data-valuetext="(any)"
+          tabindex="-1"
+          id="option-0--menu--campus"
+          @click.prevent="applyFilter('campus', '')"
+        >
+          (any)
+        </div>
+        <div
+          role="menuitem"
+          class="stripped-btn w-100% ta-l"
+          data-reach-menu-item=""
+          :data-valuetext="option.value"
+          tabindex="-1"
+          v-for="(option, index) in filters.campus"
+          :key="index"
+          @click.prevent="applyFilter('campus', option.value)"
+        >
+          [[ option.label ]]
+        </div>
+      </div>
+    </div>
+  </div>
+  <div>
+    <button
+      aria-expanded="false"
+      aria-haspopup="true"
+      aria-controls="menu--category"
+      class="select truncate ta-l"
+      type="button"
+      id="menu-button--menu--category"
+      @click.prevent="activeMenu = 'category'"
+    >
+      [[ filterLabels.category ]]
+    </button>
+    <div data-reach-menu v-if="activeMenu === 'category'">
+      <div
+        aria-labelledby="menu-button--menu--category"
+        role="menu"
+        id="menu--campus"
+        data-reach-menu-list=""
+        data-reach-menu-button=""
+        tabindex="-1"
+        style="max-height: 15.5rem; max-width: 13rem; overflow: auto"
+      >
+        <div
+          role="menuitem"
+          class="stripped-btn w-100% ta-l"
+          data-reach-menu-item=""
+          data-valuetext="(any)"
+          tabindex="-1"
+          id="option-0--menu--category"
+          @click.prevent="applyFilter('category', '')"
+        >
+          (any)
+        </div>
+        <div
+          role="menuitem"
+          class="stripped-btn w-100% ta-l"
+          data-reach-menu-item=""
+          :data-valuetext="option.value"
+          tabindex="-1"
+          v-for="(option, index) in filters.category"
+          :key="index"
+          @click.prevent="applyFilter('category', option.value)"
+        >
+          [[ option.label ]]
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

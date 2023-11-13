@@ -17,7 +17,7 @@
               <h1 class="group-settings__header-title">[[ section.title ]]</h1>
               <p class="group-settings__header-subtitle" v-if="section.subtitle">[[ section.subtitle ]]</p>
             </div>
-            <a class="sm-btn btn quiet-btn" data-remote="true" v-on:click="save()" v-if="section.showSave">Update</a>
+            <a class="sm-btn btn quiet-btn" :class="{'editing': editing }" data-remote="true" v-on:click="save()" v-if="section.showSave">Update</a>
           </header>
         </div>
       </div>

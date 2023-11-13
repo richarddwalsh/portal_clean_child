@@ -11,12 +11,11 @@
 	</div>
 	<div class="ta-r">
 		{% if team.active %}
-				{% if request_contact.is_logged_in %}
-					{# TODO: Trigger Popup #}
-					<a class="btn" href="/registrations/teams/1297980/logins/new?return=https://one-online.churchcenter.com/registrations/teams/1297980/registrations/new">Register</a>
-				{% else %}
-					<a class="btn" href="/_hcms/mem/login">Apply</a>
-				{% endif %}			
+			{% if request_contact.is_logged_in %}
+				<a class="btn" target="_blank" href="{{ team.registration_url }}?email={{ contact.email }}&firstname={{contact.firstname}}&lastname={{contact.lastname}}&phone={{contact.phone}}&team_interest={{team.team_name}}">Apply</a>
+			{% else %}
+				<a class="btn" target="_blank" href="{{ team.registration_url }}?team_interest={{team.team_name}}">Apply</a>
+			{% endif %}			
 		{% endif %}
 	</div>
 </div>

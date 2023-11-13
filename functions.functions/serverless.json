@@ -14,9 +14,25 @@
       "method": "POST",
       "file": "group/leave.js"
     },
+    "group/invite": {
+      "method": "POST",
+      "file": "group/invite.js"
+    },
     "team/leave": {
       "method": "POST",
       "file": "team/leave.js"
+    },
+    "household/add": {
+      "method": "POST",
+      "file": "household/add.js"
+    },
+    "household/remove": {
+      "method": "POST",
+      "file": "household/remove.js"
+    },
+    "household/update": {
+      "method": "POST",
+      "file": "household/update.js"
     },
     "getAdministrators": {
       "method": "POST",
@@ -33,6 +49,42 @@
     "addResource": {
       "method": "POST",
       "file": "addResource.js"
+    },
+    "me/update": {
+      "method": "POST",
+      "file": "me/update.js"
+    },
+    "event/create":{
+      "method": "POST",
+      "file": "event/create.js"
+    },
+    "event/update":{
+      "method": "POST",
+      "file": "event/update.js"
+    },
+    "event/delete":{
+      "method": "POST",
+      "file": "event/delete.js"
+    },
+    "event/invite":{
+      "method": "POST",
+      "file": "event/invite.js"
+    },
+    "event/leave":{
+      "method": "POST",
+      "file": "event/leave.js"
+    },
+    "event/register":{
+      "method": "POST",
+      "file": "event/register.js"
+    },
+    "event/getAll":{
+      "method": "POST",
+      "file": "event/getAll.js"
+    },
+    "event/attendees": {
+      "method": "GET",
+      "file": "event/attendees.js"
     }
   }
 }

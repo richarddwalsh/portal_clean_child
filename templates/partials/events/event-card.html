@@ -2,39 +2,25 @@
   templateType: global_partial
   label: Event Card
 -->
-{% set dateStr = event.starts_at %}
-{% set dateArr = dateStr|split("/", 1000) %}
-{% set useDate = [
-    (dateArr[2]|int + 2000),
-    (dateArr[0]|length == 1 ? '0' + dateArr[0] : dateArr[0]),
-    (dateArr[1]|length == 1 ? '0' + dateArr[1] : dateArr[1])
-  ]
-%}
-{% if event.starts_at %}
-{% set start_date = (useDate[0] + "-" + useDate[1] + "-" + useDate[2] + "T14:31:30+0530")|strtotime("yyyy-MM-dd'T'HH:mm:ssZ")  %}
-{% endif %}
-
-<article class="d-b">
-	<a class="card-list-item__wrapper-link" href="/registrations/{{ event.hs_object_id }}">
+<article class="d-b" v-for="event in filteredEvents">
+	<a class="card-list-item__wrapper-link" :href='"/registrations/" + event.id'>
     <div class="card-list-item__image">
-      <img alt="{{ event.name }} logo" loading="lazy" src="{{ event.banner_image }}">
-    </div>
+      <img :alt='event.properties.name + " logo"' loading="lazy" :src="event.properties.banner_image">
+    </div>    
     <div class="card-list-item__content">
       <div class="card-list-item__title d-f ai-fs">
-        <h1 class="lh-1.333 c-tint0 fs-3 fw-600">{{ event.name }}</h1>
-        {% if event.featured %}
-        <span class="featured-badge xs-badge badge d-f ai-c fw-400 ml-a">
+        <h2 class="lh-1.333 c-tint0 fs-3 fw-600">[[ event.properties.name ]]</h2>
+        <span class="featured-badge xs-badge badge d-f ai-c fw-400 ml-a" v-if="event.properties.featured">
           <span class="mr-4p featured-badge__icon">
             <svg class="symbol" xmlns="http://www.w3.org/2000/svg" id="star" viewBox="0 0 16 16">
               <path d="M8 0.5L10.4722 5.4373L16 6.22884L12 10.0719L12.9444 15.499L8 12.9373L3.05564 15.5L4 10.0729L0 6.22884L5.52782 5.43635L8 0.5Z"/>
             </svg>
           </span>
-          Featured
+          Featured  
         </span>
-        {% endif %}
       </div>
       <div class="card-list-item__details">
-        {{ event.starts_at|datetimeformat('%A, %B %e, %Y') }}, {{ event.starts_at_time.value }} {{ "- " ~ event.ends_at_time.value if event.ends_at_time }} {{ event.timezone }}
+        [[ event.properties.starts_at | formatDate(event.properties.starts_at_time, 'LLLL') ]]
       </div>
     </div>
   </a>

@@ -12,12 +12,6 @@
   {% endif %}
   {{ initials }}
 {% endmacro %}
-
-{% set member_fields = "firstname,lastname,email,phone,birthday"%}
-{% set group_leaders = crm_associations(group.id, "USER_DEFINED", 229, "", member_fields).results %}
-{% set group_members = crm_associations(group.id, "USER_DEFINED", 305, "", member_fields).results %}
-{% set members = group_leaders|union(group_members) %}
-{% set member_count = members|length %}
 <div class="f-1">
 	<div class="d-f jc-sb mt-1 mb-2">
 		<h1 class="lh-1.333 c-tint0 fs-2 fw-600">{{ member_count }} Members</h1>

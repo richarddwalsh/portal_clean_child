@@ -1,101 +1,49 @@
 <!--
   templateType: global_partial
-  label: Group Events Tab
+  label: Team Events Tab
 -->
-{% set current_dt = unixtimestamp( local_dt ) %}
-{% set event_fields = "name,description,starts_at,starts_at_time,ends_at,ends_at_time,include_on_signup_page,repeating" %}
-{% set upcoming_events_query = "limit=200&starts_at__gte=" ~ current_dt ~ "&orderBy=starts_at" %}
-{% set upcoming_events = crm_associations(group.id, "USER_DEFINED", 219, upcoming_events_query, event_fields).results %}
-{% set past_events_query = "limit=200&starts_at__lt=" ~ current_dt ~ "orderBy=starts_at" %}
-{% set past_events = crm_associations(group.id, "USER_DEFINED", 219, "", event_fields).results %}
 <div class="f-1">
 	<div class="mb-3" style="">
 		<div class="d-f ai-c mb-2">
 			<h2 class="h3">Upcoming events</h2>
-			{# TODO: Calendar Link Subscription Service #}
-			{# <div class="ml-a">
-				<button aria-controls="menu--subscribe" aria-expanded="false" aria-haspopup="true" class="minor-btn secondary-btn btn" data-reach-menu-button="" id="menu-button--menu--subscribe" type="button">
-					<div class="d-f jc-sb ai-c">
-						Subscribe to group calendar
-						<span class="dropdown-trigger__icon fs-6 ml-4p">
-							<svg class="symbol" id="down-chevron" viewBox="0 0 16 16">
-								<path d="M16 6.07L8 14.07L0 6.07L1.782 4.293L8 10.514L14.22 4.293L16 6.07Z"></path>
-							</svg>
-						</span>
-					</div>
-				</button>
-				<div data-reach-popover="" data-reach-menu="" data-reach-menu-popover="" style="position: absolute; left: 819.688px; top: 251px;">
-					<div aria-labelledby="menu-button--menu--subscribe" role="menu" id="menu--subscribe" class="dropdown__menu" data-reach-menu-list="" data-reach-menu-items="" tabindex="-1">
-						<div role="none" tabindex="-1">
-							<a role="menuitem" href="webcal://one-online.churchcenter.com/groups/icalendars/qfqnjp3p0pwhzmvvw999k7Abc1Zfmvbn6928tt1A4njcvd8vk12lmxg85tdy85rpr5cxk3yqtkqqsvpjyshxjwdcpl3qy2jhpqcghw9nqbAtwzjnv0cyj6tfjdlm74w2k4ntx6dfhhkx3htcxtjApA64964.ics" target="_blank" class="dropdown__item" data-reach-menu-link="" data-reach-menu-item="" data-valuetext="Apple Calendar" tabindex="-1" id="option-0--menu--{{ group.id }}">Apple Calendar</a>
-						</div>
-						<div role="none" tabindex="-1">
-							<a role="menuitem" href="webcal://one-online.churchcenter.com/groups/icalendars/qfqnjp3p0pwhzmvvw999k7Abc1Zfmvbn6928tt1A4njcvd8vk12lmxg85tdy85rpr5cxk3yqtkqqsvpjyshxjwdcpl3qy2jhpqcghw9nqbAtwzjnv0cyj6tfjdlm74w2k4ntx6dfhhkx3htcxtjApA64964.ics" target="_blank" class="dropdown__item" data-reach-menu-link="" data-reach-menu-item="" data-valuetext="Outlook Calendar" tabindex="-1" id="option-1--menu--{{ group.id }}">Outlook Calendar</a>
-						</div>
-						<div role="none" tabindex="-1">
-							<a role="menuitem" href="https://www.google.com/calendar/r?cid=webcal%3A%2F%2Fone-online.churchcenter.com%2Fgroups%2Ficalendars%2Fqfqnjp3p0pwhzmvvw999k7Abc1Zfmvbn6928tt1A4njcvd8vk12lmxg85tdy85rpr5cxk3yqtkqqsvpjyshxjwdcpl3qy2jhpqcghw9nqbAtwzjnv0cyj6tfjdlm74w2k4ntx6dfhhkx3htcxtjApA64964.ics" target="_blank" class="dropdown__item" data-reach-menu-link="" data-reach-menu-item="" data-valuetext="Google Calendar" tabindex="-1" id="option-2--menu--{{ group.id }}">Google Calendar</a>
-						</div>
-						<div role="none" tabindex="-1">
-							<a role="menuitem" href="https://outlook.live.com/owa/?name=Book+Study%3A+Promise+Journey+led+by+Jas+%28ATL%29+events&amp;path=%2Fcalendar%2Faction%2Fsubscribe&amp;url=https%3A%2F%2Fone-online.churchcenter.com%2Fgroups%2Ficalendars%2Fqfqnjp3p0pwhzmvvw999k7Abc1Zfmvbn6928tt1A4njcvd8vk12lmxg85tdy85rpr5cxk3yqtkqqsvpjyshxjwdcpl3qy2jhpqcghw9nqbAtwzjnv0cyj6tfjdlm74w2k4ntx6dfhhkx3htcxtjApA64964.ics" target="_blank" class="dropdown__item" data-reach-menu-link="" data-reach-menu-item="" data-valuetext="Outlook.com" tabindex="-1" id="option-3--menu--{{ group.id }}">Outlook.com</a>
-						</div>
-						<div role="none" tabindex="-1">
-							<a role="menuitem" href="https://calendar.yahoo.com/subscribe?ics=webcal%3A%2F%2Fone-online.churchcenter.com%2Fgroups%2Ficalendars%2Fqfqnjp3p0pwhzmvvw999k7Abc1Zfmvbn6928tt1A4njcvd8vk12lmxg85tdy85rpr5cxk3yqtkqqsvpjyshxjwdcpl3qy2jhpqcghw9nqbAtwzjnv0cyj6tfjdlm74w2k4ntx6dfhhkx3htcxtjApA64964.ics&amp;name=Book+Study%3A+Promise+Journey+led+by+Jas+%28ATL%29+events" target="_blank" class="dropdown__item" data-reach-menu-link="" data-reach-menu-item="" data-valuetext="Yahoo Calendar" tabindex="-1" id="option-4--menu--{{ group.id }}">Yahoo Calendar</a>
-						</div>
-						<div class="mt-4p mb-4p" style="border-top: 1px solid var(--color-tint6);"></div>
-						<div class="dropdown__item">Copy the iCal link</div>
-					</div>
-				</div>
-			</div> #}
 		</div>
-		{% if upcoming_events|length > 0 %}
 		<div>
-			{% for event in upcoming_events %}
-				{% set dateStr = event.starts_at %}
-				{% set dateArr = dateStr|split("/", 1000) %}
-				{% set useDate = [
-						(dateArr[2]|int + 2000),
-						(dateArr[0]|length == 1 ? '0' + dateArr[0] : dateArr[0]),
-						(dateArr[1]|length == 1 ? '0' + dateArr[1] : dateArr[1])
-					]
-				%}
-				{# TODO: Replace With starts_at_time #}
-				{% set start_date = (useDate[0] + "-" + useDate[1] + "-" + useDate[2] + "T14:31:30+0530")|strtotime("yyyy-MM-dd'T'HH:mm:ssZ")  %}
-				<div class="d-f mb-1 pt-1">
-					<article class="d-f f-1 ai-c">
-						<div class="mr-2">
-							<a href="/registrations/{{ event.id }}">
-								<div class="w-8 h-8 ta-c event-cal">
-									<div class="event-cal__month">
-										{{ start_date|datetimeformat('MMM') }}
-									</div>
-									<div class="event-cal__day">
-										{{ start_date|datetimeformat('dd') }}
-									</div>
-								</div>
-							</a>
-						</div>
-						<div class="f-1">
-							<a class="fw-500" href="/registrations/{{ event.id }}">
-								<div class="lh-1.5 mb-2p">
-									{{ event.name }}
-									{% if event.repeating %}
-									<span class="d-ib ml-4p c-tint3">
-										<svg class="symbol" id="calendar-repeat" viewBox="0 0 16 16">
-											<path d="M14.758 4.314V6.6H2.758V12.886C2.75786 12.9001 2.76054 12.9141 2.76587 12.9271C2.7712 12.9401 2.77908 12.952 2.78904 12.962C2.799 12.9719 2.81085 12.9798 2.82389 12.9851C2.83693 12.9905 2.85091 12.9931 2.865 12.993H5.984V14.493H2.865C2.43887 14.4927 2.03028 14.3233 1.72897 14.022C1.42765 13.7207 1.25826 13.3121 1.258 12.886V4.314C1.25826 3.88779 1.42762 3.47909 1.72891 3.17762C2.03019 2.87615 2.43878 2.70653 2.865 2.706H3.258V0.6H4.758V2.706H11.258V0.6H12.758V2.706H13.151C13.5772 2.70653 13.9858 2.87615 14.2871 3.17762C14.5884 3.47909 14.7577 3.88779 14.758 4.314ZM12.848 8.12C12.189 7.78656 11.4483 7.64884 10.7136 7.72314C9.97878 7.79744 9.28066 8.08065 8.70178 8.53926C8.12291 8.99788 7.68751 9.6127 7.44709 10.311C7.20667 11.0093 7.1713 11.7618 7.34515 12.4796C7.51901 13.1974 7.89482 13.8503 8.42813 14.3612C8.96143 14.8721 9.62991 15.2196 10.3545 15.3625C11.0791 15.5054 11.8294 15.4377 12.5167 15.1676C13.2041 14.8974 13.7996 14.436 14.233 13.838L13.019 12.957C12.7811 13.2843 12.4633 13.5451 12.0959 13.7145C11.7285 13.884 11.3238 13.9564 10.9204 13.9248C10.5171 13.8932 10.1286 13.7587 9.79199 13.5342C9.45543 13.3096 9.18207 13.0025 8.99803 12.6422C8.81399 12.2819 8.72542 11.8804 8.74079 11.4761C8.75616 11.0718 8.87494 10.6782 9.08579 10.3329C9.29665 9.98764 9.59253 9.70217 9.94516 9.50383C10.2978 9.30548 10.6954 9.20087 11.1 9.2C11.6582 9.19437 12.1989 9.39443 12.619 9.762L11.519 10.862H14.735V7.651L13.678 8.709C13.4283 8.47716 13.1493 8.27914 12.848 8.12Z"></path>
-										</svg>
-									</span>
-									{% endif %}
-								</div>
-							</a>
-							<div class="fs-13 lh-1.5 c-tint2">
-								<time>{{ start_date|datetimeformat('%A, %B %e, %Y') }}, {{ event.starts_at_time }} – {{ event.ends_at_time }} {{ event.timezone }}</time>
+			<div
+				class="d-f mb-1 pt-1"
+				v-for="event in events.upcoming"
+				:key="event.id"
+			>
+			<article class="d-f f-1 ai-c">	
+				<div class="mr-2">
+					<a href="/registrations/[[ event.id ]]">
+						<div class="w-8 h-8 ta-c event-cal">
+							<div class="event-cal__month">
+								[[ formatDate(event.start_date, "MMM") ]]
+							</div>
+							<div class="event-cal__day">
+								[[ formatDate(event.start_date, "DD") ]]
 							</div>
 						</div>
-					</article>
+					</a>
 				</div>
-			{% endfor %}
+				<div class="f-1">
+					<a class="fw-500" href="/registrations/[[ event.id ]]">
+						<div class="lh-1.5 mb-2p">
+							[[ event.name ]]
+							<span class="d-ib ml-4p c-tint3" v-if="event.repeating">
+								<svg class="symbol" id="calendar-repeat" viewBox="0 0 16 16">
+									<path d="M14.758 4.314V6.6H2.758V12.886C2.75786 12.9001 2.76054 12.9141 2.76587 12.9271C2.7712 12.9401 2.77908 12.952 2.78904 12.962C2.799 12.9719 2.81085 12.9798 2.82389 12.9851C2.83693 12.9905 2.85091 12.9931 2.865 12.993H5.984V14.493H2.865C2.43887 14.4927 2.03028 14.3233 1.72897 14.022C1.42765 13.7207 1.25826 13.3121 1.258 12.886V4.314C1.25826 3.88779 1.42762 3.47909 1.72891 3.17762C2.03019 2.87615 2.43878 2.70653 2.865 2.706H3.258V0.6H4.758V2.706H11.258V0.6H12.758V2.706H13.151C13.5772 2.70653 13.9858 2.87615 14.2871 3.17762C14.5884 3.47909 14.7577 3.88779 14.758 4.314ZM12.848 8.12C12.189 7.78656 11.4483 7.64884 10.7136 7.72314C9.97878 7.79744 9.28066 8.08065 8.70178 8.53926C8.12291 8.99788 7.68751 9.6127 7.44709 10.311C7.20667 11.0093 7.1713 11.7618 7.34515 12.4796C7.51901 13.1974 7.89482 13.8503 8.42813 14.3612C8.96143 14.8721 9.62991 15.2196 10.3545 15.3625C11.0791 15.5054 11.8294 15.4377 12.5167 15.1676C13.2041 14.8974 13.7996 14.436 14.233 13.838L13.019 12.957C12.7811 13.2843 12.4633 13.5451 12.0959 13.7145C11.7285 13.884 11.3238 13.9564 10.9204 13.9248C10.5171 13.8932 10.1286 13.7587 9.79199 13.5342C9.45543 13.3096 9.18207 13.0025 8.99803 12.6422C8.81399 12.2819 8.72542 11.8804 8.74079 11.4761C8.75616 11.0718 8.87494 10.6782 9.08579 10.3329C9.29665 9.98764 9.59253 9.70217 9.94516 9.50383C10.2978 9.30548 10.6954 9.20087 11.1 9.2C11.6582 9.19437 12.1989 9.39443 12.619 9.762L11.519 10.862H14.735V7.651L13.678 8.709C13.4283 8.47716 13.1493 8.27914 12.848 8.12Z"></path>
+								</svg>
+							</span>
+						</div>
+					</a>
+					<div class="fs-13 lh-1.5 c-tint2">
+						<time>[[ formatDate(event.start_date, "dddd, MMMM D") ]], [[ event.starts_at_time ]] – [[ event.ends_at_time ]] [[ event.timezone ]]</time>
+					</div>
+				</div>
+			</article>
+			</div>
 		</div>
-		{% else %}
 		<div class="ta-c c-tint3 p-4">
 			<div style="font-size: 32px;">
 				<svg class="symbol" id="calendar-events" viewBox="0 0 16 16">
@@ -107,56 +55,142 @@
 				<button type="button" class="btn primary-btn" @click="showModal('create_event_modal')">Create an event</button>
 			</div>
 		</div>
-		{% endif %}
 	</div>
 	<div class="mb-3">
 		<h2 class="h3">Past events</h2>
 		<div>
-			{% for event in past_events %}
-				{% set dateStr = event.starts_at %}
-				{% set dateArr = dateStr|split("/", 1000) %}
-				{% set useDate = [
-						(dateArr[2]|int + 2000),
-						(dateArr[0]|length == 1 ? '0' + dateArr[0] : dateArr[0]),
-						(dateArr[1]|length == 1 ? '0' + dateArr[1] : dateArr[1])
-					]
-				%}
-				{# TODO: Replace With starts_at_time #}
-				{% set start_date = (useDate[0] + "-" + useDate[1] + "-" + useDate[2] + "T14:31:30+0530")|strtotime("yyyy-MM-dd'T'HH:mm:ssZ")  %}
-				<div class="d-f mb-1 pt-1">
-					<article class="d-f f-1 ai-c">
-						<div class="mr-2">
-							<a href="/registrations/{{ event.id }}">
-								<div class="w-8 h-8 ta-c event-cal">
-									<div class="event-cal__month">
-										{{ start_date|datetimeformat('MMM') }}
-									</div>
-									<div class="event-cal__day">
-										{{ start_date|datetimeformat('dd') }}
-									</div>
+			<div
+				class="d-f mb-1 pt-1"
+				v-for="event in events.past"
+				:key="event.id"
+			>
+				<article class="d-f f-1 ai-c">	
+					<div class="mr-2">
+						<a href="/registrations/[[ event.id ]]">
+							<div class="w-8 h-8 ta-c event-cal">
+								<div class="event-cal__month">
+									[[ formatDate(event.start_date, "MMM") ]]
 								</div>
-							</a>
-						</div>
-						<div class="f-1">
-							<a class="fw-500" href="/registrations/{{ event.id }}">
-								<div class="lh-1.5 mb-2p">
-									{{ event.name }}
-									{% if event.repeating %}
-									<span class="d-ib ml-4p c-tint3">
-										<svg class="symbol" id="calendar-repeat" viewBox="0 0 16 16">
-											<path d="M14.758 4.314V6.6H2.758V12.886C2.75786 12.9001 2.76054 12.9141 2.76587 12.9271C2.7712 12.9401 2.77908 12.952 2.78904 12.962C2.799 12.9719 2.81085 12.9798 2.82389 12.9851C2.83693 12.9905 2.85091 12.9931 2.865 12.993H5.984V14.493H2.865C2.43887 14.4927 2.03028 14.3233 1.72897 14.022C1.42765 13.7207 1.25826 13.3121 1.258 12.886V4.314C1.25826 3.88779 1.42762 3.47909 1.72891 3.17762C2.03019 2.87615 2.43878 2.70653 2.865 2.706H3.258V0.6H4.758V2.706H11.258V0.6H12.758V2.706H13.151C13.5772 2.70653 13.9858 2.87615 14.2871 3.17762C14.5884 3.47909 14.7577 3.88779 14.758 4.314ZM12.848 8.12C12.189 7.78656 11.4483 7.64884 10.7136 7.72314C9.97878 7.79744 9.28066 8.08065 8.70178 8.53926C8.12291 8.99788 7.68751 9.6127 7.44709 10.311C7.20667 11.0093 7.1713 11.7618 7.34515 12.4796C7.51901 13.1974 7.89482 13.8503 8.42813 14.3612C8.96143 14.8721 9.62991 15.2196 10.3545 15.3625C11.0791 15.5054 11.8294 15.4377 12.5167 15.1676C13.2041 14.8974 13.7996 14.436 14.233 13.838L13.019 12.957C12.7811 13.2843 12.4633 13.5451 12.0959 13.7145C11.7285 13.884 11.3238 13.9564 10.9204 13.9248C10.5171 13.8932 10.1286 13.7587 9.79199 13.5342C9.45543 13.3096 9.18207 13.0025 8.99803 12.6422C8.81399 12.2819 8.72542 11.8804 8.74079 11.4761C8.75616 11.0718 8.87494 10.6782 9.08579 10.3329C9.29665 9.98764 9.59253 9.70217 9.94516 9.50383C10.2978 9.30548 10.6954 9.20087 11.1 9.2C11.6582 9.19437 12.1989 9.39443 12.619 9.762L11.519 10.862H14.735V7.651L13.678 8.709C13.4283 8.47716 13.1493 8.27914 12.848 8.12Z"></path>
-										</svg>
-									</span>
-									{% endif %}
+								<div class="event-cal__day">
+									[[ formatDate(event.start_date, "DD") ]]
 								</div>
-							</a>
-							<div class="fs-13 lh-1.5 c-tint2">
-								<time>{{ start_date|datetimeformat('%A, %B %e, %Y') }}, {{ event.starts_at_time }} – {{ event.ends_at_time }} {{ event.timezone }}</time>
 							</div>
+						</a>
+					</div>
+					<div class="f-1">
+						<a class="fw-500" href="/registrations/[[ event.id ]]">
+							<div class="lh-1.5 mb-2p">
+								[[ event.name ]]
+								<span class="d-ib ml-4p c-tint3" v-if="event.repeating">
+									<svg class="symbol" id="calendar-repeat" viewBox="0 0 16 16">
+										<path d="M14.758 4.314V6.6H2.758V12.886C2.75786 12.9001 2.76054 12.9141 2.76587 12.9271C2.7712 12.9401 2.77908 12.952 2.78904 12.962C2.799 12.9719 2.81085 12.9798 2.82389 12.9851C2.83693 12.9905 2.85091 12.9931 2.865 12.993H5.984V14.493H2.865C2.43887 14.4927 2.03028 14.3233 1.72897 14.022C1.42765 13.7207 1.25826 13.3121 1.258 12.886V4.314C1.25826 3.88779 1.42762 3.47909 1.72891 3.17762C2.03019 2.87615 2.43878 2.70653 2.865 2.706H3.258V0.6H4.758V2.706H11.258V0.6H12.758V2.706H13.151C13.5772 2.70653 13.9858 2.87615 14.2871 3.17762C14.5884 3.47909 14.7577 3.88779 14.758 4.314ZM12.848 8.12C12.189 7.78656 11.4483 7.64884 10.7136 7.72314C9.97878 7.79744 9.28066 8.08065 8.70178 8.53926C8.12291 8.99788 7.68751 9.6127 7.44709 10.311C7.20667 11.0093 7.1713 11.7618 7.34515 12.4796C7.51901 13.1974 7.89482 13.8503 8.42813 14.3612C8.96143 14.8721 9.62991 15.2196 10.3545 15.3625C11.0791 15.5054 11.8294 15.4377 12.5167 15.1676C13.2041 14.8974 13.7996 14.436 14.233 13.838L13.019 12.957C12.7811 13.2843 12.4633 13.5451 12.0959 13.7145C11.7285 13.884 11.3238 13.9564 10.9204 13.9248C10.5171 13.8932 10.1286 13.7587 9.79199 13.5342C9.45543 13.3096 9.18207 13.0025 8.99803 12.6422C8.81399 12.2819 8.72542 11.8804 8.74079 11.4761C8.75616 11.0718 8.87494 10.6782 9.08579 10.3329C9.29665 9.98764 9.59253 9.70217 9.94516 9.50383C10.2978 9.30548 10.6954 9.20087 11.1 9.2C11.6582 9.19437 12.1989 9.39443 12.619 9.762L11.519 10.862H14.735V7.651L13.678 8.709C13.4283 8.47716 13.1493 8.27914 12.848 8.12Z"></path>
+									</svg>
+								</span>
+							</div>
+						</a>
+						<div class="fs-13 lh-1.5 c-tint2">
+							<time>[[ formatDate(event.start_date, "dddd, MMMM D") ]], [[ event.starts_at_time ]] – [[ event.ends_at_time ]] [[ event.timezone ]]</time>
 						</div>
-					</article>
-				</div>
-			{% endfor %}
+					</div>
+				</article>
+			</div>
 		</div>
 	</div>
+</div>
+<div :id="modal.id" class="modal--open" v-for="modal in modals" v-if="modal.visible">
+  <div class="modal-layer">
+    <div class="modal">
+      <div class="modal__header">
+        <h1 class="modal-title">[[ modal.title ]]</h1>
+      </div>
+      <div 
+        class="modal__body"
+        :class="{'has-modal-footer': modal.hasFooter}"
+      >
+        <div class="grid grid-cols-1 gap-2">
+          <div
+						class="d-flex gap-2"
+						v-for="row in modal.form.rows"
+						v-if="evaluateCondition(row.visibility)"
+						:class="{'fd-c': row.type === 'column', 'fd-r ai-c': row.type === 'row'}"
+					>
+            <div
+							:class="{'f-1': column.type === 'field'}"
+							v-for="column in row.columns"
+						>
+              <label
+                class="mb-0 pb-0"
+                v-if="column.type === 'label'"
+              >[[ column.text ]]</label>
+              <div class="f-1" v-if="column.type === 'field'">
+
+								<input
+									:id="column.name"
+									:name="column.name"
+									v-model="newEvent[column.name]"
+									:type="lookupField(column.name, modal.id).format"
+									:disabled="lookupField(column.name, modal.id).disabled"
+									v-if="lookupField(column.name, modal.id).type === 'input'"
+								>
+
+								<textarea
+									:id="column.name"
+									:name="column.name"
+									v-model="newEvent[column.name]"
+									:type="lookupField(column.name, modal.id).format"
+									:disabled="lookupField(column.name, modal.id).disabled"
+									v-if="lookupField(column.name, modal.id).type === 'textarea'"
+								></textarea>
+
+                <select
+                  :id="column.name"
+                  :name="column.name"
+                  v-model="newEvent[column.name]"
+                  @change="setSelect(column.name, $event.target.value, 'newEvent')"
+                  v-if="lookupField(column.name, modal.id).type === 'select'"
+                  :disabled="lookupField(column.name, modal.id).disabled"
+                >
+                  <option disabled value="">-- Please Select --</option>
+                  <option 
+                    v-for="option in lookupField(column.name, modal.id).options"
+                    :key="option.label"
+                    :value="option.value"
+                  >[[ option.label ]]</option>
+                </select>
+
+								<!-- Checkbox -->
+								<div v-if="lookupField(column.name, modal.id).type === 'checkbox'">
+									<input
+										type="checkbox"
+										:id="column.name"
+                  	:name="column.name"
+										class="checkbox"
+										value="1"
+										v-model="newEvent[column.name]"
+										:disabled="lookupField(column.name, modal.id).disabled"
+									>
+									<label
+										:for="column.name"
+										class="checkbox-label"
+									>[[ lookupField(column.name, modal.id).label ]]</label>
+								</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal__footer d-f" v-if="modal.hasFooter">
+        <button
+          type="button"
+          :id="button.id"
+          :class="button.class"
+          @click="callDynamicMethod(button.method)"
+          v-for="button in modal.footerActions"
+          :key="button.id"
+        >
+          <span>[[button.label]]</span>
+        </button>
+      </div>
+    </div>
+  </div>
 </div>

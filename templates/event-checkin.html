@@ -1,0 +1,23 @@
+<!--
+  templateType: page
+  isAvailableForNewContent: true
+  label: Portal - Check In
+  dataQueryPath: ../data-queries/contact_info
+-->
+
+{% extends "./layouts/base-portal.html" %}
+
+{% block body %}
+<main class="body-container-wrapper checkin-template">
+
+</main>
+{% endblock body %}
+
+{% block footer_includes %}
+  {% if request_contact.is_logged_in %}
+    {{ require_js("https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js", { position: 'footer' }) }}
+    {{ require_js("https://cdn.jsdelivr.net/npm/moment-timezone@0.5.43/moment-timezone.min.js", { position: 'footer' }) }}
+    {{ require_js("https://cdn.jsdelivr.net/npm/vue@2", { position: 'footer'}) }}
+    {{ require_js(get_asset_url("../js/lib/checkin.js"), { position: 'footer'}) }}
+  {% endif %}
+{% endblock footer_includes%}

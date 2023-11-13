@@ -8,7 +8,7 @@ const targetData = document.getElementById('json-data');
 const dataset = JSON.parse(targetData.textContent);
 
 const emptyEvent = {
-  event_name: '',
+  name: '',
   starts_at: '',
   starts_at_time: '',
   ends_at: '',
@@ -16,7 +16,8 @@ const emptyEvent = {
   repeating: false,
   description: '',
   location: '',
-  send_reminder_emails: '',
+  automated_reminder_enabled: '',
+  banner_image: ''
 }
 
 const emptyResource = {
@@ -25,18 +26,39 @@ const emptyResource = {
   name: '',
   description: '',
   type: '',
-  binary: ''
+  file: ''
 }
 
 new Vue({
   delimiters: ['[[', ']]'],
-  el: '#main_page_content',
+  el: '#app',
+  mixins: [window.sharedMethods],
+  directives: {
+    'click-outside': window.clickOutsideDirective,
+  },
   data: {
+    objectName: dataset.teamData.team_name,
+    objectType: 'teams',
+    objectId: dataset.teamData.id,
+    loading: true,
+    editing: false,
     currentUser: dataset.userData,
     team: dataset.teamData,
     administrators: [],
     messages: dataset.messages.objects,
+    processing: {
+      resource: false,
+      message: false,
+    },
+    actionDrawers: {
+      primary: false
+    },
+    events: {
+      upcoming: dataset.upcomingEventsData,
+      past: dataset.pastEventsData,
+    },
     resources: dataset.resources.objects,
+    members: [],
     newEvent: emptyEvent,
     newReply: "",
     showComposer: false,
@@ -62,7 +84,7 @@ new Vue({
       { 
         id: 'messaging',
         label: "Messaging",
-        active: false,
+        active: true,
         requiresAdmin: false,
         visibility: "team.communication_enabled === true"
       },
@@ -75,7 +97,7 @@ new Vue({
       {
         id: 'resources',
         label: "Resources",
-        active: true,
+        active: false,
         requiresAdmin: false
       },
       {
@@ -242,7 +264,24 @@ new Vue({
         visible: false,
         title: "New Event",
         hasFooter: true,
-        footerActions: [],
+        footerActions: [
+          {
+            id: "create_event_modal_cancel",
+            label: "Cancel",
+            type: "button",
+            class: "btn text-btn mr-2",
+            method: "hideModal('create_event_modal')",
+            disabled: false
+          },
+          {
+            id: "create_event_modal_save",
+            label: "Save",
+            type: "button",
+            class: "btn create-btn",
+            method: "save('')",
+            disabled: false
+          }
+        ],
         form: {
           rows:[
             {
@@ -253,13 +292,173 @@ new Vue({
                   text: "Event name",
                 },
                 {
-                  type: "input",
-                  name: "event_name",
-                  placeholder: "Enter a name for your event",
-                  format: "text",
-                  value: ""
+                  type: "field",
+                  name: "name",
+                }
+              ],
+              type: 'column'
+            },
+            {
+              visibility: true,
+              columns: [
+                {
+                  type: "label",
+                  text: "Starts at",
+                },
+                {
+                  type: "field",
+                  name: "starts_at",
+                },
+                {
+                  type: "label",
+                  text: "Start Time",
+                },
+                {
+                  type: "field",
+                  name: "starts_at_time",
+                }
+              ],
+              type: 'row'
+            },
+            {
+              visibility: true,
+              columns: [
+                {
+                  type: "label",
+                  text: "Ends at",
+                },
+                {
+                  type: "field",
+                  name: "ends_at",
+                },
+                {
+                  type: "label",
+                  text: "End Time",
+                },
+                {
+                  type: "field",
+                  name: "ends_at_time",
+                }
+              ],
+              type: 'row'
+            },
+            {
+              visibility: true,
+              columns: [
+                {
+                  type: "label",
+                  text: "Repeat",
+                },
+                {
+                  type: "field",
+                  name: "repeating",
                 }
               ]
+            },
+            {
+              visibility: true,
+              columns: [
+                {
+                  type: "label",
+                  text: "Description",
+                },
+                {
+                  type: "field",
+                  name: "description",
+                }
+              ],
+              type: 'column'
+            },
+            {
+              visibility: true,
+              columns: [
+                {
+                  type: "label",
+                  text: "Location",
+                },
+                {
+                  type: "field",
+                  name: "location",
+                }
+              ],
+              type: 'column'
+            },
+            {
+              visibility: true,
+              columns: [
+                {
+                  type: "label",
+                  text: "Send reminder emails",
+                },
+                {
+                  type: "field",
+                  name: "automated_reminder_enabled",
+                }
+              ],
+              type: 'row'
+            }
+          ],
+          fields: [
+            {
+              label: "Event name",
+              name: "name",
+              type: "input",
+              format: "text",
+              placeholder: "Enter a name for your event",
+              disabled: false
+            },
+            {
+              label: "Start date",
+              name: "starts_at",
+              type: "input",
+              format: "date",
+              placeholder: "YYYY-MM-DD",
+            },
+            {
+              label: "Start time",
+              name: "starts_at_time",
+              type: "input",
+              format: "text",
+              placeholder: "HH:MM",
+            },
+            {
+              label: "End date",
+              name: "ends_at",
+              type: "input",
+              format: "date",
+              placeholder: "YYYY-MM-DD",
+            },
+            {
+              label: "End time",
+              name: "ends_at_time",
+              type: "input",
+              format: "text",
+              placeholder: "HH:MM",
+            },
+            {
+              label: "Repeat",
+              name: "repeating",
+              type: "checkbox",
+              disabled: false
+            },
+            {
+              label: "Description",
+              name: "description",
+              type: "textarea",
+              disabled: false
+            },
+            {
+              label: "Location",
+              name: "location",
+              type: "select",
+              options: [],
+              disabled: false
+            },
+            {
+              label:"Send reminder emails",
+              name: "automated_reminder_enabled",
+              type: "checkbox",
+              disabled: false
             }
           ]
         }
@@ -291,6 +490,9 @@ new Vue({
       const visibleTab = this.tabs.find(tab => this.showTab(tab));
       this.setActiveTab(visibleTab);
     }
+
+    this.newResource.objectId = this.team.id;
+    this.newResource.objectType = 'teams';
   },
   computed: {
     isAdmin() {
@@ -307,121 +509,17 @@ new Vue({
     }
   },
   methods: {
-    setActiveTab(selectedTab) {
-      // console.log(`setting active tab to ${selectedTab}`)
-      const updatedTabs = this.tabs.map(tab => ({
-        ...tab,
-        active: tab === selectedTab,
-      }));
-      this.tabs = updatedTabs;
-    },
     enableCommunication() {
       // console.log("enabling communication")
       this.form.team.communication_enabled = true;
       this.team.communication_enabled = true;
       this.save();
-    },
+    }, 
     setSelect(fieldName, selectedValue) {
       // console.log(`set select ${fieldName} to ${selectedValue}`);
       this.$set(this.form.team, fieldName, selectedValue);
       // console.log(this.form.team);
-    },
-    showTab(tab) {
-      // console.log(`showing tab ${tab.id}`)
-      if (tab.requiresAdmin && !this.isAdmin) {
-        return false
-      }
-
-      if (tab.visibility && !this.isAdmin) {
-        // eslint-disable-next-line no-new-func
-        const result = new Function('form', `with(form) { return ${tab.visibility}; }`)(this.form);
-        return result
-      }
-
-      return true
-    },
-    showModal(modalId) {
-      // console.log(`showing modal ${modalId}`);
-      this.modals = this.modals.map(modal => {
-        if (modal.id === modalId) {
-          return { ...modal, visible: true };
-        } 
-        return { ...modal, visible: false };
-      });
-    },
-    hideModal(modalId) {
-      console.log(`hiding modal ${modalId}`);
-      this.modals = this.modals.map(modal => {
-        if (modal.id === modalId) {
-          return { ...modal, visible: false };
-        } 
-        return modal;
-      });
-    },
-    lookupField(fieldName, modalId) {
-      if (modalId) {
-        // Get the modal
-        const modal = this.modals.find(m => m.id === modalId);
-        // Get the field from modal.form.fields
-        return modal.form.fields.find(field => field.name === fieldName);
-      }
-
-      // Okay now we have to parse through sections to find this field which we have accomodate for columns,panes and rows
-      let field;
-
-      try {
-        this.sections.forEach(section => {
-          section.rows.forEach(row => {
-            row.columns.forEach(column => {
-              column.panes.forEach(pane => {
-                field = pane.fields.find(f => f.name === fieldName);
-                if (field) {
-                  throw new Error('Field found');
-                }
-              });
-            });
-          });
-        });
-      } catch (e) {
-        if (e.message !== 'Field found') {
-          throw e;
-        }
-      }
-
-      return field;
-    },
-    evaluateCondition(condition) {
-      // console.log(`evaluating condition ${condition}`)
-      // eslint-disable-next-line no-new-func
-      const result = new Function('form', `with(form) { return ${condition}; }`)(this.form);
-      // console.log(`evaluating condition ${condition}: ${result}`)
-      return result;
-    },
-    callDynamicMethod(methodCall) {
-      console.log(`calling dynamic method ${methodCall}`);
-      const match = methodCall.match(/^([a-zA-Z0-9_]+)\(('([^']*)')\)$/);
-      if (match) {
-        const methodName = match[1];
-        const arg = match[3];
-        if (this[methodName]) {
-          this[methodName](arg);
-        } else {
-          console.warn(`Method ${methodName} does not exist`);
-        }
-      } else {
-        console.warn(`Invalid method call format: ${methodCall}`);
-      }
-    },
-    formatDateIfNeeded(fieldName, fieldValue) {
-      if (fieldName === 'auto_close_date') {
-        return moment(Number(fieldValue)).format('YYYY-MM-DD');
-      }
-      return fieldValue;
-    },
-    formatDate(value, format) {
-      console.log(value, format);
-      return moment(value).format(format);
-    },      
+    },    
     openEnrollment() {
       console.log("opening enrollment")
       this.form.team.active = true;
@@ -443,19 +541,6 @@ new Vue({
       enrollmentStatusButton.method = "openEnrollment('')";
       // trigger save
       this.save();
-    },
-    leaveTeam(teamId, userId) {
-      console.log(`leaving team ${teamId}`)
-      const url = `/api/teams/${teamId}/members/${userId}`;
-      console.log(teamId, userId, url);
-    },
-    addImage() {
-      console.log("adding image")
-      // Call the add image function
-    },
-    archive() {
-      console.log("archiving team")
-      // Call the archive team function
     },
     save() {
       // close all modals if open
@@ -496,129 +581,5 @@ new Vue({
         }
       });
     },
-    createEvent() {
-      console.log("creating event")
-    },
-    cancelEvent(eventId) {
-      console.log(`cancelling event ${eventId}`)
-    },
-    getInitials(name) {
-      const names = name.split(' ');
-      let initials = '';
-      names.forEach(n => {
-        initials += n.charAt(0).toUpperCase();
-      });
-      return initials;
-    },
-    getMessageReplies(messageId) {
-      console.log(`getting replies for message ${messageId}`);
-      const replies = this.messages.filter(message => message.reply === 1 && message.original_id === messageId);
-      return replies.sort((a, b) => {
-        const aDate = new Date(a.date_added);
-        const bDate = new Date(b.date_added);
-        return bDate - aDate;
-      });
-    },
-    submitMessage(reply,originalId) {
-      const message = {
-        name: this.team.team_name,
-        message: this.newReply,
-        reply,
-        // eslint-disable-next-line no-underscore-dangle
-        createdById: Number(this.currentUser._metadata.id),
-        createdByName: `${this.currentUser.firstname} ${this.currentUser.lastname}`,
-        createByEmail: this.currentUser.email,
-        objectType: 'teams',
-        objectId: this.team.id
-      };
-
-      if (originalId) {
-        message.original_id = originalId;
-      }
-      
-      $.ajax({
-        type: 'POST',
-        url: `${window.location.origin}/_hcms/api/addMessage`,
-        contentType: 'application/json',
-        data: JSON.stringify(message),
-        success: (response) => {
-          console.log(response);
-          if (response.status === 'success') {
-            this.newReply = '';
-            this.messages.unshift(response.response.values);
-          }
-        },
-        error: (error) => {
-          console.log(error);
-        }
-      });
-    },
-    convertFileToBinary(event) {
-      return new Promise((resolve, reject) => {
-        // Get the selected file from the input element
-        const file = event.target.files[0];
-
-        console.log(file);
-        
-        // Create a new FileReader instance
-        const reader = new FileReader();
-        
-        // Setup the FileReader
-        reader.onload = (e) => {
-          // Get the binary data once the file is loaded
-          const binaryString = e.target.result;
-    
-          // Create an object to hold the file information
-          const fileInfo = {
-            binary: binaryString,
-            type: file.type,
-            name: file.name
-          };
-
-          this.newResource.name = file.name;
-          this.newResource.type = file.type;
-          this.newResource.binary = binaryString;
-          
-          // Resolve the promise with the fileInfo
-          resolve(fileInfo);
-        };
-        
-        reader.onerror = () => {
-          reject(new Error("Failed to read file"));
-        };
-        
-        // Read the file as binary string
-        reader.readAsBinaryString(file);
-
-        this.fileInfoReady = true;
-      });
-    },    
-    addResource() {
-      console.log("creating resource");
-      const resourceData = {...this.newResource};
-      resourceData.objectId = this.team.id;
-      resourceData.objectType = 'teams';
-
-      // Send the resource to API
-      const endpoint = `${window.location.origin}/_hcms/api/addResource`;
-      $.ajax({
-        type: 'POST',
-        url: endpoint,
-        contentType: 'application/json',
-        data: JSON.stringify(resourceData),
-        success: (response) => {
-          console.log(response);
-          if (response.status === 'success') {
-            console.log(response);
-            // this.resources.unshift(response.response.values);
-            this.newResource = emptyResource;
-            this.fileInfoReady = false;
-          }
-        },
-        error: (error) => {
-          console.log(error);
-        }
-      });
-    }
   }
 });

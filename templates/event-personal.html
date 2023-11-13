@@ -52,7 +52,7 @@
               </div>
               <div>
                 {% for registration in registrations %}
-                  {% set event_fields = "name,banner_image" %}
+                  {% set event_fields = "name,description,starts_at,starts_at_time,ends_at,ends_at_time,include_on_signup_page,repeating,timezone,description" %}
                   {% set events = crm_associations(registration.id, "USER_DEFINED", 325, "", event_fields).results %}
                   {% set participant_fields = "firstname, lastname" %}
                   {% set participants = crm_associations(registration.id, "USER_DEFINED", 323, "", participant_fields).results %}
@@ -154,14 +154,25 @@
             </svg>
           </span>
         </a>
-        <button aria-controls="menu--103" aria-expanded="false" aria-haspopup="true" class="minor-btn secondary-btn btn" data-reach-menu-button="" id="menu-button--menu--actions" style="margin-left: auto;" type="button">
-          Actions
-          <span class="fs-6 pl-4p dropdown-trigger__icon">
-            <svg class="symbol" id="down-chevron" viewBox="0 0 16 16">
-              <path d="M16 6.07L8 14.07L0 6.07L1.782 4.293L8 10.514L14.22 4.293L16 6.07Z"></path>
-            </svg>
-          </span>
-        </button>
+        <div style="margin-left: auto;">
+          <button
+            aria-controls="menu--103"
+            aria-expanded="false"
+            aria-haspopup="true"
+            class="minor-btn secondary-btn btn"
+            data-reach-menu-button=""
+            id="menu-button--menu--actions"
+            type="button"
+            @click="actionDrawers.primary = !actionDrawers.primary"
+          >
+            Actions
+            <span class="fs-6 pl-4p dropdown-trigger__icon">
+              <svg class="symbol" id="down-chevron" viewBox="0 0 16 16">
+                <path d="M16 6.07L8 14.07L0 6.07L1.782 4.293L8 10.514L14.22 4.293L16 6.07Z"></path>
+              </svg>
+            </span>
+          </button>
+        </div>
       </div>
     </nav>
     <div class="f-1 page-content" id="main_page_content">

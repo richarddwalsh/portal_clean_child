@@ -7,22 +7,63 @@ Vue.config.silent = false;
 const targetData = document.getElementById('json-data');
 const dataset = JSON.parse(targetData.textContent);
 
+
+// const emptyEvent = {
+//   name: '',
+//   starts_at: '',
+//   starts_at_time: '',
+//   ends_at: '',
+//   ends_at_time: '',
+//   repeating: false,
+//   description: '',
+//   location: '',
+//   automated_reminder_enabled: '',
+//   banner_image: '',
+// }
+
+// const emptyResource = {
+//   objectId: '',
+//   objectType: '',
+//   name: '',
+//   description: '',
+//   retain: 0,
+//   type: '',
+//   file: ''
+// }
+
 new Vue({
   delimiters: ['[[', ']]'],
-  el: '#main_page_content',
+  el: '#app',
+  mixins: [window.sharedMethods],
+  directives: {
+    'click-outside': window.clickOutsideDirective,
+  },
   data: {
+    objectName: dataset.groupData.name,
+    objectType: 'groups',
+    objectId: dataset.groupData.id,
     loading: true,
+    editing: false,
     currentUser: dataset.userData,
+    currentEvent: undefined,
     group: dataset.groupData,
-    events: {
-      upcoming: dataset.upcomingEventsData,
-      past: dataset.pastEventsData,
+    actionDrawers: {
+      primary: false,
+      rsvp: false
+    },
+    events: dataset.eventsData,
+    processing: {
+      resource: false,
+      message: false,
     },
     messages: dataset.messages.objects,
     resources: dataset.resources.objects,
-    newEvent: {},
+    members: dataset.members.items,
+    newEvent: emptyEvent,
     newReply: "",
     showComposer: false,
+    newResource: emptyResource,
+    fileInfoReady: false,
     categoryData: dataset.categoryData,
     uneditableFields: [
       "id",
@@ -49,13 +90,13 @@ new Vue({
       { 
         id: 'messaging',
         label: "Messaging",
-        active: true,
+        active: false, // TODO: return to true
         requiresAdmin: false
       },
       {
         id: 'events',
         label: "Events",
-        active: false,
+        active: true, // TODO: return to false
         requiresAdmin: false
       },
       {
@@ -518,7 +559,7 @@ new Vue({
                     title: "Event reminder",
                     fields: [
                       {
-                        name: "send_reminder_emails",
+                        name: "automated_reminder_enabled",
                         type: "checkbox",
                         label: "Send reminder emails",
                         disabled: false
@@ -529,7 +570,7 @@ new Vue({
                         label: "This sets the default for new events. If you want to change existing reminders edit the event directly.",
                         labelClass: "fs-4 fw-400",
                         options: dataset.reminderEmailFrequencies,
-                        visibility: "form.group.send_reminder_emails",
+                        visibility: "form.group.automated_reminder_enabled",
                         disabled: false
                       },
                     ]
@@ -771,7 +812,7 @@ new Vue({
             label: "Save",
             type: "button",
             class: "btn create-btn",
-            method: "save('')",
+            method: "createEvent('')",
             disabled: false
           }
         ],
@@ -786,7 +827,7 @@ new Vue({
                 },
                 {
                   type: "field",
-                  name: "event_name",
+                  name: "name",
                 }
               ],
               type: 'column'
@@ -885,7 +926,7 @@ new Vue({
                 },
                 {
                   type: "field",
-                  name: "send_reminder_emails",
+                  name: "automated_reminder_enabled",
                 }
               ],
               type: 'row'
@@ -894,7 +935,7 @@ new Vue({
           fields: [
             {
               label: "Event name",
-              name: "event_name",
+              name: "name",
               type: "input",
               format: "text",
               placeholder: "Enter a name for your event",
@@ -949,7 +990,7 @@ new Vue({
             },
             {
               label:"Send reminder emails",
-              name: "send_reminder_emails",
+              name: "automated_reminder_enabled",
               type: "checkbox",
               disabled: false
             }
@@ -959,33 +1000,36 @@ new Vue({
     ],
   },
   created() {
-    this.group = dataset.groupData;
-    this.currentUser = dataset.userData;
-    this.form.group = dataset.groupData;
-    const categoryId = this.categoryData.id;
-    this.sections[0].rows[0].columns[0].panes[0].fields[1].options = dataset.groupCategories.map(category => ({
-      value: category.id,
-      label: category.name,
-      selected: category.id === categoryId
-    }));
-
-    this.form.group.group_category = categoryId;
     $.ajax({
       type: 'POST',
       url: `${window.location.origin}/_hcms/api/getAdministrators`,
       contentType: 'application/json',
       data: JSON.stringify({}),
       success: (response) => {
-        console.log("Administrators", response);
         if (response.status === "success") {
-          // TODO: CHECK WHY THIS ISN'T SET
+          console.log("Setting administrators", response);
           this.sections[0].rows[0].columns[1].panes[1].fields[0].options = response.results;
         }
+        this.initializeData();
       },
       error: (error) => {
         console.log(error);
+        this.initializeData();
       }
-    });
+    });    
+  },
+  watch: {
+    'form.group': {
+      handler() {
+        console.log("loading state:", this.loading)
+        if (this.loading) {
+          return; // Skip processing if still loading
+        }
+  
+        this.editing = true; // Perform the desired action
+      },
+      deep: true
+    },
   },
   computed: {
     isAdmin() {
@@ -1010,17 +1054,83 @@ new Vue({
       // We need to filter out the replies item.reply = 1
       return this.messages.filter(message => message.reply === 0);
     },
+    upcomingEvents() {
+      const updatedEvents = this.events.map(event => {
+        const startDateTime = moment(this.convertToISO8601(event.starts_at, event.starts_at_time));
+        const endDateTime = moment(this.convertToISO8601(event.ends_at, event.ends_at_time));
+        return {
+          ...event,
+          startDateTime,
+          endDateTime,
+        };
+      });
+      const now = moment();
+      return updatedEvents.filter(event => event.endDateTime.isAfter(now))
+        .sort((a, b) => a.startDateTime - b.startDateTime);
+    },
+    pastEvents() {
+      const updatedEvents = this.events.map(event => {
+        const startDateTime = moment(this.convertToISO8601(event.starts_at, event.starts_at_time));
+        const endDateTime = moment(this.convertToISO8601(event.ends_at, event.ends_at_time));
+        console.log(startDateTime, endDateTime);
+        return {
+          ...event,
+          startDateTime,
+          endDateTime,
+        };
+      });
+    
+      const now = moment();
+      return updatedEvents.filter(event => event.endDateTime.isBefore(now))
+                         .sort((a, b) => b.endDateTime - a.endDateTime); // Sort in descending order of end date-time
+    }    
   },
   methods: {
-    setActiveTab(selectedTab) {
-      // console.log(`setting active tab to ${selectedTab}`)
-      const updatedTabs = this.tabs.map(tab => ({
-        ...tab,
-        active: tab === selectedTab,
+    initializeData() {
+      // this.setCurrentEvent(dataset.eventsData[0]);
+      this.editing = false;
+      this.group = dataset.groupData;
+      if (this.group.featured_image) {
+        this.newEvent.banner_image = this.group.featured_image;
+      } else {
+        this.group.featured_image = "https://23169086.fs1.hubspotusercontent-na1.net/hubfs/23169086/Portal%20Assets/one-placeholder.png";
+        this.newEvent.banner_image = "https://23169086.fs1.hubspotusercontent-na1.net/hubfs/23169086/Portal%20Assets/one-placeholder.png";
+      }
+      this.currentUser = dataset.userData;
+      this.form.group = JSON.parse(JSON.stringify(dataset.groupData));
+      const categoryId = this.categoryData.id;
+      this.sections[0].rows[0].columns[0].panes[0].fields[1].options = dataset.groupCategories.map(category => ({
+        value: category.id,
+        label: category.name,
+        selected: category.id === categoryId
       }));
-      this.tabs = updatedTabs;
+
+      this.form.group.group_category = categoryId;
+
+      // Check if tab is visible and if not, update the first tab available as active
+      const activeTab = this.tabs.find(tab => tab.active);
+      if (!this.showTab(activeTab)) {
+        const visibleTab = this.tabs.find(tab => this.showTab(tab));
+        this.setActiveTab(visibleTab);
+      }
+
+      this.newResource.objectId = this.group.id;
+      this.newResource.objectType = 'groups';
+      setTimeout(() => { 
+        this.loading = false;
+      }, 0);
+    },
+    enableCommunication() {
+      // console.log("enabling communication")
+      this.form.group.communication_enabled = true;
+      this.group.communication_enabled = true;
+      this.save();
     },
     setSelect(fieldName, selectedValue, model) {
+      // console.log(`setting select ${fieldName} to ${selectedValue}`);
+      if (this.loading) {
+        return;
+      }
       if (model) {
         this.$set(this.form[model], fieldName, selectedValue);
         return;
@@ -1028,94 +1138,6 @@ new Vue({
       // console.log(`set select ${fieldName} to ${selectedValue}`);
       this.$set(this.form.group, fieldName, selectedValue);
       // console.log(this.form.group);
-    },
-    showTab(tab) {
-      // console.log(`showing tab ${tab.id}`)
-      if (tab.requiresAdmin && !this.isAdmin) {
-        return false
-      }
-      return true;
-    },
-    showModal(modalId) {
-      // console.log(`showing modal ${modalId}`);
-      this.modals = this.modals.map(modal => {
-        if (modal.id === modalId) {
-          return { ...modal, visible: true };
-        } 
-        return { ...modal, visible: false };
-      });
-    },
-    hideModal(modalId) {
-      console.log(`hiding modal ${modalId}`);
-      this.modals = this.modals.map(modal => {
-        if (modal.id === modalId) {
-          return { ...modal, visible: false };
-        } 
-        return modal;
-      });
-    },
-    lookupField(fieldName, modalId) {
-      if (modalId) {
-        // Get the modal
-        const modal = this.modals.find(m => m.id === modalId);
-        // Get the field from modal.form.fields
-        return modal.form.fields.find(field => field.name === fieldName);
-      }
-
-      // Okay now we have to parse through sections to find this field which we have accomodate for columns,panes and rows
-      let field;
-
-      try {
-        this.sections.forEach(section => {
-          section.rows.forEach(row => {
-            row.columns.forEach(column => {
-              column.panes.forEach(pane => {
-                field = pane.fields.find(f => f.name === fieldName);
-                if (field) {
-                  throw new Error('Field found');
-                }
-              });
-            });
-          });
-        });
-      } catch (e) {
-        if (e.message !== 'Field found') {
-          throw e;
-        }
-      }
-
-      return field;
-    },
-    evaluateCondition(condition) {
-      // console.log(`evaluating condition ${condition}`)
-      // eslint-disable-next-line no-new-func
-      const result = new Function('form', `with(form) { return ${condition}; }`)(this.form);
-      // console.log(`evaluating condition ${condition}: ${result}`)
-      return result;
-    },
-    callDynamicMethod(methodCall) {
-      console.log(`calling dynamic method ${methodCall}`);
-      const match = methodCall.match(/^([a-zA-Z0-9_]+)\(('([^']*)')\)$/);
-      if (match) {
-        const methodName = match[1];
-        const arg = match[3];
-        if (this[methodName]) {
-          this[methodName](arg);
-        } else {
-          console.warn(`Method ${methodName} does not exist`);
-        }
-      } else {
-        console.warn(`Invalid method call format: ${methodCall}`);
-      }
-    },
-    formatDateIfNeeded(fieldName, fieldValue) {
-      if (fieldName === 'auto_close_date') {
-        return moment(Number(fieldValue)).format('YYYY-MM-DD');
-      }
-      return fieldValue;
-    },
-    formatDate(value, format) {
-      return moment(value).format(format);
     },
     openEnrollment() {
       console.log("opening enrollment")
@@ -1219,65 +1241,13 @@ new Vue({
         data: JSON.stringify(groupData),
         success: (response) => {
           console.log(response);
+          this.editing = false;
         },
         error: (error) => {
           console.log(error);
+          this.editing = false;
         }
       });
     },
-    createEvent() {
-      console.log("creating event")
-    },
-    cancelEvent(eventId) {
-      console.log(`cancelling event ${eventId}`)
-    },
-    getInitials(name) {
-      const names = name.split(' ');
-      let initials = '';
-      names.forEach(n => {
-        initials += n.charAt(0).toUpperCase();
-      });
-      return initials;
-    },
-    getMessageReplies(messageId) {
-      console.log(`getting replies for message ${messageId}`);
-      const replies = this.messages.filter(message => message.reply === 1 && message.original_id === messageId);
-      return replies.sort((a, b) => {
-        const aDate = new Date(a.date_added);
-        const bDate = new Date(b.date_added);
-        return bDate - aDate;
-      });
-    },
-    submitMessage(reply,originalId) {
-      const message = {
-        name: this.group.name,
-        originalId,
-        message: this.newReply,
-        reply,
-        // eslint-disable-next-line no-underscore-dangle
-        createdById: Number(this.currentUser._metadata.id),
-        createdByName: `${this.currentUser.firstname} ${this.currentUser.lastname}`,
-        createByEmail: this.currentUser.email,
-        objectType: 'groups',
-        objectId: this.group.id
-      };
-      
-      $.ajax({
-        type: 'POST',
-        url: `${window.location.origin}/_hcms/api/addMessage`,
-        contentType: 'application/json',
-        data: JSON.stringify(message),
-        success: (response) => {
-          console.log(response);
-          if (response.status === 'success') {
-            this.newReply = '';
-            this.messages.unshift(response.response.values);
-          }
-        },
-        error: (error) => {
-          console.log(error);
-        }
-      });
-    }
   }
 });

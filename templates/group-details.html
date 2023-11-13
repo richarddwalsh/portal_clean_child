@@ -24,8 +24,9 @@
       {% endif %}
     {% endif %}
     {# TODO: Convert to 2 queries, past and upcomming #}
+  {% set event_fields = "name,description,starts_at,starts_at_time,ends_at,ends_at_time,include_on_signup_page,repeating,timezone,description" %}
     {% set event_query = "limit=200&orderBy=starts_at" %}
-    {% set events = crm_associations(group.id, "USER_DEFINED", 219, event_query, "name, description, starts_at, starts_at_time, ends_at, ends_at_time").results %}
+    {% set events = crm_associations(group.id, "USER_DEFINED", 219, event_query, event_fields).results %}
     <div class="f-1 page-content" id="main_page_content">
       <div class="f-1 container">
         <div style="outline: none;" tabindex="-1">
