@@ -28,7 +28,6 @@ query contact_info($contact_id: String!) {
       other_address_2
       other_city
       other_state
-      other_zip
       medical_notes
       marital_status
       marital_status__new_
@@ -37,6 +36,8 @@ query contact_info($contact_id: String!) {
       anniversary
       pushpay_payer_link
       pushpay_customer_id
+      household_contact_type
+      using_household_email
       associations {
         registrations: p_registrations_collection__participant {
           items {
@@ -77,6 +78,8 @@ query contact_info($contact_id: String!) {
                   birthday
                   email
                   phone
+                  household_contact_type
+                  using_household_email
                   associations {
                     registrations: p_registrations_collection__participant {
                       items {

@@ -5,12 +5,12 @@
 <article class="d-b" v-for="event in filteredEvents">
 	<a class="card-list-item__wrapper-link" :href='"/registrations/" + event.id'>
     <div class="card-list-item__image">
-      <img :alt='event.properties.name + " logo"' loading="lazy" :src="event.properties.banner_image">
+      <img :alt='event.name + " logo"' loading="lazy" :src="event.banner_image">
     </div>    
     <div class="card-list-item__content">
       <div class="card-list-item__title d-f ai-fs">
-        <h2 class="lh-1.333 c-tint0 fs-3 fw-600">[[ event.properties.name ]]</h2>
-        <span class="featured-badge xs-badge badge d-f ai-c fw-400 ml-a" v-if="event.properties.featured">
+        <h2 class="lh-1.333 c-tint0 fs-3 fw-600">[[ event.name ]]</h2>
+        <span class="featured-badge xs-badge badge d-f ai-c fw-400 ml-a" v-if="event.featured">
           <span class="mr-4p featured-badge__icon">
             <svg class="symbol" xmlns="http://www.w3.org/2000/svg" id="star" viewBox="0 0 16 16">
               <path d="M8 0.5L10.4722 5.4373L16 6.22884L12 10.0719L12.9444 15.499L8 12.9373L3.05564 15.5L4 10.0729L0 6.22884L5.52782 5.43635L8 0.5Z"/>
@@ -20,7 +20,7 @@
         </span>
       </div>
       <div class="card-list-item__details">
-        [[ event.properties.starts_at | formatDate(event.properties.starts_at_time, 'LLLL') ]]
+        [[ event.starts_at | formatDate(event.starts_at_time, 'LLLL') ]]
       </div>
     </div>
   </a>

@@ -2,14 +2,20 @@
   templateType: global_partial
   label: Events List
 -->
-<main id="app" class="body-container-wrapper event-listing-template">
+<div id="app" class="body-container-wrapper event-listing-template" v-cloak>
   <div id="main_page_content" class="f-1 page-content">
     <div class="f-1 container">
       <div tabindex="-1" style="outline: none;">
         <div tabindex="-1" style="outline: none;">
-          <div data-testid="grid" class="grid grid-cols-1 gap-3" style="">
+          <div data-testid="grid" class="grid grid-cols-1 gap-3">
             {% include "./events-filter.html" %}
-            <div v-if="events">
+            <div
+              class="fs-3 ta-c c-tint2"
+              v-if="loading"
+            >
+              <p>Loading...</p>
+            </div>
+            <div v-else>
               <section data-testid="grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3 md:gap-4">
                 {% include "./event-card.html" %}
               </section>
@@ -27,4 +33,4 @@
       </div>
     </div>
   </div>
-</main>
+</div>

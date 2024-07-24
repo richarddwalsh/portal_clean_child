@@ -6,27 +6,29 @@
 -->
 {% extends "./layouts/base-portal.html" %}
 
+{% if request_contact.is_logged_in %}
+  {% set contact = data_query.data.CRM.contact %}
+  {% set contact_id = contact._metadata.id %}
+{% endif %}
+
 {% block body %}
 <main class="body-container-wrapper group-details-template">
+
   {% if dynamic_page_crm_object %}
-    {% set group = dynamic_page_crm_object %}
-    {% set enrolled = false %}
-    {% if request_contact.is_logged_in %}
-      {% set contact = data_query.data.CRM.contact %}
-      {% set contact_id = contact._metadata.id %}
-      {% set my_groups = crm_associations(contact_id, "USER_DEFINED", 118, "").results %}
-      {% set group_ids = [] %}
-      {% for group_item in my_groups %}
-        {% set group_ids = group_ids.append(group_item.id) %}
-      {% endfor %}
-      {% if group.id in group_ids %}
-        {% set enrolled = true %}
-      {% endif %}
-    {% endif %}
-    {# TODO: Convert to 2 queries, past and upcomming #}
+  {% set group = dynamic_page_crm_object %}
   {% set event_fields = "name,description,starts_at,starts_at_time,ends_at,ends_at_time,include_on_signup_page,repeating,timezone,description" %}
-    {% set event_query = "limit=200&orderBy=starts_at" %}
-    {% set events = crm_associations(group.id, "USER_DEFINED", 219, event_query, event_fields).results %}
+  {% set event_query = "limit=200&orderBy=starts_at" %}
+  {% set events = crm_associations(group.id, "USER_DEFINED", 219, event_query, event_fields).results %}
+  <script type="application/json" id="json-data">
+      {
+        "currentView": "detail",
+        "userData": {{ contact|tojson }},
+        "group": {{ group|tojson}},
+        "events": {{ events|tojson }}
+      }
+  </script>
+
+  <div id="app">
     <div class="f-1 page-content" id="main_page_content">
       <div class="f-1 container">
         <div style="outline: none;" tabindex="-1">
@@ -41,6 +43,17 @@
         </div>
       </div>
     </div>
+    <pre>[[group]]</pre>
+  </div>
   {% endif %}
 </main>
 {% endblock body %}
+
+{% block footer_includes %}
+  {{ require_js("https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js", { position: 'footer' }) }}
+  {{ require_js("https://cdn.jsdelivr.net/npm/moment-timezone@0.5.43/moment-timezone.min.js", { position: 'footer' }) }}
+  {{ require_js("https://cdn.jsdelivr.net/npm/vue@2", { position: 'footer'}) }}
+  {{ require_js(get_asset_url("../js/lib/shared/directives.js"), { position: 'footer'}) }}
+  {{ require_js(get_asset_url("../js/lib/shared/methods.js"), { position: 'footer'}) }}
+  {{ require_js(get_asset_url("../js/lib/groups.js"), { position: 'footer'}) }}
+{% endblock footer_includes%}

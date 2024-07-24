@@ -12,126 +12,149 @@
   {% endif %}
   {{ initials }}
 {% endmacro %}
-
-{% if enrolled %}
-<div class="d-f ai-c jc-sb px-2 action-drawer action-bar mb-1@sm mb-3@md" style="gap: 1rem;">
-	<div class="d-f fd-c ai-fs fg-1">
-		<p class="fs-4 m-0 c-tint2">You are a member of this group.</p>
-	</div>
-	<div>
-		<a class="btn" href="/my/groups/{{ group.dynamic_page_slug }}">View Group</a>
-	</div>
-</div>
-{% else %}
-<div class="d-f ai-c jc-sb px-2 action-drawer action-bar mb-1@sm mb-3@md" style="gap: 1rem;">
+<div
+  v-if="group.currentlyEnrolled"
+  class="d-f ai-c jc-sb px-2 action-drawer action-bar mb-1@sm mb-3@md"
+  style="gap: 1rem;"
+>
   <div class="d-f fd-c ai-fs fg-1">
-    <p class="fs-4 m-0 c-tint2">{{ 'Group is open' if group.enrollment_open else 'This group is not currently accepting new members.' }}</p>
-    <button class="btn minor-compact-btn d-b mt-4p modal-trigger" data-target="message-modal" style="color: var(--color-brand);">Contact</button>
+    <p class="fs-4 m-0 c-tint2">You are a member of this group.</p>
   </div>
   <div>
-    {% if group.enrollment_open %}
-      {% if request_contact.is_logged_in %}
-        <button class="btn modal-trigger" data-target="join-modal">Join</button>
-        {# If member changes to View Group, url https://one-online.churchcenter.com/my/groups/interest-crafting-and-conversations #}
-      {% else %}
-        <a href="/_hcms/mem/login" class="btn">Join</a>
-      {% endif %}
-    {% endif %}
+    <a
+      class="btn"
+      :href="`/my/groups/${group.dynamic_page_slug}`"
+    >
+      View Group
+    </a>
   </div>
 </div>
-{% endif %}
-<div id="message-modal" class="modal" data-focus-lock-disabled="false" style="display:none">
-	<div>
-		<div data-reach-alert-dialog-overlay="true" data-reach-dialog-overlay="">
-			<div aria-describedby="alert-dialog-description--1" aria-labelledby="alert-dialog--1" data-reach-alert-dialog-content="true" data-reach-alert-dialong-content="true" data-reach-dialog-content="" role="alertdialog" tabindex="-1">
-				<div class="mb-1" data-reach-alert-dialog-label="true" id="alert-dialog--1">
-					Send message
-				</div>
-				<div data-reach-alert-dialog-description="true" id="alert-dialog-description--1">
-					<form data-endpoint="https://{{ request.domain }}/_hcms/api/group/message" method="POST">
-						<div class="mb-2">
-							<h2 class="lh-1.333 c-tint0 fs-3 fw-600">My information</h2>
-							<div class="d-f ai-c jc-sb action-drawer mt-1">
-								<div class="d-f">
-									<div class="avatar w-6 h-6 mr-2">
-										{{ contactInitials(contact.firstname, contact.lastname) }}
-									</div>
-									<div class="d-f fd-c">
-										<div>
-											{{ contact.firstname ~ " " ~ contact.lastname }}
-										</div>
-										<div class="fs-13 c-tint2">
-											{{ contact.email }}
-										</div>
-									</div>
-								</div>
-								<a class="minor-compact-btn btn" href="/_hcms/mem/logout">Log Out</a>
-							</div>
-						</div>
-						<div class="field-group mb-2">
-							<label class="label" for="body">Message <span class="c-ruby">*</span></label>
-							<textarea class="textarea" id="body" maxlength="500" name="body" placeholder="Have questions before joining? Ask here and someone will get back to you soon!" rows="4"></textarea>
-							<div class="ta-r">
-								<span class="c-tint3 fs-5">500 characters remaining</span>
-							</div>
-						</div>
-						<div class="d-f jc-fe mt-3">
-							<button class="btn text-btn mr-2">Cancel</button>
-							<button class="btn" disabled type="submit">Send message</button>
-						</div>
-					</form>
-				</div>
-			</div>
-		</div>
-	</div>
+
+<div
+v-if="!group.currentlyEnrolled"
+  class="d-f ai-c jc-sb px-2 action-drawer action-bar mb-1@sm mb-3@md"
+  style="gap: 1rem;"
+>
+  <div class="d-f fd-c ai-fs fg-1">
+    <p class="fs-4 m-0 c-tint2">
+      [[ group.enrollment_open ? 'Group is open' : 'This group is not currently accepting new members.' ]]
+    </p>
+    <button
+      class="btn minor-compact-btn d-b mt-4p modal-trigger"
+      data-target="message-modal"
+      style="color: var(--color-brand);"
+    >
+      Contact
+    </button>
+  </div>
+  <div>
+    <div v-if="group.enrollment_open">
+      <div v-if="currentUser">
+        <button
+          class="btn modal-trigger"
+          data-target="join-modal"
+          @click.prevent="toggleModal('group_join_modal')"
+        >
+          Join
+        </button>
+      </div>
+      <div v-else>
+        <a
+          href="/_hcms/mem/login"
+          class="btn"
+        >
+          Join
+        </a>
+      </div>
+    </div>
+  </div>
 </div>
-<div id="join-modal" class="modal" data-focus-lock-disabled="false" style="display:none">
-	<div>
-		<div data-reach-alert-dialog-overlay="true" data-reach-dialog-overlay="">
-			<div aria-describedby="alert-dialog-description--1" aria-labelledby="alert-dialog--1" aria-modal="true" data-reach-alert-dialog-content="true" data-reach-alert-dialong-content="true" data-reach-dialog-content="" role="alertdialog" tabindex="-1">
-				<div class="mb-1" data-reach-alert-dialog-label="true" id="alert-dialog--1">
-					{{ group.name }}
-				</div>
-				<div data-reach-alert-dialog-description="true" id="alert-dialog-description--1">
-					<div class="mb-2">
-						<h2 class="lh-1.333 c-tint0 fs-3 fw-600">My information</h2>
-						<div class="d-f ai-c jc-sb action-drawer mt-1">
-							<div class="d-f">
-								<div class="avatar w-6 h-6 mr-2">
-									{{ contactInitials(contact.firstname, contact.lastname) }}
-								</div>
-								<div class="d-f fd-c">
-									<div>
-										{{ contact.firstname ~ " " ~ contact.lastname }}
-									</div>
-									<div class="fs-13 c-tint2">
-										{{ contact.email }}
-									</div>
-								</div>
-							</div>
-							<a class="minor-compact-btn btn" href="/_hcms/mem/logout">Log Out</a>
-						</div>
-					</div>
-					<form data-endpoint="https://{{ request.domain }}/_hcms/api/group/join" method="POST">
-						<div class="d-f jc-fe mt-3">
-							<input type="hidden" name="groupId" value="{{ group.id }}">
-							<input type="hidden" name="groupName" value="{{ group.name }}">
-							<input type="hidden" name="groupUrl" value="http://{{ request.domain }}/my/groups/{{ group.dynamic_page_slug }}">
-							<input type="hidden" name="groupBannerUrl" value="{{ group.featured_image }}">
-							<input type="hidden" name="contactId" value="{{ contact_id }}">
-							<input type="hidden" name="firstname" value="{{ contact.firstname }}">
-							<input type="hidden" name="contactEmail" value="{{ contact.email }}">
-							<button class="btn text-btn mr-2">Cancel</button>
-							<button class="btn" type="submit">
-								<span>Join group</span>
-								<svg class="progress-circle" height="25" width="25">
-									<circle cx="12.5" cy="12.5" r="6.25"></circle>
-								</svg>
-							</button>
-						</div>
-					</form>
-				</div>
-			</div>
-		</div>
-	</div>
+
+<div
+  :id="modal.id"
+  v-for="(modal, index) in modals.detail"
+  :key="modal.id"
+  class="modal"
+  data-focus-lock-disabled="false"
+  v-if="modal.visible"
+>
+  <div data-reach-alert-dialog-overlay="true" data-reach-dialog-overlay="">
+    <div
+      aria-describedby="alert-dialog-description--1"
+      aria-labelledby="alert-dialog--1"
+      aria-modal="true"
+      data-reach-alert-dialog-content="true"
+      data-reach-dialog-content=""
+      role="alertdialog"
+      tabindex="-1"
+    >
+      <div class="mb-1" data-reach-alert-dialog-label="true" id="alert-dialog--1">
+        [[ modal.title ]]
+      </div>
+      <div data-reach-alert-dialog-description="true" id="alert-dialog-description--1">
+        
+        <div class="mb-2" v-if="modal.id === 'group_join_modal'">
+          <h2 class="lh-1.333 c-tint0 fs-3 fw-600">My information</h2>
+          <div class="d-f ai-c jc-sb action-drawer mt-1">
+            <div class="d-f">
+              <div class="avatar w-6 h-6 mr-2">
+                [[ contactInitials ]]
+              </div>
+              <div class="d-f fd-c">
+                <div>
+                  [[ currentUser.firstname + " " + currentUser.lastname ]]
+                </div>
+                <div class="fs-13 c-tint2">
+                  [[ currentUser.email ]]
+                </div>
+              </div>
+            </div>
+            <a class="minor-compact-btn btn" href="/_hcms/mem/logout">Log Out</a>
+          </div>
+          <div class="d-f jc-fe mt-3">
+            <button class="btn text-btn mr-2" @click="toggleModal('group_join_modal')">Cancel</button>
+            <button class="btn" type="button" @click="joinGroup()">
+              <span>Join group</span>
+              <svg class="progress-circle" height="25" width="25">
+                <circle cx="12.5" cy="12.5" r="6.25"></circle>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="mb-2" v-if="modal.id === 'group_message_modal'">
+          <h2 class="lh-1.333 c-tint0 fs-3 fw-600">My information</h2>
+          <div class="d-f ai-c jc-sb action-drawer mt-1">
+            <div class="d-f">
+              <div class="avatar w-6 h-6 mr-2">
+                [[ contactInitials ]]
+              </div>
+              <div class="d-f fd-c">
+                <div>
+                  [[ currentUser.firstname + " " + currentUser.lastname ]]
+                </div>
+                <div class="fs-13 c-tint2">
+                  [[ currentUser.email ]]
+                </div>
+              </div>
+            </div>
+            <a class="minor-compact-btn btn" href="/_hcms/mem/logout">Log Out</a>
+          </div>
+          <form :action="`https://${window.location.host}/_hcms/api/group/message`" method="POST">
+            <div class="field-group mb-2">
+              <label class="label" for="body">Message <span class="c-ruby">*</span></label>
+              <textarea class="textarea" id="body" maxlength="500" name="body" placeholder="Have questions before joining? Ask here and someone will get back to you soon!" rows="4"></textarea>
+              <div class="ta-r">
+                <span class="c-tint3 fs-5">500 characters remaining</span>
+              </div>
+            </div>
+            <div class="d-f jc-fe mt-3">
+              <button class="btn text-btn mr-2" @click="toggleModal('group_message_modal')">Cancel</button>
+              <button class="btn" :disabled="messageBody.length === 0" type="submit">Send message</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

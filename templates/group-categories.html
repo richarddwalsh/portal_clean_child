@@ -2,15 +2,58 @@
   templateType: page
   isAvailableForNewContent: true
   label: Portal - Group Categories
+  dataQueryPath: ../data-queries/contact_info
 -->
 {% extends "./layouts/base-portal.html" %}
+
+{% if request_contact.is_logged_in %}
+  {% set contact = data_query.data.CRM.contact %}
+  {% set contact_id = contact._metadata.id %}
+{% endif %}
 
 {% block body %}
 <main class="body-container-wrapper group-categories-template">
   {% if dynamic_page_crm_object_type_fqn %}
     {% include "./partials/groups/group-category-list.html" %}
   {% elif dynamic_page_crm_object %}
+    {% set category = dynamic_page_crm_object %}
+    {% set categories = crm_objects("group_categories", "limit=200","name, description, associations, dynamic_page_slug").results %}
+    {% set group_types_filter = crm_property_definition("groups", "group_type").options %}
+    {% set locations_filter = crm_property_definition("groups", "location_type_preference").options %}
+    {% set frequency_filter = crm_property_definition("groups", "frequency").options %}
+    {% set target_audience_filter = crm_property_definition("groups", "target_audience").options %}
+    {% set neighborhood_filter = crm_property_definition("groups", "neighborhood___area").options %}
+    {% set time_zone_filter = crm_property_definition("groups", "time_zone").options %}
+    {% set day_of_week_filter = crm_property_definition("groups", "day_of_week").options %}
+    {% set time_of_day_filter = crm_property_definition("groups", "time_of_day").options %}
+    <script type="application/json" id="json-data">
+      {
+        "currentView": "list",
+        "userData": {{ contact|tojson }},
+        "categories": {{ categories|tojson}},
+        "currentCategory": "{{ category.id }}",
+        "filters": {
+          "groupType": {{ group_types_filter|tojson }},
+          "location": {{ locations_filter|tojson }},
+          "frequency": {{ frequency_filter|tojson }},
+          "targetAudience": {{ target_audience_filter|tojson }},
+          "neighborhood": {{ neighborhood_filter|tojson }},
+          "timeZone": {{ time_zone_filter|tojson }},
+          "dayOfWeek": {{ day_of_week_filter|tojson }},
+          "timeOfDay": {{ time_of_day_filter|tojson }}
+        }
+      }
+    </script>
     {% include "./partials/groups/group-category.html" %}
   {% endif %}
 </main>
 {% endblock body %}
+
+{% block footer_includes %}
+  {{ require_js("https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js", { position: 'footer' }) }}
+  {{ require_js("https://cdn.jsdelivr.net/npm/moment-timezone@0.5.43/moment-timezone.min.js", { position: 'footer' }) }}
+  {{ require_js("https://cdn.jsdelivr.net/npm/vue@2", { position: 'footer'}) }}
+  {{ require_js(get_asset_url("../js/lib/shared/directives.js"), { position: 'footer'}) }}
+  {{ require_js(get_asset_url("../js/lib/shared/methods.js"), { position: 'footer'}) }}
+  {{ require_js(get_asset_url("../js/lib/groups.js"), { position: 'footer'}) }}
+{% endblock footer_includes%}

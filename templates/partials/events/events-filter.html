@@ -6,7 +6,7 @@
   data-testid="grid"
   class="filter-buttons grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 action-drawer"
 >
-  <div>
+  <div class="menu-group">
     <button
       aria-expanded="false"
       aria-haspopup="true"
@@ -18,7 +18,10 @@
     >
       [[ filterLabels.campus ]]
     </button>
-    <div data-reach-menu v-if="activeMenu === 'campus'">
+    <div 
+      v-if="activeMenu === 'campus'"
+      class="menu-group--flyoyout"
+    >
       <div
         aria-labelledby="menu-button--menu--campus"
         role="menu"
@@ -54,7 +57,7 @@
       </div>
     </div>
   </div>
-  <div>
+  <div class="menu-group">
     <button
       aria-expanded="false"
       aria-haspopup="true"
@@ -66,7 +69,10 @@
     >
       [[ filterLabels.category ]]
     </button>
-    <div data-reach-menu v-if="activeMenu === 'category'">
+    <div 
+      v-if="activeMenu === 'category'"
+      class="menu-group--flyoyout"
+    >
       <div
         aria-labelledby="menu-button--menu--category"
         role="menu"

@@ -9,36 +9,20 @@
 
 {% block body %}
   {% if dynamic_page_crm_object_type_fqn %}
-    {% set queryparams = "limit=200" %}
-    {% if request.query_dict.start %}
-      {% set queryparams = queryparams ~ "&starts_at__gte=" ~ request.query.starts_at %}
-    {% else %}
-      {% set queryparams = queryparams ~ "&starts_at__gte=" ~ unixtimestamp(local_dt) %}
+    {% if request_contact.is_logged_in %}
+      {% set contact = data_query.data.CRM.contact %}
+      {% set contact_id = contact._metadata.id %}
     {% endif %}
-    {% set omit = ["Do not include (direct link only)"]%}
-    {% if request.query_dict.archived %}
-      {% set queryparams = queryparams ~ "&include_on_signup_page__contains=On A specific date/time,Now" %}
-    {% else %}
-      {% set queryparams = queryparams ~ "&include_on_signup_page__ne=" ~ omitEventTypes %}
-    {% endif %}
-    {% if request.query_dict.campus %}
-      {# {% set queryparams = queryparams ~ "&campus=" ~ request.query_dict.campus %} #}
-    {% endif %}
-    {% if request.query_dict.category %}
-      {# {% set queryparams = queryparams ~ "&category=" ~ request.query_dict.category %} #}
-    {% endif %}
-    {% set queryparams = queryparams ~ "&orderBy=starts_at" %}
-    
     {% set campus_filter = crm_property_definition(dynamic_page_crm_object_type_fqn, "campus").options %}
     {% set category_filter = crm_property_definition(dynamic_page_crm_object_type_fqn, "category").options %}
     <script type="application/json" id="json-data">
       {
         "currentView": "list",
-        "userData": {{ contact|tojson }},
         "filters": {
           "campus": {{ campus_filter|tojson }},
           "category": {{ category_filter|tojson }}
-        }
+        },
+        "userData": {{ contact|tojson }}
       }
     </script>
     {% include "./partials/events/event-list.html" %}
@@ -96,5 +80,7 @@
   {{ require_js("https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js", { position: 'footer' }) }}
   {{ require_js("https://cdn.jsdelivr.net/npm/moment-timezone@0.5.43/moment-timezone.min.js", { position: 'footer' }) }}
   {{ require_js("https://cdn.jsdelivr.net/npm/vue@2", { position: 'footer'}) }}
+  {{ require_js(get_asset_url("../js/lib/shared/directives.js"), { position: 'footer'}) }}
+  {{ require_js(get_asset_url("../js/lib/shared/methods.js"), { position: 'footer'}) }}
   {{ require_js(get_asset_url("../js/lib/events.js"), { position: 'footer'}) }}
 {% endblock footer_includes%}

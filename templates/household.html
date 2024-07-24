@@ -64,7 +64,8 @@
                 <div class="f-1">
                   <h2 class="lh-1.25">
                     <span>[[ member.firstname ]] [[ member.lastname ]]</span>
-                    <span class="badge ml-4p open-badge tt-c">type</span>
+                    <span class="badge ml-4p open-badge tt-c" v-if="member.household_contact_type">[[ member.household_contact_type.label ]]</span>
+                    <span class="badge ml-4p error-badge tt-c" v-else>Needs Attention</span>
                   </h2>
                   <p class="fs-5">[[ member.email ]]</p>
                 </div>

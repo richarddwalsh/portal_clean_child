@@ -1,8 +1,12 @@
+<!--
+  templateType: "none"
+  isAvailableForNewContent: false
+-->
 <div data-testid="grid" class="grid grid-cols-1 gap-2">
   <div>
     <div class="d-f jc-sb ai-c">
       <div style="flex: 1 1 0%; position: relative">
-        <input type="text" value="" style="padding-left: 32px" />
+        <input type="text" value="" style="padding-left: 32px" @input="updateSearchQuery" />
         <span style="color: var(--color-tint4); font-size: 14px; left: 10px; top: 11px; position: absolute; z-index: 1;">
           <svg class="symbol" id="search" viewBox="0 0 16 16">
             <path fill-rule="evenodd" clip-rule="evenodd" d="M16 14.3288L12.3216 10.7424C13.2016 9.616 13.7296 8.2168 13.7296 6.696C13.7296 3.004 10.6504 0 6.8656 0C3.08 0 0 3.004 0 6.696C0 10.388 3.08 13.392 6.8656 13.392C8.2168 13.392 9.4744 13.004 10.5384 12.344L14.2864 16L16 14.3288ZM1.616 6.696C1.616 3.8728 3.9704 1.576 6.8656 1.576C9.7592 1.576 12.1152 3.8728 12.1152 6.696C12.1152 9.5192 9.7592 11.816 6.8656 11.816C3.9704 11.816 1.616 9.5192 1.616 6.696Z"></path>
@@ -12,77 +16,416 @@
     </div>
   </div>
   <div>
-    <div data-testid="grid" class="filter-buttons grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
-      <button aria-expanded="false" aria-haspopup="true" aria-controls="menu--8" class="select truncate ta-l" data-reach-menu-button="" type="button" id="menu-button--menu--group_type">Group Type</button>
-      <div data-reach-popover="" data-reach-menu="" data-reach-menu-popover="">
-        <div aria-labelledby="menu-button--menu--group_type" role="menu" id="menu--group_type" data-reach-menu-list="" data-reach-menu-items="" tabindex="-1" style="max-height: 15.5rem; max-width: 13rem; overflow: auto;">
-          <div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="(any)" tabindex="-1" id="option-0--menu--8">(any)</div>
-          {% for option in group_types_filter.options %}
-            <div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="{{ option.value }}" tabindex="-1" id="option-{{loop.index}}--menu--8">{{ option.label }}</div>
-          {% endfor %}
+    <div
+      data-testid="grid"
+      class="filter-buttons grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 action-drawer"
+    >
+      <div class="menu-group">
+        <button
+          aria-expanded="false"
+          aria-haspopup="true"
+          aria-controls="menu--campus"
+          class="select truncate ta-l"
+          type="button"
+          id="menu-button--menu--campus"
+          @click.prevent="activeMenu = 'groupType'"
+        >
+          [[ filterLabels.groupType ]]
+        </button>
+        <div 
+          v-if="activeMenu === 'groupType'"
+          class="menu-group--flyout"
+        >
+          <div
+            aria-labelledby="menu-button--menu--groupType"
+            role="menu"
+            id="menu--campus"
+            data-reach-menu-list=""
+            data-reach-menu-button=""
+            tabindex="-1"
+            style="max-height: 15.5rem; max-width: 13rem; overflow: auto"
+          >
+            <div
+              role="menuitem"
+              class="stripped-btn w-100% ta-l"
+              data-reach-menu-item=""
+              data-valuetext="(any)"
+              tabindex="-1"
+              id="option-0--menu--groupType"
+              @click.prevent="applyFilter('groupType', '')"
+            >
+              (any)
+            </div>
+            <div
+              role="menuitem"
+              class="stripped-btn w-100% ta-l"
+              data-reach-menu-item=""
+              :data-valuetext="option.value"
+              tabindex="-1"
+              v-for="(option, index) in filters.groupType"
+              :key="index"
+              @click.prevent="applyFilter('groupType', option.value)"
+            >
+              [[ option.label ]]
+            </div>
+          </div>
         </div>
       </div>
-      <button aria-expanded="false" aria-haspopup="true" aria-controls="menu--9" class="select truncate ta-l" data-reach-menu-button="" type="button" id="menu-button--menu--location_type">Location Type</button>
-      <div data-reach-popover="" data-reach-menu="" data-reach-menu-popover="">
-        <div aria-labelledby="menu-button--menu--location_type" role="menu" id="menu--8" data-reach-menu-list="" data-reach-menu-items="" tabindex="-1" style="max-height: 15.5rem; max-width: 13rem; overflow: auto;">
-          <div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="(any)" tabindex="-1" id="option-0--menu--location_type">(any)</div>
-          {% for option in locations_filter.options %}
-            <div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="{{ option.value }}" tabindex="-1" id="option-{{loop.index}}--menu--location_type">{{ option.label }}</div>
-          {% endfor %}
+      <div class="menu-group">
+        <button
+          aria-expanded="false"
+          aria-haspopup="true"
+          aria-controls="menu--location"
+          class="select truncate ta-l"
+          type="button"
+          id="menu-button--menu--location"
+          @click.prevent="activeMenu = 'location'"
+        >
+          [[ filterLabels.location ]]
+        </button>
+        <div 
+          v-if="activeMenu === 'location'"
+          class="menu-group--flyout"
+        >
+          <div
+            aria-labelledby="menu-button--menu--location"
+            role="menu"
+            id="menu--location"
+            data-reach-menu-list=""
+            data-reach-menu-button=""
+            tabindex="-1"
+            style="max-height: 15.5rem; max-width: 13rem; overflow: auto"
+          >
+            <div
+              role="menuitem"
+              class="stripped-btn w-100% ta-l"
+              data-reach-menu-item=""
+              data-valuetext="(any)"
+              tabindex="-1"
+              id="option-0--menu--location"
+              @click.prevent="applyFilter('location', '')"
+            >
+              (any)
+            </div>
+            <div
+              role="menuitem"
+              class="stripped-btn w-100% ta-l"
+              data-reach-menu-item=""
+              :data-valuetext="option.value"
+              tabindex="-1"
+              v-for="(option, index) in filters.location"
+              :key="index"
+              @click.prevent="applyFilter('location', option.value)"
+            >
+              [[ option.label ]]
+            </div>
+          </div>
         </div>
       </div>
-      <button aria-expanded="false" aria-haspopup="true" aria-controls="menu--target_audience" class="select truncate ta-l" data-reach-menu-button="" type="button" id="menu-button--menu--target_audience">Target Audience</button>
-      <div data-reach-popover="" data-reach-menu="" data-reach-menu-popover="">
-        <div aria-labelledby="menu-button--menu--target_audience" role="menu" id="menu--8" data-reach-menu-list="" data-reach-menu-items="" tabindex="-1" style="max-height: 15.5rem; max-width: 13rem; overflow: auto;">
-          <div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="(any)" tabindex="-1" id="option-0--menu--target_audience">(any)</div>
-          {% for option in target_audience_filter.options %}
-            <div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="{{ option.value }}" tabindex="-1" id="option-{{loop.index}}--menu--target_audience">{{ option.label }}</div>
-          {% endfor %}
+      <div class="menu-group">
+        <button
+          aria-expanded="false"
+          aria-haspopup="true"
+          aria-controls="menu--targetAudience"
+          class="select truncate ta-l"
+          type="button"
+          id="menu-button--menu--targetAudience"
+          @click.prevent="activeMenu = 'targetAudience'"
+        >
+          [[ filterLabels.targetAudience ]]
+        </button>
+        <div 
+          v-if="activeMenu === 'targetAudience'"
+          class="menu-group--flyout"
+        >
+          <div
+            aria-labelledby="menu-button--menu--targetAudience"
+            role="menu"
+            id="menu--targetAudience"
+            data-reach-menu-list=""
+            data-reach-menu-button=""
+            tabindex="-1"
+            style="max-height: 15.5rem; max-width: 13rem; overflow: auto"
+          >
+            <div
+              role="menuitem"
+              class="stripped-btn w-100% ta-l"
+              data-reach-menu-item=""
+              data-valuetext="(any)"
+              tabindex="-1"
+              id="option-0--menu--targetAudience"
+              @click.prevent="applyFilter('targetAudience', '')"
+            >
+              (any)
+            </div>
+            <div
+              role="menuitem"
+              class="stripped-btn w-100% ta-l"
+              data-reach-menu-item=""
+              :data-valuetext="option.value"
+              tabindex="-1"
+              v-for="(option, index) in filters.targetAudience"
+              :key="index"
+              @click.prevent="applyFilter('targetAudience', option.value)"
+            >
+              [[ option.label ]]
+            </div>
+          </div>
         </div>
       </div>
-      <button aria-expanded="false" aria-haspopup="true"aria-controls="menu--frequency" class="select truncate ta-l" data-reach-menu-button="" type="button" id="menu-button--menu--frequency">Frequency</button>
-      <div data-reach-popover="" data-reach-menu="" data-reach-menu-popover="">
-        <div aria-labelledby="menu-button--menu--frequency" role="menu" id="menu--8" data-reach-menu-list="" data-reach-menu-items="" tabindex="-1" style="max-height: 15.5rem; max-width: 13rem; overflow: auto;">
-          <div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="(any)" tabindex="-1" id="option-0--menu--frequency">(any)</div>
-          {% for option in frequency_filter.options %}
-            <div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="{{ option.value }}" tabindex="-1" id="option-{{loop.index}}--menu--frequency">{{ option.label }}</div>
-          {% endfor %}
+      <div class="menu-group">
+        <button
+          aria-expanded="false"
+          aria-haspopup="true"
+          aria-controls="menu--frequency"
+          class="select truncate ta-l"
+          type="button"
+          id="menu-button--menu--frequency"
+          @click.prevent="activeMenu = 'frequency'"
+        >
+          [[ filterLabels.frequency ]]
+        </button>
+        <div 
+          v-if="activeMenu === 'frequency'"
+          class="menu-group--flyout"
+        >
+          <div
+            aria-labelledby="menu-button--menu--frequency"
+            role="menu"
+            id="menu--frequency"
+            data-reach-menu-list=""
+            data-reach-menu-button=""
+            tabindex="-1"
+            style="max-height: 15.5rem; max-width: 13rem; overflow: auto"
+          >
+            <div
+              role="menuitem"
+              class="stripped-btn w-100% ta-l"
+              data-reach-menu-item=""
+              data-valuetext="(any)"
+              tabindex="-1"
+              id="option-0--menu--frequency"
+              @click.prevent="applyFilter('frequency', '')"
+            >
+              (any)
+            </div>
+            <div
+              role="menuitem"
+              class="stripped-btn w-100% ta-l"
+              data-reach-menu-item=""
+              :data-valuetext="option.value"
+              tabindex="-1"
+              v-for="(option, index) in filters.frequency"
+              :key="index"
+              @click.prevent="applyFilter('frequency', option.value)"
+            >
+              [[ option.label ]]
+            </div>
+          </div>
         </div>
       </div>
-      <button aria-expanded="false" aria-haspopup="true" aria-controls="menu--neighborhood" class="select truncate ta-l" data-reach-menu-button="" type="button" id="menu-button--menu--neighborhood">Neighborhood | Area</button>
-      <div data-reach-popover="" data-reach-menu="" data-reach-menu-popover="">
-        <div aria-labelledby="menu-button--menu--neighborhood" role="menu" id="menu--8" data-reach-menu-list="" data-reach-menu-items="" tabindex="-1" style="max-height: 15.5rem; max-width: 13rem; overflow: auto;">
-          <div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="(any)" tabindex="-1" id="option-0--menu--neighborhood">(any)</div>
-          {% for option in neighborhood_filter.options %}
-            <div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="{{ option.value }}" tabindex="-1" id="option-{{loop.index}}--menu--neighborhood">{{ option.label }}</div>
-          {% endfor %}
+      <div class="menu-group">
+        <button
+          aria-expanded="false"
+          aria-haspopup="true"
+          aria-controls="menu--neighborhood"
+          class="select truncate ta-l"
+          type="button"
+          id="menu-button--menu--neighborhood"
+          @click.prevent="activeMenu = 'neighborhood'"
+        >
+          [[ filterLabels.neighborhood ]]
+        </button>
+        <div 
+          v-if="activeMenu === 'neighborhood'"
+          class="menu-group--flyout"
+        >
+          <div
+            aria-labelledby="menu-button--menu--neighborhood"
+            role="menu"
+            id="menu--neighborhood"
+            data-reach-menu-list=""
+            data-reach-menu-button=""
+            tabindex="-1"
+            style="max-height: 15.5rem; max-width: 13rem; overflow: auto"
+          >
+            <div
+              role="menuitem"
+              class="stripped-btn w-100% ta-l"
+              data-reach-menu-item=""
+              data-valuetext="(any)"
+              tabindex="-1"
+              id="option-0--menu--neighborhood"
+              @click.prevent="applyFilter('neighborhood', '')"
+            >
+              (any)
+            </div>
+            <div
+              role="menuitem"
+              class="stripped-btn w-100% ta-l"
+              data-reach-menu-item=""
+              :data-valuetext="option.value"
+              tabindex="-1"
+              v-for="(option, index) in filters.neighborhood"
+              :key="index"
+              @click.prevent="applyFilter('neighborhood', option.value)"
+            >
+              [[ option.label ]]
+            </div>
+          </div>
         </div>
       </div>
-      <button aria-expanded="false" aria-haspopup="true" aria-controls="menu--timezone" class="select truncate ta-l" data-reach-menu-button="" type="button" id="menu-button--menu--timezone">Time Zone</button>
-      <div data-reach-popover="" data-reach-menu="" data-reach-menu-popover="">
-        <div aria-labelledby="menu-button--menu--timezone" role="menu" id="menu--8" data-reach-menu-list="" data-reach-menu-items="" tabindex="-1" style="max-height: 15.5rem; max-width: 13rem; overflow: auto;">
-          <div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="(any)" tabindex="-1" id="option-0--menu--timezone">(any)</div>
-          {% for option in time_zone_filter.options %}
-            <div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="{{ option.value }}" tabindex="-1" id="option-{{loop.index}}--menu--timezone">{{ option.label }}</div>
-          {% endfor %}
+      <div class="menu-group">
+        <button
+          aria-expanded="false"
+          aria-haspopup="true"
+          aria-controls="menu--timeZone"
+          class="select truncate ta-l"
+          type="button"
+          id="menu-button--menu--timeZone"
+          @click.prevent="activeMenu = 'timeZone'"
+        >
+          [[ filterLabels.timeZone ]]
+        </button>
+        <div 
+          v-if="activeMenu === 'timeZone'"
+          class="menu-group--flyout"
+        >
+          <div
+            aria-labelledby="menu-button--menu--timeZone"
+            role="menu"
+            id="menu--timeZone"
+            data-reach-menu-list=""
+            data-reach-menu-button=""
+            tabindex="-1"
+            style="max-height: 15.5rem; max-width: 13rem; overflow: auto"
+          >
+            <div
+              role="menuitem"
+              class="stripped-btn w-100% ta-l"
+              data-reach-menu-item=""
+              data-valuetext="(any)"
+              tabindex="-1"
+              id="option-0--menu--timeZone"
+              @click.prevent="applyFilter('timeZone', '')"
+            >
+              (any)
+            </div>
+            <div
+              role="menuitem"
+              class="stripped-btn w-100% ta-l"
+              data-reach-menu-item=""
+              :data-valuetext="option.value"
+              tabindex="-1"
+              v-for="(option, index) in filters.timeZone"
+              :key="index"
+              @click.prevent="applyFilter('timeZone', option.value)"
+            >
+              [[ option.label ]]
+            </div>
+          </div>
         </div>
       </div>
-      <button aria-expanded="false" aria-haspopup="true" aria-controls="menu--day_of_week" class="select truncate ta-l" data-reach-menu-button="" type="button" id="menu-button--menu--day_of_week">Day of the Week</button>
-      <div data-reach-popover="" data-reach-menu="" data-reach-menu-popover="">
-        <div aria-labelledby="menu-button--menu--day_of_week" role="menu" id="menu--8" data-reach-menu-list="" data-reach-menu-items="" tabindex="-1" style="max-height: 15.5rem; max-width: 13rem; overflow: auto;">
-          <div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="(any)" tabindex="-1" id="option-0--menu--day_of_week">(any)</div>
-          {% for option in day_of_week_filter.options %}
-            <div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="{{ option.value }}" tabindex="-1" id="option-{{loop.index}}--menu--day_of_week">{{ option.label }}</div>
-          {% endfor %}
+      <div class="menu-group">
+        <button
+          aria-expanded="false"
+          aria-haspopup="true"
+          aria-controls="menu--dayOfWeek"
+          class="select truncate ta-l"
+          type="button"
+          id="menu-button--menu--dayOfWeek"
+          @click.prevent="activeMenu = 'dayOfWeek'"
+        >
+          [[ filterLabels.dayOfWeek ]]
+        </button>
+        <div 
+          v-if="activeMenu === 'dayOfWeek'"
+          class="menu-group--flyout"
+        >
+          <div
+            aria-labelledby="menu-button--menu--dayOfWeek"
+            role="menu"
+            id="menu--dayOfWeek"
+            data-reach-menu-list=""
+            data-reach-menu-button=""
+            tabindex="-1"
+            style="max-height: 15.5rem; max-width: 13rem; overflow: auto"
+          >
+            <div
+              role="menuitem"
+              class="stripped-btn w-100% ta-l"
+              data-reach-menu-item=""
+              data-valuetext="(any)"
+              tabindex="-1"
+              id="option-0--menu--dayOfWeek"
+              @click.prevent="applyFilter('dayOfWeek', '')"
+            >
+              (any)
+            </div>
+            <div
+              role="menuitem"
+              class="stripped-btn w-100% ta-l"
+              data-reach-menu-item=""
+              :data-valuetext="option.value"
+              tabindex="-1"
+              v-for="(option, index) in filters.dayOfWeek"
+              :key="index"
+              @click.prevent="applyFilter('dayOfWeek', option.value)"
+            >
+              [[ option.label ]]
+            </div>
+          </div>
         </div>
       </div>
-      <button aria-expanded="false" aria-haspopup="true" aria-controls="menu--time_of_day" class="select truncate ta-l" data-reach-menu-button="" type="button" id="menu-button--menu--time_of_day">Time of Day</button>
-      <div data-reach-popover="" data-reach-menu="" data-reach-menu-popover="">
-        <div aria-labelledby="menu-button--menu--time_of_day" role="menu" id="menu--8" data-reach-menu-list="" data-reach-menu-items="" tabindex="-1" style="max-height: 15.5rem; max-width: 13rem; overflow: auto;">
-          <div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="(any)" tabindex="-1" id="option-0--menu--time_of_day">(any)</div>
-          {% for option in time_of_day_filter.options %}
-            <div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="{{ option.value }}" tabindex="-1" id="option-{{loop.index}}--menu--time_of_day">{{ option.label }}</div>
-          {% endfor %}
+      <div class="menu-group">
+        <button
+          aria-expanded="false"
+          aria-haspopup="true"
+          aria-controls="menu--timeOfDay"
+          class="select truncate ta-l"
+          type="button"
+          id="menu-button--menu--timeOfDay"
+          @click.prevent="activeMenu = 'timeOfDay'"
+        >
+          [[ filterLabels.timeOfDay ]]
+        </button>
+        <div 
+          v-if="activeMenu === 'timeOfDay'"
+          class="menu-group--flyout"
+        >
+          <div
+            aria-labelledby="menu-button--menu--timeOfDay"
+            role="menu"
+            id="menu--timeOfDay"
+            data-reach-menu-list=""
+            data-reach-menu-button=""
+            tabindex="-1"
+            style="max-height: 15.5rem; max-width: 13rem; overflow: auto"
+          >
+            <div
+              role="menuitem"
+              class="stripped-btn w-100% ta-l"
+              data-reach-menu-item=""
+              data-valuetext="(any)"
+              tabindex="-1"
+              id="option-0--menu--timeOfDay"
+              @click.prevent="applyFilter('timeOfDay', '')"
+            >
+              (any)
+            </div>
+            <div
+              role="menuitem"
+              class="stripped-btn w-100% ta-l"
+              data-reach-menu-item=""
+              :data-valuetext="option.value"
+              tabindex="-1"
+              v-for="(option, index) in filters.timeOfDay"
+              :key="index"
+              @click.prevent="applyFilter('timeOfDay', option.value)"
+            >
+              [[ option.label ]]
+            </div>
+          </div>
         </div>
       </div>
     </div>

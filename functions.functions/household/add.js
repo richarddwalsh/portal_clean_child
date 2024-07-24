@@ -10,7 +10,17 @@ exports.main = ({ body }, sendResponse) => {
     sendResponse({ body: { status: "error", error: "No body provided.", step: "validateBody" }, statusCode: 500 });
   }
 
-  const { householdId, first_name, last_name, email, phone, birthday, member_type } = body;
+  const { 
+    householdId,
+    first_name,
+    last_name,
+    email,
+    phone,
+    birthday,
+    member_type,
+    using_household_email,
+    household_contact_type
+  } = body;
 
   const config = {
     headers: {
@@ -25,7 +35,9 @@ exports.main = ({ body }, sendResponse) => {
     lastname: last_name,
     email,
     phone,
-    birthday
+    birthday,
+    using_household_email,
+    household_contact_type
   };
 
   const householdAssociationData = {

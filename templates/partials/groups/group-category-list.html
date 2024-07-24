@@ -3,43 +3,43 @@
   label: Group Category List
 -->
 {% if dynamic_page_crm_object_type_fqn %}
-{% set query = "limit=200" %}
-{% set categories = crm_objects(dynamic_page_crm_object_type_fqn, query,"name, description, associations, dynamic_page_slug") %}
-<div id="main_page_content" class="f-1">
-  <div class="f-1 container pt-4 pb-4">
-    <div tabindex="-1" style="outline: none;">
+  {% set query = "limit=200" %}
+  {% set categories = crm_objects(dynamic_page_crm_object_type_fqn, query,"name, description, associations, dynamic_page_slug") %}
+  <div id="main_page_content" class="f-1 group-categores-list-template">
+    <div class="f-1 container pt-4 pb-4">
       <div tabindex="-1" style="outline: none;">
-        <div>
-          {% for category in categories.results %}
-            {% set children = crm_associations(category.id, "USER_DEFINED", 304, "", "name,featured_image").results %}
-            <a href="{{ request.path }}/{{ category.dynamic_page_slug }}" class="card-list-item__wrapper-link group-types-collection">
-              <div class="d-f@md jc-sb ai-c">
-                <div class="f-1">
-                  <div>
-                    <div class="d-f ai-c mb-1">
-                      <h2 class="mb-0">{{ category.name }}</h2>
-                      {% if children|length > 0 %}
-                      <div class="ml-1 badge as-fs p-r t-2p">{{ children|length}} open groups</div>
-                      {% endif %}
-                    </div>
-                    <div class="fs-4">
-                      {{ category.description|striptags }}
+        <div tabindex="-1" style="outline: none;">
+          <div>
+            {% for category in categories.results %}
+              {% set children = crm_associations(category.id, "USER_DEFINED", 304, "", "name,featured_image").results %}
+              <a href="{{ request.path }}/{{ category.dynamic_page_slug }}" class="card-list-item__wrapper-link group-types-collection">
+                <div class="d-f@md jc-sb ai-c">
+                  <div class="f-1">
+                    <div>
+                      <div class="d-f ai-c mb-1">
+                        <h2 class="mb-0">{{ category.name }}</h2>
+                        {% if children|length > 0 %}
+                        <div class="ml-1 badge as-fs p-r t-2p">{{ children|length}} open groups</div>
+                        {% endif %}
+                      </div>
+                      <div class="fs-4">
+                        {{ category.description|striptags }}
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div class="w-30%@md mt-3 mt-0@md d-f ai-c jc-c">
-                  {% for child in children[:3] %}
-                  <div class="w-8 h-8 ml-1 d-flex">
-                    <img loading="lazy" src="{{ child.featured_image }}" alt="Logo for {{ child.name }}" class="d-b circle" style="object-fit:cover">
+                  <div class="w-30%@md mt-3 mt-0@md d-f ai-c jc-c">
+                    {% for child in children[:3] %}
+                    <div class="w-8 h-8 ml-1 d-flex">
+                      <img loading="lazy" src="{{ child.featured_image }}" alt="Logo for {{ child.name }}" class="d-b circle" style="object-fit:cover">
+                    </div>
+                    {% endfor %}
                   </div>
-                  {% endfor %}
                 </div>
-              </div>
-            </a>
-          {% endfor %}
+              </a>
+            {% endfor %}
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
-{% endif %}
+  {% endif %}

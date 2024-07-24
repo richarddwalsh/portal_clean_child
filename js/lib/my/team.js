@@ -7,28 +7,6 @@ Vue.config.silent = false;
 const targetData = document.getElementById('json-data');
 const dataset = JSON.parse(targetData.textContent);
 
-const emptyEvent = {
-  name: '',
-  starts_at: '',
-  starts_at_time: '',
-  ends_at: '',
-  ends_at_time: '',
-  repeating: false,
-  description: '',
-  location: '',
-  automated_reminder_enabled: '',
-  banner_image: ''
-}
-
-const emptyResource = {
-  objectId: '',
-  objectType: '',
-  name: '',
-  description: '',
-  type: '',
-  file: ''
-}
-
 new Vue({
   delimiters: ['[[', ']]'],
   el: '#app',
@@ -43,19 +21,18 @@ new Vue({
     loading: true,
     editing: false,
     currentUser: dataset.userData,
+    currentEvent: undefined,
     team: dataset.teamData,
     administrators: [],
     messages: dataset.messages.objects,
+    actionDrawers: {
+      primary: false,
+      rsvp: false,
+    },
+    events: dataset.eventsData,
     processing: {
       resource: false,
       message: false,
-    },
-    actionDrawers: {
-      primary: false
-    },
-    events: {
-      upcoming: dataset.upcomingEventsData,
-      past: dataset.pastEventsData,
     },
     resources: dataset.resources.objects,
     members: [],
@@ -466,33 +443,20 @@ new Vue({
     ],
   },
   created() { 
-    this.team = dataset.teamData;
-    this.currentUser = dataset.userData;
-    const { teamData } = dataset
-    Object.keys(this.form.team).forEach(key => {
-      if (teamData[key]) {
-        this.form.team[key] = teamData[key]; 
-      }
-    });
-    
-    // if team.active is true, update the enrollment status button
-    if (this.form.team.active) {
-      const enrollmentStatusButton = this.lookupField("active");
-      console.log(enrollmentStatusButton);
-      enrollmentStatusButton.title = "Open";
-      enrollmentStatusButton.label = "Close enrollment";
-      enrollmentStatusButton.method = "closeEnrollment('')";
-    }
-
-    // Check if tab is visible and if not, update the first tab available as active
-    const activeTab = this.tabs.find(tab => tab.active);
-    if (!this.showTab(activeTab)) {
-      const visibleTab = this.tabs.find(tab => this.showTab(tab));
-      this.setActiveTab(visibleTab);
-    }
-
-    this.newResource.objectId = this.team.id;
-    this.newResource.objectType = 'teams';
+    this.initializeData();
+  },
+  watch: {
+    'form.team': {
+      handler() {
+        console.log("loading state:", this.loading)
+        if (this.loading) {
+          return; // Skip processing if still loading
+        }
+  
+        this.editing = true; // Perform the desired action
+      },
+      deep: true
+    },
   },
   computed: {
     isAdmin() {
@@ -506,9 +470,73 @@ new Vue({
     filteredMessages() {
       // We need to filter out the replies item.reply = 1
       return this.messages.filter(message => message.reply === 0);
-    }
+    },
+    upcomingEvents() {
+      const updatedEvents = this.events.map(event => {
+        const startDateTime = moment(this.convertToISO8601(event.starts_at, event.starts_at_time));
+        const endDateTime = moment(this.convertToISO8601(event.ends_at, event.ends_at_time));
+        return {
+          ...event,
+          startDateTime,
+          endDateTime,
+        };
+      });
+      const now = moment();
+      return updatedEvents.filter(event => event.endDateTime.isAfter(now))
+        .sort((a, b) => a.startDateTime - b.startDateTime);
+    },
+    pastEvents() {
+      const updatedEvents = this.events.map(event => {
+        const startDateTime = moment(this.convertToISO8601(event.starts_at, event.starts_at_time));
+        const endDateTime = moment(this.convertToISO8601(event.ends_at, event.ends_at_time));
+        console.log(startDateTime, endDateTime);
+        return {
+          ...event,
+          startDateTime,
+          endDateTime,
+        };
+      });
+    
+      const now = moment();
+      return updatedEvents.filter(event => event.endDateTime.isBefore(now))
+                         .sort((a, b) => b.endDateTime - a.endDateTime); // Sort in descending order of end date-time
+    } 
   },
   methods: {
+    initializeData() {
+      this.editing = false;
+      this.team = dataset.teamData;
+      this.currentUser = dataset.userData;
+      const { teamData } = dataset
+      Object.keys(this.form.team).forEach(key => {
+        if (teamData[key]) {
+          this.form.team[key] = teamData[key]; 
+        }
+      });
+      
+      // if team.active is true, update the enrollment status button
+      if (this.form.team.active) {
+        const enrollmentStatusButton = this.lookupField("active");
+        console.log(enrollmentStatusButton);
+        enrollmentStatusButton.title = "Open";
+        enrollmentStatusButton.label = "Close enrollment";
+        enrollmentStatusButton.method = "closeEnrollment('')";
+      }
+
+      // Check if tab is visible and if not, update the first tab available as active
+      const activeTab = this.tabs.find(tab => tab.active);
+      if (!this.showTab(activeTab)) {
+        const visibleTab = this.tabs.find(tab => this.showTab(tab));
+        this.setActiveTab(visibleTab);
+      }
+
+      this.newResource.objectId = this.team.id;
+      this.newResource.objectType = 'teams';
+
+      setTimeout(() => {
+        this.loading = false;
+      });
+    },
     enableCommunication() {
       // console.log("enabling communication")
       this.form.team.communication_enabled = true;

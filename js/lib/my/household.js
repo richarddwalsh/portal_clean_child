@@ -25,7 +25,8 @@ new Vue({
         email: '',
         phone: '',
         birthday: '',
-        member_type: ''
+        member_type: '',
+        using_household_email: false
       },
       editMember: {
         hs_object_id: '',
@@ -34,7 +35,8 @@ new Vue({
         email: '',
         phone: '',
         birthday: '',
-        member_type: ''
+        member_type: '',
+        using_household_email: false
       }
     },
     modals: [
@@ -84,7 +86,13 @@ new Vue({
               property: "email",
               type: "input",
               format: "email",
-              notice: "This email address will be used to send reminders and other important information. Leave blank to send yourself these notifications."
+              notice: "This email address will be used to send reminders and other important information."
+            },
+            {
+              label: "Use Parent/Guardian Email for Communications",
+              name: "using_household_email",
+              property: "using_household_email",
+              type: "checkbox",
             },
             {
               label: "Phone",
@@ -178,6 +186,16 @@ new Vue({
                   type: "field",
                   name: "email"
                 },
+              ],
+              type: "column"
+            },
+            {
+              visibility: true,
+              columns: [
+                {
+                  type: "field",
+                  name: "using_household_email"
+                }
               ],
               type: "column"
             },
@@ -244,7 +262,13 @@ new Vue({
               property: "email",
               type: "input",
               format: "email",
-              notice: "This email address will be used to send reminders and other important information. Leave blank to send yourself these notifications."
+              notice: "This email address will be used to send reminders and other important information."
+            },
+            {
+              label: "Use Parent/Guardian Email for Communications",
+              name: "using_household_email",
+              property: "using_household_email",
+              type: "checkbox",
             },
             {
               label: "Phone",
@@ -338,6 +362,16 @@ new Vue({
                   type: "field",
                   name: "email"
                 },
+              ],
+              type: "column"
+            },
+            {
+              visibility: true,
+              columns: [
+                {
+                  type: "field",
+                  name: "using_household_email"
+                }
               ],
               type: "column"
             },
@@ -467,12 +501,20 @@ new Vue({
         newMember.email = email;
       }
 
+      // Need to set the household_contact_type based on the member_type's label
+      // eslint-disable-next-line camelcase
+      const household_contact_type = this.lookupField('member_type', 'create_member_modal').options.find(option => option.value === newMember.member_type).label;
+
       // Now we can submit to the api to create the contact and add the assiociation.
       const householdId = this.household.hs_object_id;
       const payload = {
         householdId,
+        // eslint-disable-next-line camelcase
+        household_contact_type,
         ...newMember
       };
+
+      console.log(payload);
 
       const endpoint = `${window.location.origin}/_hcms/api/household/add`;
 
@@ -527,10 +569,17 @@ new Vue({
       console.log("Updating member");
       this.actionDrawers.primary = false;
       const { editMember } = this.dynamicModel;
+
+      // Need to set the household_contact_type based on the member_type's label
+      // eslint-disable-next-line camelcase
+      const household_contact_type = this.lookupField('member_type', 'create_member_modal').options.find(option => option.value === editMember.member_type).label;
+
       // Now we can submit to the api to create the contact and add the assiociation.
       const householdId = this.household.hs_object_id;
       const payload = {
         householdId,
+        // eslint-disable-next-line camelcase
+        household_contact_type,
         ...editMember
       };
 

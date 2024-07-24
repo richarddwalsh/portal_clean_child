@@ -7,13 +7,18 @@ Vue.config.silent = false;
 const targetData = document.getElementById('json-data');
 const dataset = JSON.parse(targetData.textContent);
 
+console.log("targetData", targetData);
+console.log("dataset", dataset);
+
 new Vue({
   delimiters: ['[[', ']]'],
   el: '#app',
+  mixins: [window.sharedMethods],
   directives: {
     'click-outside': window.clickOutsideDirective,
   },
   data: {
+    loading: true,
     attendees: [],
     currentView: dataset.currentView,
     currentUser: dataset.userData,
@@ -22,10 +27,7 @@ new Vue({
     members: [],
     events: [],
     event: {},
-    filters: {
-      campus: [],
-      category: [],     
-    },
+    filters: dataset.filters,
     defaultLabels: {
       campus: 'All Campuses',
       category: 'All Categories',
@@ -59,89 +61,15 @@ new Vue({
     showRegConfirmation: false
   },
   created() {
-    console.log('created');
-    console.log(this.currentUser);
-    if (Object.prototype.hasOwnProperty.call(this.currentUser, 'hs_object_id')) {
-      // Your code goes here
-      this.isLoggedIn = true;
-    }
-
-    if (this.currentView === 'list') {
-      const data = {
-        query: {
-          limit: 100,
-          properties: [
-            "name",
-            "description",
-            "dynamic_page_slug",
-            "banner_image",
-            "featured",
-            "registration_status",
-            "include_on_signup_page",
-            "starts_at",
-            "starts_at_time",
-            "ends_at",
-            "ends_at_time",
-            "campus",
-            "category"
-          ],
-          filterGroups: [
-            {
-              filters: [
-                {
-                  propertyName: "include_on_signup_page",
-                  operator: "NOT_IN",
-                  values: [
-                    "Do not include (direct link only)"
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      }
-
-      $.ajax({
-        type: 'POST',
-        url: `${window.location.origin}/_hcms/api/event/getAll`,
-        contentType: 'application/json',
-        data: JSON.stringify(data),
-        success: (result) => {
-          if (result.status === 'success') {
-            this.events = result.response.results;
-            this.filters = result.response.filters;
-            // sort filters by displayOrder
-            this.filters.campus = this.filters.campus.sort((a, b) => a.displayOrder - b.displayOrder);
-            this.filters.category = this.filters.category.sort((a, b) => a.displayOrder - b.displayOrder);
-          } else {
-            console.log(result.error);
-          }
-        },
-        error: (error) => {
-          console.log(error);
-        }
-      });
-    }
-    if (this.currentView === 'detail') {
-      this.event = {
-        ...dataset.event,
-        selections: dataset.selections,
-        initialSelection: dataset.selections[0],
-        minGradeOptions: dataset.minGradeOptions,
-        maxGradeOptions: dataset.maxGradeOptions,
-        attendees: []
-      }
-
-      if (this.members) {
-        this.event.registrations = this.members
-      }
-    };
+    this.initializeData();
   },
   computed: {
     filteredEvents() {
+      console.log("filtering events");
       let filteredEvents = this.events;
       if (this.activeFilters.length > 0) {
         this.activeFilters.forEach(filter => {
+          console.log(`Filter: ${filter}`);
           console.log(filter.type);
           filteredEvents = filteredEvents.filter(event => event[filter.type] === filter.value);
         });
@@ -168,12 +96,15 @@ new Vue({
         moment.tz.add('America/Los_Angeles|PST PDT|80 70|0101|1Lzm0 1zb0 Op0');
         const now = moment();
 
-        // ex: registration_open_date "1698883200000", registration_open_time "12:00 AM"
-        const openDate = `${moment.utc(this.event.registration_open_date).format('YYYY-MM-DD').toString()} ${this.event.registration_open_time}`;
-        const openTime = moment(openDate);
-        const closeDate = `${moment.utc(this.event.registration_close_date).format('YYYY-MM-DD').toString()} ${this.event.registration_close_time}`;
-        const closeTime = moment(closeDate);
-        return this.event.registration_status === 'open' || openTime.isSameOrBefore(now) || closeTime.isBefore(now);
+        const registrationOpenDate = moment(this.convertTimestampToDate(this.event.registration_open_date, this.event.registration_open_time));
+        const registrationCloseDate = moment(this.convertTimestampToDate(this.event.close_registration_date, this.event.close_registration_time));
+        
+        // if registrationOpenDate && registrationOpenDate are set use them
+        // if not use registration status
+        if (registrationOpenDate && registrationCloseDate) {
+          return this.event.registration_status === 'open' || registrationOpenDate.isSameOrBefore(now) || registrationCloseDate.isBefore(now);
+        }
+        return this.event.registration_status === 'open';
       }
       return false
     },
@@ -184,8 +115,7 @@ new Vue({
       if (this.currentView === 'detail' && this.isLoggedIn) {
         moment.tz.add('America/Los_Angeles|PST PDT|80 70|0101|1Lzm0 1zb0 Op0');
         const now = moment();
-        const endDate = `${moment.utc(this.event.ends_at).format('YYYY-MM-DD').toString()} ${this.event.ends_at_time}`;
-        const endTime = moment(endDate);
+        const endTime = moment(this.convertTimestampToDate(this.event.ends_at, this.event.ends_at_time));
         return this.isRegisteredForEvent && endTime.isSameOrAfter(now);
       }
       return false;
@@ -209,20 +139,6 @@ new Vue({
       }
       return 'Registration is closed';
     }, 
-    getInitials() {
-      if (this.currentUser) {
-        const names = [
-          this.currentUser.firstname,
-          this.currentUser.lastname,
-        ];
-        let initials = '';
-        names.forEach(n => {
-          initials += n.charAt(0).toUpperCase();
-        });
-        return initials;
-      }
-      return '';
-    },
   },
   filters: {  
     formatDate(date, time, format) {
@@ -257,7 +173,112 @@ new Vue({
     
   },
   methods: {
+    initializeData() {
+      console.log(this.currentUser);
+      if (Object.prototype.hasOwnProperty.call(this.currentUser, 'hs_object_id')) {
+        // Your code goes here
+        this.isLoggedIn = true;
+      }
+  
+      if (this.currentView === 'list') {
+        const data = {
+          query: {
+            limit: 100,
+            properties: [
+              "name",
+              "description",
+              "dynamic_page_slug",
+              "banner_image",
+              "featured",
+              "registration_status",
+              "include_on_signup_page",
+              "starts_at",
+              "starts_at_time",
+              "ends_at",
+              "ends_at_time",
+              "campus",
+              "category"
+            ],
+            filterGroups: [
+              {
+                filters: [
+                  {
+                    propertyName: "include_on_signup_page",
+                    operator: "NOT_IN",
+                    values: [
+                      "Do not include (direct link only)"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        }
+  
+        $.ajax({
+          type: 'POST',
+          url: `${window.location.origin}/_hcms/api/event/getAll`,
+          contentType: 'application/json',
+          data: JSON.stringify(data),
+          success: (result) => {
+            if (result.status === 'success') {
+              result.response.results.forEach(event => {
+                const newEvent = {
+                  id: event.id,
+                  ...event.properties
+                }
+                this.events.push(newEvent)
+              });
+              this.filters.campus = this.filters.campus.sort((a, b) => a.displayOrder - b.displayOrder);
+              this.filters.category = this.filters.category.sort((a, b) => a.displayOrder - b.displayOrder);
+            } else {
+              console.log(result.error);
+            }
+            setTimeout(() => {
+              this.loading = false;
+            }, 0)
+          },
+          error: (error) => {
+            console.log(error);
+            setTimeout(() => {
+              this.loading = false;
+            }, 0)
+          }
+        });
+      }
+      if (this.currentView === 'detail') {
+        console.log("detail view");
+        this.event = {
+          ...dataset.event,
+          selections: dataset.selections,
+          initialSelection: dataset.selections[0],
+          minGradeOptions: dataset.minGradeOptions,
+          maxGradeOptions: dataset.maxGradeOptions,
+          attendees: []
+        }
+
+        // Get the currentUser's households and add them to the members array
+        const households = this.currentUser.associations.households.items;
+        households.forEach(household => {
+          const members = household.associations.members.items.filter(member => member.hs_object_id !== this.currentUser.hs_object_id);
+          this.members = [...this.members, ...members];
+        });
+
+        // filter our current user from the members array, we already add them separately
+        this.members = this.members.filter(member => member.email !== this.currentUser.email);
+  
+        if (this.members) {
+          this.event.registrations = this.members
+        }
+
+        setTimeout(() => {
+          this.loading = false;
+        }, 0)
+      };
+
+    },
     applyFilter(type, value) {
+      console.log(`Apply filter: ${type} ${value}`);
       // Update the filter label or reset to default if value is empty
       this.filterLabels[type] = value || this.defaultLabels[type];
   

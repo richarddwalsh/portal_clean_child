@@ -7,30 +7,6 @@ Vue.config.silent = false;
 const targetData = document.getElementById('json-data');
 const dataset = JSON.parse(targetData.textContent);
 
-
-// const emptyEvent = {
-//   name: '',
-//   starts_at: '',
-//   starts_at_time: '',
-//   ends_at: '',
-//   ends_at_time: '',
-//   repeating: false,
-//   description: '',
-//   location: '',
-//   automated_reminder_enabled: '',
-//   banner_image: '',
-// }
-
-// const emptyResource = {
-//   objectId: '',
-//   objectType: '',
-//   name: '',
-//   description: '',
-//   retain: 0,
-//   type: '',
-//   file: ''
-// }
-
 new Vue({
   delimiters: ['[[', ']]'],
   el: '#app',
@@ -1055,6 +1031,11 @@ new Vue({
       return this.messages.filter(message => message.reply === 0);
     },
     upcomingEvents() {
+      if (!Array.isArray(this.events)) {
+        // Handle the case where this.events is null or not an array
+        return [];
+      }
+
       const updatedEvents = this.events.map(event => {
         const startDateTime = moment(this.convertToISO8601(event.starts_at, event.starts_at_time));
         const endDateTime = moment(this.convertToISO8601(event.ends_at, event.ends_at_time));
@@ -1069,6 +1050,11 @@ new Vue({
         .sort((a, b) => a.startDateTime - b.startDateTime);
     },
     pastEvents() {
+      if (!Array.isArray(this.events)) {
+        // Handle the case where this.events is null or not an array
+        return [];
+      }
+      
       const updatedEvents = this.events.map(event => {
         const startDateTime = moment(this.convertToISO8601(event.starts_at, event.starts_at_time));
         const endDateTime = moment(this.convertToISO8601(event.ends_at, event.ends_at_time));

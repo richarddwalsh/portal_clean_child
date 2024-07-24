@@ -8,7 +8,7 @@
 {% extends "./layouts/base-portal.html" %}
 
 {% block body %}
-<main id="app" class="body-container-wrapper my-teams-template">
+<div id="app" class="body-container-wrapper my-teams-template" v-cloak>
   {% set team = dynamic_page_crm_object %}
   {% set objectFQN = "teams" %}
   {% set admin_list_id = 717 %}
@@ -19,7 +19,7 @@
     {% set is_admin = admin_list_id in memberships %}
   {% endif %}
   {% if dynamic_page_crm_object_type_fqn %}
-    {% set fields = "team_name,featured_image,page_slug,primary_team_lead,schedule" %}
+    {% set fields = "team_name,featured_image,page_slug,primary_team_lead,schedule,application_form_link" %}
     {% set my_leadership_teams = crm_associations(contact_id, "USER_DEFINED", 346, "", fields).results %}
     {% set my_teams = crm_associations(contact_id, "USER_DEFINED", 216, "", fields).results %}
     {% set teams = my_leadership_teams|union(my_membership_teams)|union(my_teams) %}
@@ -134,10 +134,9 @@
       </div>
     </div>
   {% elif dynamic_page_crm_object %}
-    {% set upcoming_events_query = "limit=200&starts_at__gte=" ~ current_dt ~ "&orderBy=starts_at" %}
-    {% set upcoming_events = crm_associations(team.id, "USER_DEFINED", 348, upcoming_events_query, event_fields).results %}
-    {% set past_events_query = "limit=200&starts_at__lt=" ~ current_dt ~ "orderBy=starts_at" %}
-    {% set past_events = crm_associations(team.id, "USER_DEFINED", 348, "", event_fields).results %}
+    {% set event_fields = "name,description,starts_at,starts_at_time,ends_at,ends_at_time,include_on_signup_page,repeating,timezone,description" %}
+    {% set event_query = "limit=200&orderBy=starts_at" %}
+    {% set events = crm_associations(team.id, "USER_DEFINED", 348, event_query, event_fields).results %}
     {# TODO: CHECK MESSAGE FILTER #}
     {% set messages = hubdb_table_rows(7272351,"orderBy=-date_added&object_id=" ~ team.id) %}
     {% set resources = hubdb_table_rows(7284336, "orderBy=name&object_id=" ~ team.id) %}
@@ -148,8 +147,7 @@
         "userData": {{ contact|tojson }},
         "messages": {{ messages|tojson }},
         "resources": {{ resources|tojson }},
-        "pastEventsData": {{ past_events|tojson }},
-        "upcomingEventsData": {{ upcoming_events|tojson }},
+        "eventsData": {{ events|tojson }},
         "options": {
           "schedule": {{ crm_property_definition(objectFQN, "serve_schedule").options|tojson }},
           "location": {{ crm_property_definition(objectFQN, "location").options|tojson }},
@@ -285,7 +283,7 @@
       </div>
     </div>
   {% endif %}
-</main>
+</div>
 {% endblock body %}
 
 {% block footer_includes %}

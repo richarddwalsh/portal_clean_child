@@ -149,7 +149,7 @@
 									<input type="hidden" name="contactEmail" value="{{ contact.email }}">
 									<button class="btn text-btn mr-2 cancel-btn">Close</button>
 									{# TODO: SWITCH BASEURL BEFORE LAUNCH #}
-									<a href="https://share.hsforms.com/1Xe7Y5xryTd6ycasCOFRQTwdsldq?firstname={{member.firstname}}&lastname={{member.lastname}}&email={{member.email}}&2-12312453/team_name-{{team.team_name}}" class="btn" target="_blank">Change Volunteer Status</a>
+									<a href="{{team.registration_url}}?firstname={{member.firstname}}&lastname={{member.lastname}}&email={{member.email}}&2-12312453/team_name-{{team.team_name}}" class="btn" target="_blank">Change Volunteer Status</a>
 								</div>
 							</div>
 						</div>

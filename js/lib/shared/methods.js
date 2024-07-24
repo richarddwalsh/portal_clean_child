@@ -38,6 +38,9 @@ window.sharedMethods = {
       return initials;
     },
     setActiveTab(selectedTab) {
+      if (selectedTab.id === 'events') {
+        this.currentEvent = undefined;
+      }
       // console.log(`setting active tab to ${selectedTab}`)
       const updatedTabs = this.tabs.map(tab => ({
         ...tab,
@@ -310,6 +313,28 @@ window.sharedMethods = {
         'END:VEVENT',
         'END:VCALENDAR',
       ].join('\n');
+    },
+    convertTimestampToDate(timestamp, time) {
+      // Convert timestamp to Date object
+      const date = new Date(timestamp);
+
+      // Extract year, month, and day
+      const year = date.getFullYear();
+      const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Month is 0-indexed
+      const day = date.getDate().toString().padStart(2, '0');
+
+      // Convert time string to 24-hour format
+      const [hourMin, period] = time.split(' ');
+      let [hour, minute] = hourMin.split(':');
+
+      if (period === 'PM' && hour !== '12') {
+          hour = (parseInt(hour, 10) + 12).toString();
+      } else if (period === 'AM' && hour === '12') {
+          hour = '00';
+      }
+
+      // Combine date and time in ISO 8601 format
+      return `${year}-${month}-${day}T${hour.padStart(2, '0')}:${minute.padStart(2, '0')}`;
     },
     convertToISO8601(date, time) {
       // Assuming date format is 'MM/DD/YY' and time is 'HH:MM AM/PM'

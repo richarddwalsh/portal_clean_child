@@ -6,6 +6,10 @@
     "portal_token"
   ],
   "endpoints": {
+    "group/getAll": {
+      "method": "POST",
+      "file": "group/getAll.js"
+    },
     "group/join": {
       "method": "POST",
       "file": "group/join.js"

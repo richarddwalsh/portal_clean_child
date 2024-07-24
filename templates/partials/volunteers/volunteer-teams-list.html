@@ -16,7 +16,8 @@
   {% if request.query_dict.background %}
     {% set queryparams = queryparams ~ "&require_background_check=" ~ request.query_dict.background %}
   {% endif %}
-  {% set teams = crm_objects(dynamic_page_crm_object_type_fqn, queryparams,"team_name,description,page_slug,featured_image,show_in_portal,public,active").results %}
+  {% set team_fields = "team_name,description,page_slug,featured_image,show_in_portal,public,active,application_form_link" %}
+  {% set teams = crm_objects(dynamic_page_crm_object_type_fqn, queryparams,team_fields).results %}
   <div id="main_page_content" class="f-1">
     <div class="f-1 container pt-4 pb-4">
       <div tabindex="-1" style="outline: none;">

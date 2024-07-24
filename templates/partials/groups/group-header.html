@@ -5,20 +5,36 @@
 <div class="mb-2@sm mb-4@md" style="">
   <div class="grid grid-cols-1 md:grid-cols-2 md:gap-4" data-testid="grid">
     <div class="css-736fdb">
-      <img alt="Logo for {{ group.name }}" class="block w-full md:rounded" src="{{ group.featured_image }}">
+      <img :alt='"Logo for " + group.name' class="block w-full md:rounded" :src="group.featured_image">
     </div>
     <div class="grid grid-cols-1 sm:gap-2" data-testid="grid">
       <div class="d-f fd-c jc-c g-2">
-        <h1 class="lh-1.333 c-tint0 fs-0 fw-600">{{ group.name }}</h1>
+        <h1 class="lh-1.333 c-tint0 fs-0 fw-600">[[ group.name ]]</h1>
         <div class="d-f g-4p fw-w">
-          {% if group.location_type_preference %}<span class="badge"><strong>Location Type:</strong> {{ 'Virtual | Online' if group.location_type_preference else 'In Person' }}</span>{% endif %}
-          {% if group.frequency %}<span class="badge"><strong>Frequency:</strong> {{ group.frequency }}</span>{% endif %}
-          {% if group.group_type %}<span class="badge"><strong>Group Type:</strong> {{ group.group_type }}y</span>{% endif %}
-          {% if group.target_audience %}<span class="badge"><strong>Target Audience:</strong> {{ group.target_audience }}</span>{% endif %}
-          {% if group.neighborhood___area %}<span class="badge"><strong>Neighborhood | Area:</strong> {{ group.neighborhood___area }}</span>{% endif %}
-          {% if group.time_zone %}<span class="badge"><strong>Time Zone:</strong> {{ group.time_zone }}</span>{% endif %}
-          {% if group.day_of_week %}<span class="badge"><strong>Day of the Week:</strong> {{ group.day_of_week }}</span>{% endif %}
-          {% if group.time_of_day %}<span class="badge"><strong>Time of Day:</strong> {{ group.time_of_day }}</span>{% endif %}
+          <span v-if="group.location_type_preference" class="badge">
+            <strong>Location Type:</strong> {{ group.location_type_preference ? 'Virtual | Online' : 'In Person' }}
+          </span>
+          <span v-if="group.frequency" class="badge">
+            <strong>Frequency:</strong> {{ group.frequency }}
+          </span>
+          <span v-if="group.group_type" class="badge">
+            <strong>Group Type:</strong> {{ group.group_type }}
+          </span>
+          <span v-if="group.target_audience" class="badge">
+            <strong>Target Audience:</strong> {{ group.target_audience }}
+          </span>
+          <span v-if="group.neighborhood___area" class="badge">
+            <strong>Neighborhood | Area:</strong> {{ group.neighborhood___area }}
+          </span>
+          <span v-if="group.time_zone" class="badge">
+            <strong>Time Zone:</strong> {{ group.time_zone }}
+          </span>
+          <span v-if="group.day_of_week" class="badge">
+            <strong>Day of the Week:</strong> {{ group.day_of_week }}
+          </span>
+          <span v-if="group.time_of_day" class="badge">
+            <strong>Time of Day:</strong> {{ group.time_of_day }}
+          </span>
         </div>
       </div>
     </div>

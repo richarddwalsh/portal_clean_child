@@ -2,7 +2,17 @@
   templateType: global_partial
   label: Team Events Tab
 -->
-<div class="f-1">
+<div class="f-1" v-if="!currentEvent">
+	<div class="ta-c c-tint3 p-4" v-if="upcomingEvents.length && isAdmin">
+		<div style="font-size: 32px;">
+			<svg class="symbol" id="calendar-events" viewBox="0 0 16 16">
+				<path d="M7.56207 7.21894C7.60056 7.13514 7.66228 7.06414 7.7399 7.01437C7.81753 6.96459 7.9078 6.93814 8 6.93814C8.09221 6.93814 8.18248 6.96459 8.2601 7.01437C8.33773 7.06414 8.39945 7.13514 8.43793 7.21894L8.98385 8.40793L10.2836 8.54493C10.3766 8.55501 10.4646 8.59184 10.537 8.65095C10.6094 8.71007 10.6631 8.78893 10.6915 8.87796C10.72 8.96699 10.722 9.06238 10.6974 9.15254C10.6727 9.24271 10.6224 9.32378 10.5526 9.38592L9.59175 10.2359L9.86071 11.4909C9.88003 11.5815 9.87282 11.6758 9.83993 11.7625C9.80704 11.8491 9.74987 11.9244 9.67527 11.9794C9.60068 12.0344 9.51182 12.0667 9.41933 12.0725C9.32685 12.0782 9.23466 12.0572 9.15382 12.0119L8 11.3659L6.84519 12.0119C6.76435 12.0572 6.67216 12.0782 6.57968 12.0725C6.48719 12.0667 6.39833 12.0344 6.32373 11.9794C6.24914 11.9244 6.19197 11.8491 6.15908 11.7625C6.12619 11.6758 6.11898 11.5815 6.1383 11.4909L6.40725 10.2359L5.44641 9.38592C5.37659 9.32378 5.3263 9.24271 5.30164 9.15254C5.27698 9.06238 5.27901 8.96699 5.30748 8.87796C5.33595 8.78893 5.38965 8.71007 5.46205 8.65095C5.53445 8.59184 5.62245 8.55501 5.71536 8.54493L7.01516 8.40793L7.56207 7.21894ZM12.6663 0H11.0255V1.64099H4.76951V0H3.12877V1.64099H2.41088C1.99009 1.62989 1.58188 1.78511 1.27474 2.07301C0.967609 2.36091 0.786307 2.75828 0.770142 3.17897V14.3589C0.76732 14.5752 0.807832 14.7898 0.889288 14.9902C0.970744 15.1905 1.09149 15.3726 1.24442 15.5255C1.39734 15.6785 1.57934 15.7992 1.77968 15.8807C1.98001 15.9622 2.19464 16.0027 2.41088 15.9999H13.5891C13.8054 16.0027 14.02 15.9622 14.2203 15.8807C14.4207 15.7992 14.6027 15.6785 14.7556 15.5255C14.9085 15.3726 15.0293 15.1905 15.1107 14.9902C15.1922 14.7898 15.2327 14.5752 15.2299 14.3589V3.17897C15.1731 2.7556 14.9654 2.36694 14.6451 2.0844C14.3247 1.80186 13.9132 1.64441 13.4861 1.64099H12.6663V0ZM2.41088 5.53795H13.5891V14.3589H2.41088V5.53795Z"></path>
+			</svg>
+		</div>
+		<div>
+			<button type="button" class="btn primary-btn" @click="showModal('create_event_modal')">Create another event</button>
+		</div>
+	</div>
 	<div class="mb-3" style="">
 		<div class="d-f ai-c mb-2">
 			<h2 class="h3">Upcoming events</h2>
@@ -10,75 +20,26 @@
 		<div>
 			<div
 				class="d-f mb-1 pt-1"
-				v-for="event in events.upcoming"
+				v-for="event in upcomingEvents"
 				:key="event.id"
 			>
-			<article class="d-f f-1 ai-c">	
-				<div class="mr-2">
-					<a href="/registrations/[[ event.id ]]">
-						<div class="w-8 h-8 ta-c event-cal">
-							<div class="event-cal__month">
-								[[ formatDate(event.start_date, "MMM") ]]
-							</div>
-							<div class="event-cal__day">
-								[[ formatDate(event.start_date, "DD") ]]
-							</div>
-						</div>
-					</a>
-				</div>
-				<div class="f-1">
-					<a class="fw-500" href="/registrations/[[ event.id ]]">
-						<div class="lh-1.5 mb-2p">
-							[[ event.name ]]
-							<span class="d-ib ml-4p c-tint3" v-if="event.repeating">
-								<svg class="symbol" id="calendar-repeat" viewBox="0 0 16 16">
-									<path d="M14.758 4.314V6.6H2.758V12.886C2.75786 12.9001 2.76054 12.9141 2.76587 12.9271C2.7712 12.9401 2.77908 12.952 2.78904 12.962C2.799 12.9719 2.81085 12.9798 2.82389 12.9851C2.83693 12.9905 2.85091 12.9931 2.865 12.993H5.984V14.493H2.865C2.43887 14.4927 2.03028 14.3233 1.72897 14.022C1.42765 13.7207 1.25826 13.3121 1.258 12.886V4.314C1.25826 3.88779 1.42762 3.47909 1.72891 3.17762C2.03019 2.87615 2.43878 2.70653 2.865 2.706H3.258V0.6H4.758V2.706H11.258V0.6H12.758V2.706H13.151C13.5772 2.70653 13.9858 2.87615 14.2871 3.17762C14.5884 3.47909 14.7577 3.88779 14.758 4.314ZM12.848 8.12C12.189 7.78656 11.4483 7.64884 10.7136 7.72314C9.97878 7.79744 9.28066 8.08065 8.70178 8.53926C8.12291 8.99788 7.68751 9.6127 7.44709 10.311C7.20667 11.0093 7.1713 11.7618 7.34515 12.4796C7.51901 13.1974 7.89482 13.8503 8.42813 14.3612C8.96143 14.8721 9.62991 15.2196 10.3545 15.3625C11.0791 15.5054 11.8294 15.4377 12.5167 15.1676C13.2041 14.8974 13.7996 14.436 14.233 13.838L13.019 12.957C12.7811 13.2843 12.4633 13.5451 12.0959 13.7145C11.7285 13.884 11.3238 13.9564 10.9204 13.9248C10.5171 13.8932 10.1286 13.7587 9.79199 13.5342C9.45543 13.3096 9.18207 13.0025 8.99803 12.6422C8.81399 12.2819 8.72542 11.8804 8.74079 11.4761C8.75616 11.0718 8.87494 10.6782 9.08579 10.3329C9.29665 9.98764 9.59253 9.70217 9.94516 9.50383C10.2978 9.30548 10.6954 9.20087 11.1 9.2C11.6582 9.19437 12.1989 9.39443 12.619 9.762L11.519 10.862H14.735V7.651L13.678 8.709C13.4283 8.47716 13.1493 8.27914 12.848 8.12Z"></path>
-								</svg>
-							</span>
-						</div>
-					</a>
-					<div class="fs-13 lh-1.5 c-tint2">
-						<time>[[ formatDate(event.start_date, "dddd, MMMM D") ]], [[ event.starts_at_time ]] – [[ event.ends_at_time ]] [[ event.timezone ]]</time>
-					</div>
-				</div>
-			</article>
-			</div>
-		</div>
-		<div class="ta-c c-tint3 p-4">
-			<div style="font-size: 32px;">
-				<svg class="symbol" id="calendar-events" viewBox="0 0 16 16">
-					<path d="M7.56207 7.21894C7.60056 7.13514 7.66228 7.06414 7.7399 7.01437C7.81753 6.96459 7.9078 6.93814 8 6.93814C8.09221 6.93814 8.18248 6.96459 8.2601 7.01437C8.33773 7.06414 8.39945 7.13514 8.43793 7.21894L8.98385 8.40793L10.2836 8.54493C10.3766 8.55501 10.4646 8.59184 10.537 8.65095C10.6094 8.71007 10.6631 8.78893 10.6915 8.87796C10.72 8.96699 10.722 9.06238 10.6974 9.15254C10.6727 9.24271 10.6224 9.32378 10.5526 9.38592L9.59175 10.2359L9.86071 11.4909C9.88003 11.5815 9.87282 11.6758 9.83993 11.7625C9.80704 11.8491 9.74987 11.9244 9.67527 11.9794C9.60068 12.0344 9.51182 12.0667 9.41933 12.0725C9.32685 12.0782 9.23466 12.0572 9.15382 12.0119L8 11.3659L6.84519 12.0119C6.76435 12.0572 6.67216 12.0782 6.57968 12.0725C6.48719 12.0667 6.39833 12.0344 6.32373 11.9794C6.24914 11.9244 6.19197 11.8491 6.15908 11.7625C6.12619 11.6758 6.11898 11.5815 6.1383 11.4909L6.40725 10.2359L5.44641 9.38592C5.37659 9.32378 5.3263 9.24271 5.30164 9.15254C5.27698 9.06238 5.27901 8.96699 5.30748 8.87796C5.33595 8.78893 5.38965 8.71007 5.46205 8.65095C5.53445 8.59184 5.62245 8.55501 5.71536 8.54493L7.01516 8.40793L7.56207 7.21894ZM12.6663 0H11.0255V1.64099H4.76951V0H3.12877V1.64099H2.41088C1.99009 1.62989 1.58188 1.78511 1.27474 2.07301C0.967609 2.36091 0.786307 2.75828 0.770142 3.17897V14.3589C0.76732 14.5752 0.807832 14.7898 0.889288 14.9902C0.970744 15.1905 1.09149 15.3726 1.24442 15.5255C1.39734 15.6785 1.57934 15.7992 1.77968 15.8807C1.98001 15.9622 2.19464 16.0027 2.41088 15.9999H13.5891C13.8054 16.0027 14.02 15.9622 14.2203 15.8807C14.4207 15.7992 14.6027 15.6785 14.7556 15.5255C14.9085 15.3726 15.0293 15.1905 15.1107 14.9902C15.1922 14.7898 15.2327 14.5752 15.2299 14.3589V3.17897C15.1731 2.7556 14.9654 2.36694 14.6451 2.0844C14.3247 1.80186 13.9132 1.64441 13.4861 1.64099H12.6663V0ZM2.41088 5.53795H13.5891V14.3589H2.41088V5.53795Z"></path>
-				</svg>
-			</div>
-			<p>There are currently no upcoming events scheduled for this group.</p>
-			<div>
-				<button type="button" class="btn primary-btn" @click="showModal('create_event_modal')">Create an event</button>
-			</div>
-		</div>
-	</div>
-	<div class="mb-3">
-		<h2 class="h3">Past events</h2>
-		<div>
-			<div
-				class="d-f mb-1 pt-1"
-				v-for="event in events.past"
-				:key="event.id"
-			>
-				<article class="d-f f-1 ai-c">	
+				<article
+					class="d-f f-1 ai-c"
+				>	
 					<div class="mr-2">
-						<a href="/registrations/[[ event.id ]]">
+						<a @click="setCurrentEvent(event)">
 							<div class="w-8 h-8 ta-c event-cal">
 								<div class="event-cal__month">
-									[[ formatDate(event.start_date, "MMM") ]]
+									[[ formatDate(event.startDateTime, "MMM") ]]
 								</div>
 								<div class="event-cal__day">
-									[[ formatDate(event.start_date, "DD") ]]
+									[[ formatDate(event.startDateTime, "DD") ]]
 								</div>
 							</div>
 						</a>
 					</div>
 					<div class="f-1">
-						<a class="fw-500" href="/registrations/[[ event.id ]]">
+						<a class="fw-500" @click="setCurrentEvent(event)">
 							<div class="lh-1.5 mb-2p">
 								[[ event.name ]]
 								<span class="d-ib ml-4p c-tint3" v-if="event.repeating">
@@ -89,12 +50,241 @@
 							</div>
 						</a>
 						<div class="fs-13 lh-1.5 c-tint2">
-							<time>[[ formatDate(event.start_date, "dddd, MMMM D") ]], [[ event.starts_at_time ]] – [[ event.ends_at_time ]] [[ event.timezone ]]</time>
+							<time>[[ formatDate(event.startDateTime, "dddd, MMMM D h:mm A") ]] - [[ event.ends_at_time ]] [[ event.timezone ]]</time>
 						</div>
 					</div>
 				</article>
 			</div>
 		</div>
+		<div class="ta-c c-tint3 p-4" v-if="upcomingEvents.length <= 0">
+			<div style="font-size: 32px;">
+				<svg class="symbol" id="calendar-events" viewBox="0 0 16 16">
+					<path d="M7.56207 7.21894C7.60056 7.13514 7.66228 7.06414 7.7399 7.01437C7.81753 6.96459 7.9078 6.93814 8 6.93814C8.09221 6.93814 8.18248 6.96459 8.2601 7.01437C8.33773 7.06414 8.39945 7.13514 8.43793 7.21894L8.98385 8.40793L10.2836 8.54493C10.3766 8.55501 10.4646 8.59184 10.537 8.65095C10.6094 8.71007 10.6631 8.78893 10.6915 8.87796C10.72 8.96699 10.722 9.06238 10.6974 9.15254C10.6727 9.24271 10.6224 9.32378 10.5526 9.38592L9.59175 10.2359L9.86071 11.4909C9.88003 11.5815 9.87282 11.6758 9.83993 11.7625C9.80704 11.8491 9.74987 11.9244 9.67527 11.9794C9.60068 12.0344 9.51182 12.0667 9.41933 12.0725C9.32685 12.0782 9.23466 12.0572 9.15382 12.0119L8 11.3659L6.84519 12.0119C6.76435 12.0572 6.67216 12.0782 6.57968 12.0725C6.48719 12.0667 6.39833 12.0344 6.32373 11.9794C6.24914 11.9244 6.19197 11.8491 6.15908 11.7625C6.12619 11.6758 6.11898 11.5815 6.1383 11.4909L6.40725 10.2359L5.44641 9.38592C5.37659 9.32378 5.3263 9.24271 5.30164 9.15254C5.27698 9.06238 5.27901 8.96699 5.30748 8.87796C5.33595 8.78893 5.38965 8.71007 5.46205 8.65095C5.53445 8.59184 5.62245 8.55501 5.71536 8.54493L7.01516 8.40793L7.56207 7.21894ZM12.6663 0H11.0255V1.64099H4.76951V0H3.12877V1.64099H2.41088C1.99009 1.62989 1.58188 1.78511 1.27474 2.07301C0.967609 2.36091 0.786307 2.75828 0.770142 3.17897V14.3589C0.76732 14.5752 0.807832 14.7898 0.889288 14.9902C0.970744 15.1905 1.09149 15.3726 1.24442 15.5255C1.39734 15.6785 1.57934 15.7992 1.77968 15.8807C1.98001 15.9622 2.19464 16.0027 2.41088 15.9999H13.5891C13.8054 16.0027 14.02 15.9622 14.2203 15.8807C14.4207 15.7992 14.6027 15.6785 14.7556 15.5255C14.9085 15.3726 15.0293 15.1905 15.1107 14.9902C15.1922 14.7898 15.2327 14.5752 15.2299 14.3589V3.17897C15.1731 2.7556 14.9654 2.36694 14.6451 2.0844C14.3247 1.80186 13.9132 1.64441 13.4861 1.64099H12.6663V0ZM2.41088 5.53795H13.5891V14.3589H2.41088V5.53795Z"></path>
+				</svg>
+			</div>
+			<p>There are currently no upcoming events scheduled for this team.</p>
+			<div>
+				<button type="button" class="btn primary-btn" @click="showModal('create_event_modal')">Create an event</button>
+			</div>
+		</div>
+	</div>
+	<div class="mb-3" v-if="pastEvents.length > 0">
+		<h2 class="h3">Past events</h2>
+		<div>
+			<div
+				class="d-f mb-1 pt-1"
+				v-for="event in pastEvents"
+				:key="event.id"
+			>
+			<article
+				class="d-f f-1 ai-c"
+			>	
+				<div class="mr-2">
+					<a @click="setCurrentEvent(event)">
+						<div class="w-8 h-8 ta-c event-cal">
+							<div class="event-cal__month">
+								[[ formatDate(event.startDateTime, "MMM") ]]
+							</div>
+							<div class="event-cal__day">
+								[[ formatDate(event.startDateTime, "DD") ]]
+							</div>
+						</div>
+					</a>
+				</div>
+				<div class="f-1">
+					<a class="fw-500" @click="setCurrentEvent(event)">
+						<div class="lh-1.5 mb-2p">
+							[[ event.name ]]
+							<span class="d-ib ml-4p c-tint3" v-if="event.repeating">
+								<svg class="symbol" id="calendar-repeat" viewBox="0 0 16 16">
+									<path d="M14.758 4.314V6.6H2.758V12.886C2.75786 12.9001 2.76054 12.9141 2.76587 12.9271C2.7712 12.9401 2.77908 12.952 2.78904 12.962C2.799 12.9719 2.81085 12.9798 2.82389 12.9851C2.83693 12.9905 2.85091 12.9931 2.865 12.993H5.984V14.493H2.865C2.43887 14.4927 2.03028 14.3233 1.72897 14.022C1.42765 13.7207 1.25826 13.3121 1.258 12.886V4.314C1.25826 3.88779 1.42762 3.47909 1.72891 3.17762C2.03019 2.87615 2.43878 2.70653 2.865 2.706H3.258V0.6H4.758V2.706H11.258V0.6H12.758V2.706H13.151C13.5772 2.70653 13.9858 2.87615 14.2871 3.17762C14.5884 3.47909 14.7577 3.88779 14.758 4.314ZM12.848 8.12C12.189 7.78656 11.4483 7.64884 10.7136 7.72314C9.97878 7.79744 9.28066 8.08065 8.70178 8.53926C8.12291 8.99788 7.68751 9.6127 7.44709 10.311C7.20667 11.0093 7.1713 11.7618 7.34515 12.4796C7.51901 13.1974 7.89482 13.8503 8.42813 14.3612C8.96143 14.8721 9.62991 15.2196 10.3545 15.3625C11.0791 15.5054 11.8294 15.4377 12.5167 15.1676C13.2041 14.8974 13.7996 14.436 14.233 13.838L13.019 12.957C12.7811 13.2843 12.4633 13.5451 12.0959 13.7145C11.7285 13.884 11.3238 13.9564 10.9204 13.9248C10.5171 13.8932 10.1286 13.7587 9.79199 13.5342C9.45543 13.3096 9.18207 13.0025 8.99803 12.6422C8.81399 12.2819 8.72542 11.8804 8.74079 11.4761C8.75616 11.0718 8.87494 10.6782 9.08579 10.3329C9.29665 9.98764 9.59253 9.70217 9.94516 9.50383C10.2978 9.30548 10.6954 9.20087 11.1 9.2C11.6582 9.19437 12.1989 9.39443 12.619 9.762L11.519 10.862H14.735V7.651L13.678 8.709C13.4283 8.47716 13.1493 8.27914 12.848 8.12Z"></path>
+								</svg>
+							</span>
+						</div>
+					</a>
+					<div class="fs-13 lh-1.5 c-tint2">
+						<time>[[ formatDate(event.startDateTime, "dddd, MMMM D h:mm A") ]] - [[ event.ends_at_time ]] [[ event.timezone ]]</time>
+					</div>
+				</div>
+			</article>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="f-1" v-else>
+	<header class="d-f fd-c fd-r@xs mb-3 pt-1 ai-c ai-fs@xs g-2">
+		<div class="event-detail__cal">
+			<div class="ta-c event-cal">
+				<div class="event-cal__month">[[ formatDate(currentEvent.startDateTime, "MMM") ]]</div>
+				<div class="event-cal__day">[[ formatDate(currentEvent.startDateTime, "DD") ]]</div>
+			</div>
+		</div>
+		<div class="f-1 ta-c ta-l@xs">
+			<div class="d-f ai-c jc-c jc-fs@xs">
+				<h1 class="lh-1.333 c-tint0 fs-21 fw-600">[[ currentEvent.name ]]</h1>
+			</div>
+			<div class="mb-4p c-tint2">
+				<time>[[ formatDate(currentEvent.startDateTime, "dddd, MMMM D h:mm A") ]] - [[ currentEvent.ends_at_time ]] [[ currentEvent.timezone ]]</time>
+			</div>
+			<div class="d-f fd-c fd-r@xs ai-c jc-c jc-fs@xs g-1 mt-2 mt-1@xs">
+				{# TODO: OUT OF SCOPE
+					<button
+					aria-haspopup="true"
+					aria-controls="menu--2"
+					class="minor-btn secondary-btn btn"
+					id="menu-button--menu--2"
+					type="button"
+					data-reach-menu-button=""
+					v-if="isAdmin"
+				>
+					<div class="d-f jc-sb ai-c">
+						Edit Event
+					</div>
+				</button>
+				<button
+					aria-haspopup="true"
+					aria-controls="menu--2"
+					class="minor-btn secondary-btn btn"
+					id="menu-button--menu--2"
+					type="button"
+					data-reach-menu-button=""
+					@click="downloadICS(currentEvent)"
+				>
+					<div class="d-f jc-sb ai-c">
+						Add to my calendar
+						<span class="dropdown-trigger__icon fs-6 ml-4p">
+							<svg aria-hidden="true" viewBox="0 0 16 16" class="symbol" role="img">
+								<path d="M16 6.07L8 14.07L0 6.07L1.782 4.293L8 10.514L14.22 4.293L16 6.07Z"></path>
+							</svg>
+						</span>
+					</div>
+				</button> #}
+			</div>
+		</div>
+	</header>
+	<div
+		class="d-f ai-c jc-sb px-2 action-drawer action-bar mb-3@sm p-4"
+		style="gap: 1rem;"
+	>
+		<div class="d-f fd-c ai-fs fg-1">
+			<h2 class="lh-1.333 c-tint2 fs-3 fw-600">RSVP</h2>
+			<p class="fs-4 m-0 c-tint2" v-if="!currentEvent.responded">
+				<span class="c-marigold p-r t-1p mr-4p fs-5">
+					<svg id="question-circle" viewBox="0 0 16 16" class="symbol" role="img">
+						<path d="M8 0C6.41775 0 4.87103 0.469192 3.55544 1.34824C2.23985 2.22729 1.21447 3.47672 0.608967 4.93853C0.00346625 6.40034 -0.15496 8.00887 0.153721 9.56072C0.462403 11.1126 1.22433 12.538 2.34315 13.6569C3.46197 14.7757 4.88743 15.5376 6.43928 15.8463C7.99113 16.155 9.59966 15.9965 11.0615 15.391C12.5233 14.7855 13.7727 13.7602 14.6518 12.4446C15.5308 11.129 16 9.58225 16 8C16 5.87827 15.1571 3.84344 13.6569 2.34315C12.1566 0.842855 10.1217 0 8 0V0ZM8.8 12.8H7.2V11.2H8.8V12.8ZM8.8 10.4H7.2C7.2 7.8 9.6 8 9.6 6.4C9.6 5.97565 9.43143 5.56869 9.13137 5.26863C8.83132 4.96857 8.42435 4.8 8 4.8C7.57566 4.8 7.16869 4.96857 6.86863 5.26863C6.56857 5.56869 6.4 5.97565 6.4 6.4H4.8C4.8 5.55131 5.13715 4.73737 5.73726 4.13726C6.33738 3.53714 7.15131 3.2 8 3.2C8.8487 3.2 9.66263 3.53714 10.2627 4.13726C10.8629 4.73737 11.2 5.55131 11.2 6.4C11.2 8.4 8.8 8.6 8.8 10.4Z"></path>
+					</svg>
+				</span>
+				You have not responded
+			</p>
+			<p class="fs-4 m-0 c-tint2" v-else-if="currentEvent.attending.yes && currentEvent.responded">
+				<span class="c-emerald p-r t-1p mr-4p fs-5">
+					<svg id="check" viewBox="0 0 16 16" class="symbol" role="img">
+						<path d="M6.26299 13.329L0.0629883 7.129L2.03199 5.164L6.26299 9.4L13.972 1.692L15.939 3.658L6.26299 13.329Z"></path>
+					</svg>
+				</span>
+				You are going!
+			</p>
+			<p class="fs-4 m-0 c-tint2" v-else-if="currentEvent.attending.no && currentEvent.responded">
+				<span class="c-ruby p-r t-1p mr-4p fs-5">
+					<svg id="x" viewBox="0 0 16 16" class="symbol" role="img">
+						<path d="M9.88 8.035L15.58 13.735L13.68 15.635L7.98 9.935L2.28 15.635L0.380005 13.735L6.08 8.035L0.380005 2.335L2.28 0.434998L7.98 6.135L13.68 0.434998L15.58 2.335L9.88 8.035Z"></path>
+					</svg>
+				</span>
+				You are not going
+			</p>
+			<p class="fs-4 m-0 c-tint2" v-else>
+				<span class="c-marigold p-r t-1p mr-4p fs-5">
+					<svg id="question-circle" viewBox="0 0 16 16" class="symbol" role="img">
+						<path d="M8 0C6.41775 0 4.87103 0.469192 3.55544 1.34824C2.23985 2.22729 1.21447 3.47672 0.608967 4.93853C0.00346625 6.40034 -0.15496 8.00887 0.153721 9.56072C0.462403 11.1126 1.22433 12.538 2.34315 13.6569C3.46197 14.7757 4.88743 15.5376 6.43928 15.8463C7.99113 16.155 9.59966 15.9965 11.0615 15.391C12.5233 14.7855 13.7727 13.7602 14.6518 12.4446C15.5308 11.129 16 9.58225 16 8C16 5.87827 15.1571 3.84344 13.6569 2.34315C12.1566 0.842855 10.1217 0 8 0V0ZM8.8 12.8H7.2V11.2H8.8V12.8ZM8.8 10.4H7.2C7.2 7.8 9.6 8 9.6 6.4C9.6 5.97565 9.43143 5.56869 9.13137 5.26863C8.83132 4.96857 8.42435 4.8 8 4.8C7.57566 4.8 7.16869 4.96857 6.86863 5.26863C6.56857 5.56869 6.4 5.97565 6.4 6.4H4.8C4.8 5.55131 5.13715 4.73737 5.73726 4.13726C6.33738 3.53714 7.15131 3.2 8 3.2C8.8487 3.2 9.66263 3.53714 10.2627 4.13726C10.8629 4.73737 11.2 5.55131 11.2 6.4C11.2 8.4 8.8 8.6 8.8 10.4Z"></path>
+					</svg>
+				</span>
+				You might be going
+			</p>
+		</div>
+		<div style="margin-left: auto">
+			<button
+				aria-haspopup="true"
+				aria-controls="menu--3"
+				class="btn"
+				id="menu-button--menu--3"
+				type="button"
+				data-reach-menu-button=""
+				@click="actionDrawers.rsvp = true"
+			>
+				Respond
+				<span class="fs-5 ml-1 dropdown-trigger__icon">
+					<svg class="symbol" id="down-chevron" viewBox="0 0 16 16">
+						<path d="M16 6.07L8 14.07L0 6.07L1.782 4.293L8 10.514L14.22 4.293L16 6.07Z"></path>
+					</svg>
+				</span>
+			</button>
+			<div
+				style="position: absolute;"
+				v-if="actionDrawers.rsvp"
+				v-click-outside="closeActionDrawer"
+			>
+				<div
+					aria-labelledby="menu-button--menu--3"
+					role="menu"
+					tabindex="-1"
+					class="dropdown__menu"
+					data-reach-menu-list=""
+					id="menu--3"
+					data-reach-menu-items=""
+				>
+					<div
+						role="menuitem"
+						tabindex="-1"
+						class="dropdown__item"
+						data-valuetext="I'll be there"
+						data-reach-menu-item=""
+						id="option-0--menu--3"
+						@click="updateEventStatus('yes')"
+					>
+						I'll be there
+					</div>
+					<div
+						role="menuitem"
+						tabindex="-1"
+						class="dropdown__item"
+						data-valuetext="I can't make it"
+						data-reach-menu-item=""
+						id="option-1--menu--3"
+						@click="updateEventStatus('no')"
+					>
+						I can't make it
+					</div>
+					<div
+						role="menuitem"
+						tabindex="-1"
+						class="dropdown__item"
+						data-valuetext="I'm not sure"
+						data-reach-menu-item=""
+						id="option-2--menu--3"
+						@click="updateEventStatus('maybe')"
+					>
+						I'm not sure
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="mb-3 d-f fd-c g-1">
+		<h2 class="fs-4 fw-600 lh-20p tt-u c-tint3">Details</h2>
+		<div>
+			<div>
+				<div>Test</div>
+			</div>
+		</div>
+	</div>
+	<div class="mb-3 w-33%@md">
+		<section class="mb-4">
+			<div class="mb-1">
+				<h2 class="fs-4 fw-600 lh-20p tt-u c-tint3">Location</h2>
+			</div>
+				<p class="mb-0 fs-4 c-tint1">Online</p>
+				<a class="mt-1 btn minor-btn secondary-btn" href="https://zoom.us/" target="_blank" rel="noopener noreferrer">Attend online</a>
+		</section>
 	</div>
 </div>
 <div :id="modal.id" class="modal--open" v-for="modal in modals" v-if="modal.visible">

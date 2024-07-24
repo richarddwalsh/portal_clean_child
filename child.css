@@ -15666,3 +15666,12 @@ _:-moz-tree-row(hover) {
     animation: pulse 2s infinite;
     padding: 1rem 1rem;
 }
+
+.menu-group {
+  position: relative;
+}
+
+.menu-group .menu-group--flyout {
+  position:absolute;
+  z-index: 1;
+}
