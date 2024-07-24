@@ -69,8 +69,7 @@ new Vue({
       if (this.searchQuery) {
         const query = this.searchQuery.toLowerCase();
         filteredTeams = filteredTeams.filter(team => 
-          team.name.toLowerCase().includes(query) || 
-          team.description.toLowerCase().includes(query)
+          team.team_name.toLowerCase().includes(query)
         );
       }
     
