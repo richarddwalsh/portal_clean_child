@@ -2,16 +2,71 @@
   templateType: page
   isAvailableForNewContent: true
   label: Portal - Volunteer Teams
+  dataQueryPath: ../data-queries/contact_info
 -->
 {% extends "./layouts/base-portal.html" %}
+
+{% if request_contact.is_logged_in %}
+  {% set contact = data_query.data.CRM.contact %}
+  {% set contact_id = contact._metadata.id %}
+{% endif %}
 
 {% block body %}
 <main class="body-container-wrapper group-categories-template">
   {% if dynamic_page_crm_object_type_fqn %}
+    {% set team_fields = "team_name,description,page_slug,featured_image,show_in_portal,public,active,application_form_link" %}
+    {% set teams = crm_objects(dynamic_page_crm_object_type_fqn, queryparams,team_fields).results %}
+    {% set schedule_filter = crm_property_definition(dynamic_page_crm_object_type_fqn, "serve_schedule").options %}
+    {% set location_filter = crm_property_definition(dynamic_page_crm_object_type_fqn, "location").options %}
+    {% set experience_filter = crm_property_definition(dynamic_page_crm_object_type_fqn, "requires_experience").options %}
+    {% set background_filter = crm_property_definition(dynamic_page_crm_object_type_fqn, "require_background_check").options %}
+    <script type="application/json" id="json-data">
+      {
+        "currentView": "list",
+        "userData": {{ contact|tojson }},
+        "teams": {{ teams|tojson}},
+        "teamFields": [
+          "team_name",
+          "description",
+          "page_slug",
+          "featured_image",
+          "show_in_portal",
+          "public",
+          "active",
+          "application_form_link",
+          "serve_schedule",
+          "location",
+          "requires_experience",
+          "require_background_check"
+        ],
+        "filters": {
+          "serve_schedule": {{ schedule_filter|tojson }},
+          "location": {{ location_filter|tojson }},
+          "requires_experience": {{ experience_filter|tojson }},
+          "require_background_check": {{ background_filter|tojson }}
+        }
+      }
+    </script>
     {% include "./partials/volunteers/volunteer-teams-list.html" %}
   {% elif dynamic_page_crm_object %}
     {% set team = dynamic_page_crm_object %}
+      <script type="application/json" id="json-data">
+      {
+        "currentView": "detail",
+        "userData": {{ contact|tojson }},
+        "team": {{ team|tojson}}
+      }
+    </script>
     {% include "./partials/volunteers/volunteer-detail.html" %}
   {% endif %}
 </main>
 {% endblock body %}
+
+{% block footer_includes %}
+  {{ require_js("https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js", { position: 'footer' }) }}
+  {{ require_js("https://cdn.jsdelivr.net/npm/moment-timezone@0.5.43/moment-timezone.min.js", { position: 'footer' }) }}
+  {{ require_js("https://cdn.jsdelivr.net/npm/vue@2", { position: 'footer'}) }}
+  {{ require_js(get_asset_url("../js/lib/shared/directives.js"), { position: 'footer'}) }}
+  {{ require_js(get_asset_url("../js/lib/shared/methods.js"), { position: 'footer'}) }}
+  {{ require_js(get_asset_url("../js/lib/teams.js"), { position: 'footer'}) }}
+{% endblock footer_includes%}

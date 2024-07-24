@@ -16,14 +16,14 @@ exports.main = ({ body }, sendResponse) => {
     }
   }
 
-  const endpoint = "https://api.hubapi.com/crm/v3/objects/groups/search";
+  const endpoint = "https://api.hubapi.com/crm/v3/objects/teams/search";
 
   axios
     .post( endpoint, JSON.stringify(query), config )
     .then(response => {
-      sendResponse({ body: { status: "success", response: response.data, step: "getGroups" }, statusCode: 200 });
+      sendResponse({ body: { status: "success", response: response.data, step: "getTeams" }, statusCode: 200 });
     })
     .catch(error => {
-      sendResponse({ body: { status: "error", error: error.message, step: "getGroups" }, statusCode: 200 });
+      sendResponse({ body: { status: "error", error: error.message, step: "getTeams" }, statusCode: 200 });
     });
 };

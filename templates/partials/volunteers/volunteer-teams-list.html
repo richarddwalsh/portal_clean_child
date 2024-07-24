@@ -2,6 +2,7 @@
   templateType: global_partial
   label: Volunteer Team List
 -->
+
 {% if dynamic_page_crm_object_type_fqn %}
   {% set queryparams = "limit=200&orderBy=team_name&public=true" %}
   {% if request.query_dict.schedule %}
@@ -18,28 +19,17 @@
   {% endif %}
   {% set team_fields = "team_name,description,page_slug,featured_image,show_in_portal,public,active,application_form_link" %}
   {% set teams = crm_objects(dynamic_page_crm_object_type_fqn, queryparams,team_fields).results %}
-  <div id="main_page_content" class="f-1">
-    <div class="f-1 container pt-4 pb-4">
-      <div tabindex="-1" style="outline: none;">
+  <div id="app" class="body-container-wrapper team-listing-template" v-cloak>
+    <div id="main_page_content" class="f-1">
+      <div class="f-1 container pt-4 pb-4">
         <div tabindex="-1" style="outline: none;">
-          <div data-testid="grid" class="grid grid-cols-1 gap-3" style="">
-            {% include "./volunteer-filter.html" %}
-            <section data-testid="grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3 md:gap-4">
-              {% for team in teams %}
-                <article class="d-b" data-team-id="{{team.id}}" data-team-name="{{team.team_name}}">
-                  <a href="{{ request.path }}/{{ team.page_slug }}" class="d-b card-list-item__wrapper-link">
-                    <div class="card-list-item__image">
-                      <img loading="lazy" alt="Logo for {{ team.team_name }}" src="{{ team.featured_image }}" />
-                    </div>
-                    <div class="d-f jc-sb ai-fs">
-                      <h1 class="lh-1.333 c-tint0 fs-3 fw-600">{{ team.team_name }}</h1>
-                      <span class="badge ml-2 {{ 'open' if team.active else 'closed' }}-badge" style="text-transform: capitalize">{{ "Open" if team.active else "Closed" }}</span>
-                    </div>
-                    <div>{{ team.description }}</div>
-                  </a>
-                </article>
-              {% endfor %}
-            </section>
+          <div tabindex="-1" style="outline: none;">
+            <div data-testid="grid" class="grid grid-cols-1 gap-3" style="">
+              {% include "./volunteer-filter.html" %}
+              <section data-testid="grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3 md:gap-4">
+                {% include "./volunteer-card.html" %}
+              </section>
+            </div>
           </div>
         </div>
       </div>
