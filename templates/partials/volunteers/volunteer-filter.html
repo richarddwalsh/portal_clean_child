@@ -2,66 +2,235 @@
   templateType: global_partial
   label: Volunteer Teams Filter
 -->
-{% if dynamic_page_crm_object_type_fqn %}
-{% set schedule_filter = crm_property_definition(dynamic_page_crm_object_type_fqn, "serve_schedule") %}
-{% set location_filter = crm_property_definition(dynamic_page_crm_object_type_fqn, "location") %}
-{% set experience_filter = crm_property_definition(dynamic_page_crm_object_type_fqn, "requires_experience") %}
-{% set background_filter = crm_property_definition(dynamic_page_crm_object_type_fqn, "require_background_check") %}
-{% endif %}
 <div data-testid="grid" class="grid grid-cols-1 gap-2">
-	<div>
-		<div class="d-f jc-sb ai-c">
-			<div style="flex: 1 1 0%; position: relative">
-				<input type="text" value="" style="padding-left: 32px" />
-				<span style="color: var(--color-tint4); font-size: 14px; left: 10px; top: 11px; position: absolute; z-index: 1;">
-					<svg class="symbol" id="search" viewBox="0 0 16 16">
-						<path fill-rule="evenodd" clip-rule="evenodd" d="M16 14.3288L12.3216 10.7424C13.2016 9.616 13.7296 8.2168 13.7296 6.696C13.7296 3.004 10.6504 0 6.8656 0C3.08 0 0 3.004 0 6.696C0 10.388 3.08 13.392 6.8656 13.392C8.2168 13.392 9.4744 13.004 10.5384 12.344L14.2864 16L16 14.3288ZM1.616 6.696C1.616 3.8728 3.9704 1.576 6.8656 1.576C9.7592 1.576 12.1152 3.8728 12.1152 6.696C12.1152 9.5192 9.7592 11.816 6.8656 11.816C3.9704 11.816 1.616 9.5192 1.616 6.696Z"></path>
-					</svg>
-				</span>
-			</div>
-		</div>
-	</div>
-	<div>
-	<div data-testid="grid" class="filter-buttons grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
-		<button aria-expanded="false" aria-haspopup="true" aria-controls="menu--schedule" class="select truncate ta-l" data-reach-menu-button="" type="button" id="menu-button--menu--schedule">Schedule</button>
-		<div data-reach-popover="" data-reach-menu="" data-reach-menu-popover="">
-			<div aria-labelledby="menu-button--menu--schedule" role="menu" id="menu--schedule" data-reach-menu-list="" data-reach-menu-items="" tabindex="-1" style="max-height: 15.5rem; max-width: 13rem; overflow: auto;">
-				<div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="(any)" tabindex="-1" id="option-0--menu--schedule">(any)</div>
-				{% for option in schedule_filter.options %}
-					<div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="{{ option.value }}" tabindex="-1" id="option-{{loop.index}}--menu--schedule">{{ option.label }}</div>
-				{% endfor %}
-			</div>
-		</div>
-		<button aria-expanded="false" aria-haspopup="true" aria-controls="menu--location" class="select truncate ta-l" data-reach-menu-button="" type="button" id="menu-button--menu--location">Location</button>
-		<div data-reach-popover="" data-reach-menu="" data-reach-menu-popover="">
-			<div aria-labelledby="menu-button--menu--location" role="menu" id="menu--schedule" data-reach-menu-list="" data-reach-menu-items="" tabindex="-1" style="max-height: 15.5rem; max-width: 13rem; overflow: auto;">
-				<div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="(any)" tabindex="-1" id="option-0--menu--location">(any)</div>
-				{% for option in location_filter.options %}
-					<div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="{{ option.value }}" tabindex="-1" id="option-{{loop.index}}--menu--location">{{ option.label }}</div>
-				{% endfor %}
-			</div>
-		</div>
-		<button aria-expanded="false" aria-haspopup="true" aria-controls="menu--experience" class="select truncate ta-l" data-reach-menu-button="" type="button" id="menu-button--menu--experience">Requires Experience</button>
-		<div data-reach-popover="" data-reach-menu="" data-reach-menu-popover="">
-			<div aria-labelledby="menu-button--menu--experience" role="menu" id="menu--schedule" data-reach-menu-list="" data-reach-menu-items="" tabindex="-1" style="max-height: 15.5rem; max-width: 13rem; overflow: auto;">
-				<div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="(any)" tabindex="-1" id="option-0--menu--experience">(any)</div>
-				{% for option in experience_filter.options %}
-					<div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="{{ option.value }}" tabindex="-1" id="option-{{loop.index}}--menu--experience">{{ option.label }}</div>
-				{% endfor %}
-			</div>
-		</div>
-		<button aria-expanded="false" aria-haspopup="true"aria-controls="menu--background" class="select truncate ta-l" data-reach-menu-button="" type="button" id="menu-button--menu--background">Requires Background Check</button>
-		<div data-reach-popover="" data-reach-menu="" data-reach-menu-popover="">
-			<div aria-labelledby="menu-button--menu--background" role="menu" id="menu--schedule" data-reach-menu-list="" data-reach-menu-items="" tabindex="-1" style="max-height: 15.5rem; max-width: 13rem; overflow: auto;">
-				<div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="(any)" tabindex="-1" id="option-0--menu--background">(any)</div>
-				{% for option in background_filter.options %}
-					<div role="menuitem" class="stripped-btn w-100% ta-l" data-reach-menu-item="" data-valuetext="{{ option.value }}" tabindex="-1" id="option-{{loop.index}}--menu--background">{{ option.label }}</div>
-				{% endfor %}
-			</div>
-		</div>
-	</div>
-	<div class="pt-3 mb-3">
-		<input type="checkbox" id="enrollment-status" class="checkbox"/>
-		<label for="enrollment-status" class="checkbox-label" >Include closed &amp; full teams</label>
-	</div>
+  <div>
+    <div class="d-f jc-sb ai-c">
+      <div style="flex: 1 1 0%; position: relative">
+      <input type="text" value="" style="padding-left: 32px" @input="updateSearchQuery" />
+        <span
+          style="
+            color: var(--color-tint4);
+            font-size: 14px;
+            left: 10px;
+            top: 11px;
+            position: absolute;
+            z-index: 1;
+          "
+        >
+          <svg class="symbol" id="search" viewBox="0 0 16 16">
+            <path
+              fill-rule="evenodd"
+              clip-rule="evenodd"
+              d="M16 14.3288L12.3216 10.7424C13.2016 9.616 13.7296 8.2168 13.7296 6.696C13.7296 3.004 10.6504 0 6.8656 0C3.08 0 0 3.004 0 6.696C0 10.388 3.08 13.392 6.8656 13.392C8.2168 13.392 9.4744 13.004 10.5384 12.344L14.2864 16L16 14.3288ZM1.616 6.696C1.616 3.8728 3.9704 1.576 6.8656 1.576C9.7592 1.576 12.1152 3.8728 12.1152 6.696C12.1152 9.5192 9.7592 11.816 6.8656 11.816C3.9704 11.816 1.616 9.5192 1.616 6.696Z"
+            ></path>
+          </svg>
+        </span>
+      </div>
+    </div>
+  </div>
+  <div>
+    <div
+      data-testid="grid"
+      class="filter-buttons grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2"
+    >
+      <div class="menu-group">
+        <button
+          aria-expanded="false"
+          aria-haspopup="true"
+          aria-controls="menu--schedule"
+          class="select truncate ta-l"
+          type="button"
+          id="menu-button--menu--schedule"
+          @click.prevent="activeMenu = 'serve_schedule'"
+        >
+          [[ filterLabels.serve_schedule ]]
+        </button>
+        <div v-if="activeMenu === 'serve_schedule'" class="menu-group--flyout">
+          <div
+            aria-labelledby="menu-button--menu--schedule"
+            role="menu"
+            id="menu--schedule"
+            data-reach-menu-list=""
+            data-reach-menu-button=""
+            tabindex="-1"
+            style="max-height: 15.5rem; max-width: 13rem; overflow: auto"
+          >
+            <div
+              role="menuitem"
+              class="stripped-btn w-100% ta-l"
+              data-reach-menu-item=""
+              data-valuetext="(any)"
+              tabindex="-1"
+              id="option-0--menu--schedule"
+              @click.prevent="applyFilter('serve_schedule', '')"
+            >
+              (any)
+            </div>
+            <div
+              role="menuitem"
+              class="stripped-btn w-100% ta-l"
+              data-reach-menu-item=""
+              :data-valuetext="option.value"
+              tabindex="-1"
+              v-for="(option, index) in filters.serve_schedule"
+              :key="index"
+              @click.prevent="applyFilter('serve_schedule', option.value)"
+            >
+              [[ option.label ]]
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="menu-group">
+        <button
+          aria-expanded="false"
+          aria-haspopup="true"
+          aria-controls="menu--schedule"
+          class="select truncate ta-l"
+          type="button"
+          id="menu-button--menu--location"
+          @click.prevent="activeMenu = 'location'"
+        >
+          [[ filterLabels.location ]]
+        </button>
+        <div v-if="activeMenu === 'location'" class="menu-group--flyout">
+          <div
+            aria-labelledby="menu-button--menu--location"
+            role="menu"
+            id="menu--location"
+            data-reach-menu-list=""
+            data-reach-menu-button=""
+            tabindex="-1"
+            style="max-height: 15.5rem; max-width: 13rem; overflow: auto"
+          >
+            <div
+              role="menuitem"
+              class="stripped-btn w-100% ta-l"
+              data-reach-menu-item=""
+              data-valuetext="(any)"
+              tabindex="-1"
+              id="option-0--menu--location"
+              @click.prevent="applyFilter('location', '')"
+            >
+              (any)
+            </div>
+            <div
+              role="menuitem"
+              class="stripped-btn w-100% ta-l"
+              data-reach-menu-item=""
+              :data-valuetext="option.value"
+              tabindex="-1"
+              v-for="(option, index) in filters.location"
+              :key="index"
+              @click.prevent="applyFilter('location', option.value)"
+            >
+              [[ option.label ]]
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="menu-group">
+        <button
+          aria-expanded="false"
+          aria-haspopup="true"
+          aria-controls="menu--experience"
+          class="select truncate ta-l"
+          type="button"
+          id="menu-button--menu--experience"
+          @click.prevent="activeMenu = 'requires_experience'"
+        >
+          [[ filterLabels.requires_experience ]]
+        </button>
+        <div v-if="activeMenu === 'requires_experience'" class="menu-group--flyout">
+          <div
+            aria-labelledby="menu-button--menu--experience"
+            role="menu"
+            id="menu--experience"
+            data-reach-menu-list=""
+            data-reach-menu-button=""
+            tabindex="-1"
+            style="max-height: 15.5rem; max-width: 13rem; overflow: auto"
+          >
+            <div
+              role="menuitem"
+              class="stripped-btn w-100% ta-l"
+              data-reach-menu-item=""
+              data-valuetext="(any)"
+              tabindex="-1"
+              id="option-0--menu--experience"
+              @click.prevent="applyFilter('requires_experience', '')"
+            >
+              (any)
+            </div>
+            <div
+              role="menuitem"
+              class="stripped-btn w-100% ta-l"
+              data-reach-menu-item=""
+              :data-valuetext="option.value"
+              tabindex="-1"
+              v-for="(option, index) in filters.requires_experience"
+              :key="index"
+              @click.prevent="applyFilter('requires_experience', option.value)"
+            >
+              [[ option.label ]]
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="menu-group">
+        <button
+          aria-expanded="false"
+          aria-haspopup="true"
+          aria-controls="menu--background"
+          class="select truncate ta-l"
+          type="button"
+          id="menu-button--menu--background"
+          @click.prevent="activeMenu = 'require_background_check'"
+        >
+          [[ filterLabels.require_background_check ]]
+        </button>
+        <div v-if="activeMenu === 'require_background_check'" class="menu-group--flyout">
+          <div
+            aria-labelledby="menu-button--menu--background"
+            role="menu"
+            id="menu--background"
+            data-reach-menu-list=""
+            data-reach-menu-button=""
+            tabindex="-1"
+            style="max-height: 15.5rem; max-width: 13rem; overflow: auto"
+          >
+            <div
+              role="menuitem"
+              class="stripped-btn w-100% ta-l"
+              data-reach-menu-item=""
+              data-valuetext="(any)"
+              tabindex="-1"
+              id="option-0--menu--background"
+              @click.prevent="applyFilter('require_background_check', '')"
+            >
+              (any)
+            </div>
+            <div
+              role="menuitem"
+              class="stripped-btn w-100% ta-l"
+              data-reach-menu-item=""
+              :data-valuetext="option.value"
+              tabindex="-1"
+              v-for="(option, index) in filters.require_background_check"
+              :key="index"
+              @click.prevent="applyFilter('require_background_check', option.value)"
+            >
+              [[ option.label ]]
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pt-3 mb-3">
+      <input type="checkbox" id="enrollment-status" class="checkbox" />
+      <label for="enrollment-status" class="checkbox-label"
+        >Include closed &amp; full teams</label
+      >
+    </div>
+  </div>
 </div>

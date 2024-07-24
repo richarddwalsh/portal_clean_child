@@ -22,6 +22,10 @@
       "method": "POST",
       "file": "group/invite.js"
     },
+    "team/getAll": {
+      "method": "POST",
+      "file": "team/getAll.js"
+    },
     "team/leave": {
       "method": "POST",
       "file": "team/leave.js"

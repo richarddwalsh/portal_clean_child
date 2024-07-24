@@ -1,0 +1,21 @@
+<!--
+  templateType: "none"
+  isAvailableForNewContent: false
+-->
+<article class="d-b" v-for="team in filteredTeams">
+  <a :href='"/volunteer/" + team.page_slug'class="d-b card-list-item__wrapper-link">
+    <div class="card-list-item__image">
+      <img :alt='"Logo for " + team.team_name' loading="lazy" :src="team.featured_image" />
+    </div>
+    <div class="d-f jc-sb ai-fs">
+      <h1 class="lh-1.333 c-tint0 fs-3 fw-600">[[ team.team_name ]]</h1>
+      <span 
+        class="badge ml-2" 
+        :class="team.active ? 'open-badge' : 'closed-badge'" 
+        style="text-transform: capitalize">
+        [[ team.active ? 'Open' : 'Closed' ]]
+      </span>
+    </div>
+    <div>[[ team.description ]]</div>
+  </a>
+</article>
