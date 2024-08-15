@@ -13,13 +13,15 @@
 
 {% block body %}
 <main class="body-container-wrapper group-categories-template">
-  {% if dynamic_page_crm_object_type_fqn %}
-    {% set team_fields = "team_name,description,page_slug,featured_image,show_in_portal,public,active,application_form_link" %}
-    {% set teams = crm_objects(dynamic_page_crm_object_type_fqn, queryparams,team_fields).results %}
+  {% if dynamic_page_crm_object_type_fqn %}    
     {% set schedule_filter = crm_property_definition(dynamic_page_crm_object_type_fqn, "serve_schedule").options %}
     {% set location_filter = crm_property_definition(dynamic_page_crm_object_type_fqn, "location").options %}
     {% set experience_filter = crm_property_definition(dynamic_page_crm_object_type_fqn, "requires_experience").options %}
     {% set background_filter = crm_property_definition(dynamic_page_crm_object_type_fqn, "require_background_check").options %}
+    {% set query= "limit=200&orderBy=team_name" %}
+    {% set team_fields = "team_name,description,page_slug,featured_image,show_in_portal,public,active,application_form_link" %}
+    {% set teams = crm_objects(dynamic_page_crm_object_type_fqn,query,team_fields).results %}
+    
     <script type="application/json" id="json-data">
       {
         "currentView": "list",

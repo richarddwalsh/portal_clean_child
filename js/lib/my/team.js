@@ -259,6 +259,7 @@ new Vue({
             disabled: false
           }
         ],
+        data: undefined,
         form: {
           rows:[
             {
@@ -439,6 +440,31 @@ new Vue({
             }
           ]
         }
+      },
+      {
+        id: "team_member_modal",
+        visible: false,
+        title: "Team Member Details",
+        hasFooter: true,
+        footerActions: [
+          {
+            id: "team_member_modal_cancel",
+            label: "Close",
+            type: "button",
+            class: "btn text-btn mr-2",
+            method: "hideModal('team_member_modal')",
+            disabled: false
+          },
+          {
+            id: "team_member_modal_promote",
+            label: "Change Volunteer Status",
+            type: "button",
+            class: "btn create-btn",
+            method: "changeVolunteerStatus('')",
+            disabled: false
+          }
+        ],
+        data: undefined
       }
     ],
   },
@@ -462,6 +488,10 @@ new Vue({
     isAdmin() {
       // console.log("Checking if user is admin")
       return document.getElementById('main_page_content').getAttribute('data-is-admin');;
+    },
+    isLead() {
+      const myTeamsLead = this.currentUser.associations.my_teams.items.map(item => item.hs_object_id);
+      return myTeamsLead.includes(this.team.id);
     },
     activeTab() {
       // console.log("Getting active tab")
@@ -500,7 +530,7 @@ new Vue({
       const now = moment();
       return updatedEvents.filter(event => event.endDateTime.isBefore(now))
                          .sort((a, b) => b.endDateTime - a.endDateTime); // Sort in descending order of end date-time
-    } 
+    }
   },
   methods: {
     initializeData() {
@@ -532,9 +562,63 @@ new Vue({
 
       this.newResource.objectId = this.team.id;
       this.newResource.objectType = 'teams';
+      this.getMembers();
 
       setTimeout(() => {
         this.loading = false;
+      });
+    },
+    getMembers() {
+      const data = {
+        "teamId": this.team.id
+      };
+
+      $.ajax({
+        type: 'POST',
+        url: `${window.location.origin}/_hcms/api/team/getMembers`,
+        contentType: 'application/json',
+        data: JSON.stringify(data),
+        success: (result) => {
+          if (result.status === 'success') {
+            result.contacts.sort((a, b) => {
+              if (a.role === 'lead' && b.role !== 'lead') {
+                return -1;
+              } if (a.role !== 'lead' && b.role === 'lead') {
+                return 1;
+              } 
+                if (a.firstname < b.firstname) {
+                  return -1;
+                } if (a.firstname > b.firstname) {
+                  return 1;
+                } 
+                  if (a.lastname < b.lastname) {
+                    return -1;
+                  } if (a.lastname > b.lastname) {
+                    return 1;
+                  } 
+                    return 0;
+                  
+                
+              
+            });
+    
+            // Push sorted members to the array
+            result.contacts.forEach(member => {
+              this.members.push(member);
+            });
+          } else {
+            console.log(result.error);
+          }
+          setTimeout(() => {
+            this.loading = false;
+          }, 0)
+        },
+        error: (error) => {
+          console.log(error);
+          setTimeout(() => {
+            this.loading = false;
+          }, 0)
+        }
       });
     },
     enableCommunication() {
@@ -609,5 +693,52 @@ new Vue({
         }
       });
     },
+    changeVolunteerStatus() {
+      const data = {
+        teamId: this.team.id, 
+        contactId: parseInt(this.currentData.hs_object_id),
+        firstname: this.currentData.firstname, 
+        contactEmail: this.currentData.email, 
+        teamUrl: `${window.location.origin}/my/teams/${this.team.page_slug}`, 
+        teamName: this.team.team_name,
+        teamBannerUrl: this.team.featured_image
+      }
+
+      let state = 'promote';
+      let endpoint = `${window.location.origin}/_hcms/api/team/promoteMember`
+      if (this.currentData.role === 'lead') {
+        state = 'demote';
+        endpoint = `${window.location.origin}/_hcms/api/team/demoteMember`
+      }
+
+      $.ajax({
+        type: 'POST',
+        url: endpoint,
+        contentType: 'application/json',
+        data: JSON.stringify(data),
+        success: (result) => {
+          if (result.status === 'success') {
+            console.log(result);
+            if (state === 'promote') {
+              this.currentData.role = 'lead';
+            } else {
+              this.currentData.role = 'member';
+            }
+            
+          } else {
+            console.log(result.error);
+          }
+          setTimeout(() => {
+            this.loading = false;
+          }, 0)
+        },
+        error: (error) => {
+          console.log(error);
+          setTimeout(() => {
+            this.loading = false;
+          }, 0)
+        }
+      });
+    }
   }
 });

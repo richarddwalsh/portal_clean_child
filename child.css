@@ -15675,3 +15675,7 @@ _:-moz-tree-row(hover) {
   position:absolute;
   z-index: 1;
 }
+
+.cursor-pointer {
+    cursor: pointer;
+}

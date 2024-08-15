@@ -3,25 +3,19 @@
   label: teams Details Sidebar
 -->
 <div class="w-33%@md o-1@md">
-	{% if team.require_background_check && team.requires_experience %}
-		<div class="mb-3 mb-4@md">
+		<div class="mb-3 mb-4@md" v-if="team.require_background_check || team.requires_experience">
 			<div class="mb-1 d-f ai-c jc-sb fw-w">
 				<h2 class="fs-4 fw-600 lh-20p tt-u c-tint3">Requirements</h2>
 			</div>
 			<div class="d-f fw-w g-4p mt-1">
-				{% if team.require_background_check %}
-					<div class="badge">
+					<div class="badge" v-if="team.requires_experience">
 						Previous Experience
 					</div>
-				{% endif %}
-				{% if team.require_background_check %}
-					<div class="badge">
+					<div class="badge" v-if="team.require_background_check">
 						Background Check
 					</div>
-				{% endif %}
 			</div>
 		</div>
-	{% endif %}
 	{% if team.location|length > 0  %}
 	<div class="mb-3 mb-4@md">
 		<div class="mb-1 d-f ai-c jc-sb fw-w">

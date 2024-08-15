@@ -3,19 +3,15 @@
   label: teams Details Registration Bar
 -->
 <div class="mb-3@sm px-2 action-drawer d-f ai-c jc-sb action-bar">
-	<div data-turbolinks="false">
+	<div :data-turbolinks="false">
 		<div class="c-tint2 fs-13 f-1 mr-2 lh-1.5">
-		{{ 'Accepting applications.' if team.active else 'No longer accepting applicants.' }}
+			[[ team.currentlyEnrolled ? 'You are a member of this team' : (team.active ? 'Accepting volunteers.' : 'No longer accepting volunteers.') ]]
 		</div>
 		<div class="c-tint2 fs-13 f-1 mr-2 lh-1.5"></div>
 	</div>
 	<div class="ta-r">
-		{% if team.active %}
-			{% if request_contact.is_logged_in %}
-				<a class="btn" target="_blank" href="{{ team.registration_url }}?email={{ contact.email }}&firstname={{contact.firstname}}&lastname={{contact.lastname}}&phone={{contact.phone}}&team_interest={{team.team_name}}">Apply</a>
-			{% else %}
-				<a class="btn" target="_blank" href="{{ team.registration_url }}?team_interest={{team.team_name}}">Apply</a>
-			{% endif %}			
-		{% endif %}
+		<a v-if="team.currentlyEnrolled" class="btn" target="_blank" :href="`${team.leave_url}?team_name=${team.team_name}`">Leave Team</a>
+		<a v-else-if="isLoggedIn" class="btn" target="_blank" :href="`${team.registration_url}?team_name=${team.team_name}`" :disabled="!team.active">Apply</a>
+		<a v-else class="btn" target="_blank" :href="`${team.registration_url}?email=${currentUser.email}&firstname=${currentUser.firstname}&lastname=${currentUser.lastname}&phone=${currentUser.phone}&team_name=${team.team_name}`" :disabled="!team.active">Apply</a>
 	</div>
 </div>

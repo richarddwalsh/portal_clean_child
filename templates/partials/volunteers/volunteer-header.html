@@ -4,10 +4,11 @@
 -->
 <div class="d-f@md ai-c fd-rr mb-3@md">
 	<div class="w-48%@md item-show__image css-32z89w">
-    <img alt="{{ team.team_name }} logo" class="d-b" src="{{ team.featured_image }}">
+		<img :alt='"Logo for " + team.team_name' loading="lazy" class="d-b" :src="team.featured_image" v-if="team.featured_image" />
+		<img :alt='"Logo for " + team.team_name' loading="lazy" class="d-b" src="https://23169086.fs1.hubspotusercontent-na1.net/hubfs/23169086/Portal%20Assets/one-placeholder.png" v-else />
   </div>
 	<div class="f-1 pr-6@md">
-		<h1 class="lh-1.333 c-tint0 fs-0 fw-600">{{ team.team_name }}</h1>
+		<h1 class="lh-1.333 c-tint0 fs-0 fw-600">[[ team.team_name ]]</h1>
 		<div class="mt-2 mt-1@md">
 			<span class="d-n d-b@md"></span>
 		</div>

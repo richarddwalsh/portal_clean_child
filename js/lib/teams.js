@@ -16,6 +16,7 @@ new Vue({
   data: {
     loading: true,
     teams: [],
+    team: {},
     teamFields: dataset.teamFields,
     includeClosed: false,
     currentView: dataset.currentView,
@@ -51,6 +52,10 @@ new Vue({
       // console.log("Checking if user is admin")
       return document.getElementById('main_page_content').getAttribute('data-is-admin');;
     },
+    isLead() {
+      const myTeamsLead = this.currentUser.associations.my_teams.items.map(item => item.hs_object_id);
+      return myTeamsLead.includes(this.team.id);
+    },
     filteredTeams() {
       let filteredTeams = this.teams;
       
@@ -71,6 +76,14 @@ new Vue({
         filteredTeams = filteredTeams.filter(team => 
           team.team_name.toLowerCase().includes(query)
         );
+      }
+
+      if (this.includeClosed) {
+        // Include teams where team.active is false if includeClosed is true
+        filteredTeams = filteredTeams.filter(team => team.active || !team.active);
+      } else {
+        // Exclude teams where team.active is false if includeClosed is false
+        filteredTeams = filteredTeams.filter(team => team.active);
       }
     
       return filteredTeams;
@@ -102,24 +115,6 @@ new Vue({
             ]
           }
         }
-
-        if (this.includeClosed) {
-          const closedFilterGroup = {
-            propertyName: "active",
-            operator: "EQ",
-            value: false
-          }
-          
-          data.query.filterGroups[0].filters.push(closedFilterGroup);
-        } else {
-          const openFilterGroup = {
-            propertyName: "active",
-            operator: "EQ",
-            value: true
-          }
-          
-          data.query.filterGroups[0].filters.push(openFilterGroup);
-        }
   
         $.ajax({
           type: 'POST',
@@ -133,7 +128,22 @@ new Vue({
                   id: team.id,
                   ...team.properties
                 }
+
+                if(team.properties.active === "true") {
+                  newTeam.active = true;
+                } else {
+                  newTeam.active = false;
+                }
+
                 this.teams.push(newTeam)
+              });
+
+              this.teams.sort((a, b) => {
+                const nameA = a.team_name.toLowerCase();
+                const nameB = b.team_name.toLowerCase();
+                if (nameA < nameB) return -1;
+                if (nameA > nameB) return 1;
+                return 0;
               });
               
             } else {
@@ -152,6 +162,13 @@ new Vue({
         });
       }
       if (this.currentView === 'detail') {
+        this.team = {
+          ...dataset.team,
+        }
+
+        const enrolledTeamIds = this.currentUser.associations.teams.items.map(item => item.hs_object_id);
+        this.team.currentlyEnrolled = enrolledTeamIds.includes(this.team.id);
+
         setTimeout(() => {
           this.loading = false;
         }, 0)

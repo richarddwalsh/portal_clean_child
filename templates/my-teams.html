@@ -16,6 +16,7 @@
     {% set contact = data_query.data.CRM.contact %}
     {% set contact_id = contact._metadata.id %}
     {% set memberships = request_contact.list_memberships %}
+    {# need to check associations, if Team Lead #}
     {% set is_admin = admin_list_id in memberships %}
   {% endif %}
   {% if dynamic_page_crm_object_type_fqn %}
@@ -23,13 +24,6 @@
     {% set my_leadership_teams = crm_associations(contact_id, "USER_DEFINED", 346, "", fields).results %}
     {% set my_teams = crm_associations(contact_id, "USER_DEFINED", 216, "", fields).results %}
     {% set teams = my_leadership_teams|union(my_membership_teams)|union(my_teams) %}
-    <script type="application/json" id="json-data">
-      {
-        "objectFQN": "{{ objectFQN }}",
-        "teams": {{ teams|tojson }},
-        "userData": {{ contact|tojson }}
-      }
-    </script>
     <nav aria-label="Breadcrumb" class="breadcrumbs">
       <div class="breadcrumbs__layout container">
         <a aria-label="Me" class="breadcrumbs__page" href="/me">
@@ -55,6 +49,13 @@
       </div>
     </nav>
     <div class="f-1 pb-4 pt-4" id="main_page_content">
+      <script type="application/json" id="json-data">
+        {
+          "objectFQN": "{{ objectFQN }}",
+          "teams": {{ teams|tojson }},
+          "userData": {{ contact|tojson }}
+        }
+      </script>
       <div class="f-1 container">
         <div tabindex="-1" style="outline: none;">
           <div tabindex="-1" style="outline: none;">
@@ -110,19 +111,10 @@
                         <div class="mb-2">
                           <span>Are you sure you would like to leave {{ team.team_name }}?</span>
                         </div>
-                        <form data-endpoint="https://{{ request.domain }}/_hcms/api/team/leave">
-                          <div class="d-f jc-fe mt-3">
-                            <input type="hidden" name="teamId" value="{{ team.id }}">
-                            <input type="hidden" name="teamName" value="{{ team.team_name }}">
-                            <input type="hidden" name="teamUrl" value="http://{{ request.domain }}/my/teams/{{ team.page_slug }}">
-                            <input type="hidden" name="teamBannerUrl" value="{{ team.featured_image }}">
-                            <input type="hidden" name="contactId" value="{{ contact_id }}">
-                            <input type="hidden" name="firstname" value="{{ contact.firstname }}">
-                            <input type="hidden" name="contactEmail" value="{{ contact.email }}">
-                            <button class="btn text-btn mr-2 cancel-btn">Cancel</button>
-                            <button class="btn" type="submit">Yes, leave team</button>
-                          </div>
-                        </form>
+                        <div class="d-f jc-fe mt-3">
+                          <button class="btn text-btn mr-2 cancel-btn">Cancel</button>
+                          <button class="btn" @click.prevent="leaveTeam()">Yes, leave team</button>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -273,7 +265,7 @@
                 <div class="f-1" v-if="activeTab.id == 'members' && showTab">
                   {% include "./partials/volunteers/tabs/team-members.html" %}
                 </div>
-                <div class="f-1" v-if="activeTab.id == 'settings' && showTab">
+                <div class="f-1" v-if="activeTab.id == 'settings' && showTab && (isAdmin || isLead)">
                   {% include "./partials/volunteers/tabs/team-settings.html" %}
                 </div>
               </div>
@@ -293,7 +285,7 @@
   {{ require_js(get_asset_url("../js/lib/directives.js"), { position: 'footer'}) }}
   {{ require_js(get_asset_url("../js/lib/shared/methods.js"), { position: 'footer'}) }}
   {% if dynamic_page_crm_object_type_fqn %}
-    {{ require_js(get_asset_url("../js/lib/teams.js"), { position: 'footer'}) }}
+    {{ require_js(get_asset_url("../js/lib/my/teams.js"), { position: 'footer'}) }}
   {% elif dynamic_page_crm_object %}
     {{ require_js(get_asset_url("../js/lib/my/team.js"), { position: 'footer'}) }}
   {% endif %}

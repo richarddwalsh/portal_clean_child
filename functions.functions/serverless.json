@@ -26,9 +26,21 @@
       "method": "POST",
       "file": "team/getAll.js"
     },
+    "team/getMembers": {
+      "method": "POST",
+      "file": "team/getMembers.js"
+    },
     "team/leave": {
       "method": "POST",
       "file": "team/leave.js"
+    },
+    "team/promoteMember": {
+      "method": "POST",
+      "file": "team/promoteMember.js"
+    },
+    "team/demoteMember": {
+      "method": "POST",
+      "file": "team/demoteMember.js"
     },
     "household/add": {
       "method": "POST",

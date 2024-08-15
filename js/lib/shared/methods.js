@@ -23,6 +23,9 @@ const emptyResource = {
 }
 
 window.sharedMethods = {
+  data: {
+    currentData: null
+  },
   methods: {
     closeActionDrawer() {
       Object.keys(this.actionDrawers).forEach(key => {
@@ -50,18 +53,22 @@ window.sharedMethods = {
     },
     showTab(tab) {
       // console.log(`showing tab ${tab.id}`)
-      if (tab.requiresAdmin && !this.isAdmin) {
+      if (tab.requiresAdmin && (!this.isAdmin || !this.isLead)) {
         return false
       }
       return true;
     },
-    showModal(modalId) {
-      // console.log(`showing modal ${modalId}`);
+    showModal(modalId, data) {
+      this.currentData = null;
+      if (data) {
+        this.currentData = data;
+      }
+      // console.log(`showing modal ${modalId}`, data, this.currentData);
       this.modals = this.modals.map(modal => {
         if (modal.id === modalId) {
-          return { ...modal, visible: true };
+          return { ...modal, visible: true, data };
         } 
-        return { ...modal, visible: false };
+        return { ...modal, visible: false, data };
       });
     },
     hideModal(modalId) {
@@ -453,7 +460,6 @@ window.sharedMethods = {
     },
     archiveObject(objectType, objectId) {
       console.log(`Archiving ${objectType} ${objectId}...`)
-    },
-    
+    }
   }
 }

@@ -44,7 +44,25 @@ query contact_info($contact_id: String!) {
             hs_object_id
           }
         }
-        groups: p_groups_collection__group_to_contact {
+        my_groups_lead: p_groups_collection__group_lead {
+          items {
+            hs_object_id
+            name
+          }
+        }
+        my_groups: p_groups_collection__group_to_contact {
+          items {
+            hs_object_id
+            name
+          }
+        }
+        my_groups_volunteed_lead: p_groups_collection__volunteer_lead {
+          items {
+            hs_object_id
+            name
+          }
+        }
+        my_groups_volunteer: p_groups_collection__volunteer {
           items {
             hs_object_id
             name
@@ -55,6 +73,13 @@ query contact_info($contact_id: String!) {
             hs_object_id
             team_name
             featured_image
+          }
+        }
+        my_teams: p_teams_collection__team_lead{
+          items {
+            hs_object_id
+            team_name
+						featured_image
           }
         }
         events: p_events_collection__event_to_contact {

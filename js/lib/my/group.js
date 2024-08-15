@@ -1012,6 +1012,10 @@ new Vue({
       // console.log("Checking if user is admin")
       return document.getElementById('main_page_content').getAttribute('data-is-admin');;
     },
+    isLead() {
+      const myGroupsLead = this.currentUser.associations.my_groups_lead.items.map(item => item.hs_object_id);
+      return myGroupsLead.includes(this.team.id);
+    },  
     activeTab() {
       // console.log("Getting active tab")
       return this.tabs.find(tab => tab.active);
