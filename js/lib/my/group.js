@@ -17,6 +17,7 @@ new Vue({
   data: {
     objectName: dataset.groupData.name,
     objectType: 'groups',
+    activeButton: undefined,
     objectId: dataset.groupData.id,
     loading: true,
     editing: false,
@@ -34,7 +35,7 @@ new Vue({
     },
     messages: dataset.messages.objects,
     resources: dataset.resources.objects,
-    members: dataset.members.items,
+    members: [],
     newEvent: emptyEvent,
     newReply: "",
     showComposer: false,
@@ -332,7 +333,7 @@ new Vue({
               {
                 panes: [
                   {
-                    id: "group-details-2-locatoon-settings",
+                    id: "group-details-2-location-settings",
                     fields: [
                       {
                         cols: 2,
@@ -961,7 +962,20 @@ new Vue({
               label: "Location",
               name: "location",
               type: "select",
-              options: [],
+              options: [
+                {
+                  id: "location_type_preference_physical",
+                  label: "Physical address",
+                  value: "Physical",
+                  checked: false
+                },
+                {
+                  id: "location_type_preference_virtual",
+                  label: "Virtual (link)",
+                  value: "Virtual",
+                  checked: false
+                }
+              ],
               disabled: false
             },
             {
@@ -972,6 +986,31 @@ new Vue({
             }
           ]
         }
+      },
+      {
+        id: "team_member_modal",
+        visible: false,
+        title: "Team Member Details",
+        hasFooter: true,
+        footerActions: [
+          {
+            id: "team_member_modal_cancel",
+            label: "Close",
+            type: "button",
+            class: "btn text-btn mr-2",
+            method: "hideModal('team_member_modal')",
+            disabled: false
+          },
+          {
+            id: "team_member_modal_promote",
+            label: "Change Volunteer Status",
+            type: "button",
+            class: "btn create-btn",
+            method: "changeVolunteerStatus('')",
+            disabled: false
+          }
+        ],
+        data: undefined
       }
     ],
   },
@@ -1014,7 +1053,7 @@ new Vue({
     },
     isLead() {
       const myGroupsLead = this.currentUser.associations.my_groups_lead.items.map(item => item.hs_object_id);
-      return myGroupsLead.includes(this.team.id);
+      return myGroupsLead.includes(this.group.id);
     },  
     activeTab() {
       // console.log("Getting active tab")
@@ -1106,9 +1145,64 @@ new Vue({
 
       this.newResource.objectId = this.group.id;
       this.newResource.objectType = 'groups';
+
+      this.getMembers();
+
       setTimeout(() => { 
         this.loading = false;
       }, 0);
+    },
+    getMembers() {
+      const data = {
+        "groupId": this.group.id
+      };
+
+      $.ajax({
+        type: 'POST',
+        url: `${window.location.origin}/_hcms/api/group/getMembers`,
+        contentType: 'application/json',
+        data: JSON.stringify(data),
+        success: (result) => {
+          if (result.status === 'success') {
+            result.contacts.sort((a, b) => {
+              if (a.role === 'lead' && b.role !== 'lead') {
+                return -1;
+              } if (a.role !== 'lead' && b.role === 'lead') {
+                return 1;
+              } 
+                if (a.firstname < b.firstname) {
+                  return -1;
+                } if (a.firstname > b.firstname) {
+                  return 1;
+                } 
+                  if (a.lastname < b.lastname) {
+                    return -1;
+                  } if (a.lastname > b.lastname) {
+                    return 1;
+                  } 
+                    return 0;
+                  
+                
+              
+            });
+            // Push sorted members to the array
+            result.contacts.forEach(member => {
+              this.members.push(member);
+            });
+          } else {
+            console.log(result.error);
+          }
+          setTimeout(() => {
+            this.loading = false;
+          }, 0)
+        },
+        error: (error) => {
+          console.log(error);
+          setTimeout(() => {
+            this.loading = false;
+          }, 0)
+        }
+      });
     },
     enableCommunication() {
       // console.log("enabling communication")

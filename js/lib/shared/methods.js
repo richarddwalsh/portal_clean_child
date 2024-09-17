@@ -203,8 +203,28 @@ window.sharedMethods = {
         }
       });
     },
-    removeResource() {
-
+    removeResource(resourceId) {
+      this.processing.resource = true;
+    
+      console.log("removing resource", resourceId);
+      const endpoint = `${window.location.origin}/_hcms/api/removeResource`;
+      $.ajax({
+        type: 'POST',
+        url: endpoint,
+        contentType: 'application/json',
+        data: JSON.stringify({ id: resourceId }),
+        success: (response) => {
+          this.processing.resource = false;
+          if (response.status === 'success') {
+            // Remove the resource from the resources array
+            this.resources = this.resources.filter(resource => resource.id !== resourceId);
+          }
+        },
+        error: (error) => {
+          console.log(error);
+          this.processing.resource = false;
+        }
+      });
     },
     createEvent() {
       console.log("creating event...")
@@ -403,6 +423,7 @@ window.sharedMethods = {
       });
     },
     submitMessage(reply,originalId) {
+      this.activeButton = originalId;
       const message = {
         name: this.objectName,
         originalId,
@@ -426,6 +447,7 @@ window.sharedMethods = {
           if (response.status === 'success') {
             this.newReply = '';
             this.messages.unshift(response.response.values);
+            this.activeButton = undefined;
           }
         },
         error: (error) => {

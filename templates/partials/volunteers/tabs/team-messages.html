@@ -32,7 +32,17 @@
                   placeholder="Write your message..."
                   v-model="newReply"
                 ></textarea>
-                <button type="button" @click="submitMessage(0)" class="btn quite-btn fsh-0">Submit</button>
+                <button type="button" @click="submitMessage(0)" class="btn quite-btn fsh-0">
+                  <span>Submit</span>
+                  <svg
+                    class="progress-circle"
+                    height="25"
+                    width="25"
+                    v-if="activeButton === 0"
+                  >
+                    <circle cx="12.5" cy="12.5" r="6.25"></circle>
+                  </svg>
+                </button>
               </form>
             </div>
           </div>
@@ -66,7 +76,17 @@
               placeholder="Reply to this message"
               v-model="newReply"
             ></textarea>
-            <button type="button" @click="submitMessage(1,item.hs_id)" class="btn quite-btn fsh-0">Submit</button>
+            <button type="button" @click="submitMessage(1,item.hs_id)" class="btn quite-btn fsh-0">
+              <span>Submit</span>
+              <svg
+                class="progress-circle"
+                height="25"
+                width="25"
+                v-if="activeButton === item.hs_id"
+              >
+                <circle cx="12.5" cy="12.5" r="6.25"></circle>
+              </svg>
+            </button>
           </div>
         </div>
         <div

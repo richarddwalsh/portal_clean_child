@@ -14968,7 +14968,7 @@ _:-moz-tree-row(hover) {
 }
 
 .progress-circle {
-    display: none;
+    /* display: none; */
 }
 
 .progress-circle circle {
@@ -15678,4 +15678,9 @@ _:-moz-tree-row(hover) {
 
 .cursor-pointer {
     cursor: pointer;
+}
+
+.icon-btn svg {
+    width: 1.5rem;
+    height: 1.5rem;
 }

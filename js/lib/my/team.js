@@ -16,6 +16,7 @@ new Vue({
   },
   data: {
     objectName: dataset.teamData.team_name,
+    activeButton: undefined,
     objectType: 'teams',
     objectId: dataset.teamData.id,
     loading: true,

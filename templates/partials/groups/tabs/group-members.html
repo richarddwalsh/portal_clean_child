@@ -2,134 +2,141 @@
   templateType: global_partial
   label: Group Members Tab
 -->
-{% macro contactInitials(firstname, lastname) %}
-  {% set initials = "" %}
-  {% if firstname|length>0 %}
-    {% set initials = initials ~ truncate(firstname, 1, false, "") %}
-  {% endif %}
-  {% if lastname|length>0 %}
-    {% set initials = initials ~ truncate(lastname, 1, false, "") %}
-  {% endif %}
-  {{ initials }}
-{% endmacro %}
 <div class="f-1">
 	<div class="d-f jc-sb mt-1 mb-2">
-		<h1 class="lh-1.333 c-tint0 fs-2 fw-600">{{ member_count }} Members</h1>
+		<h1 class="lh-1.333 c-tint0 fs-2 fw-600">[[ members.length ]] [[ members.length === 1 ? 'Member' : 'Members' ]]</h1>
 		<div class="d-f" style="gap: 0.5rem;">
 		</div>
 	</div>
 
 	<div>
-		<a href="/my/groups/{{ group.dynamic_page_slug }}">
-			<article class="d-f ai-c mb-2 pb-2 my-member__row">
-				<div class="avatar w-8 h-8 mr-2">
-					{{ contactInitials(contact.firstname, contact.lastname) }}
-				</div>
-				<div class="f-1 d-f jc-sb ai-c">
-					<div class="d-f fd-c ai-fs">
-						<h3 class="lh-1.333 c-tint0 fs-3 fw-600">{{ contact.firstname ~ " " ~ contact.lastname }}</h3>
-						<span class="fs-13 lh-1.5 c-brand">Edit visible info</span>
-					</div>
-				</div>
-			</article>
-		</a>
-		{% for leader in group_leaders %}
-			{% if leader.id != contact_id %}
-			<a id="leader-{{leader.id}}" class="member-modal-btn modal-trigger" data-id="{{ leader.id }}" href="javascript:void(0);" data-target="modal-{{leader.id}}">
-				<article class="d-f ai-c mb-2">
-					<div class="avatar w-8 h-8 mr-2">
-						{{ contactInitials(leader.firstname, leader.lastname) }}
-					</div>
-					<div class="f-1 d-f jc-sb ai-c">
-						<div class="d-f fd-c ai-fs">
-							<h3 class="lh-1.333 c-tint0 fs-3 fw-600">{{ leader.firstname ~ " " ~ leader.lastname }}</h3>
-							<span class="fs-13 lh-1.5 c-brand">Member info</span>
-						</div>
-						<div>
-							<span class="badge">Leader</span>
-						</div>
-					</div>
-				</article>
-			</a>
-			{% endif %}
-		{% endfor %}
-		{% for member in group_members %}
-			{% if member.id != contact_id %}
-			<a id="member-{{member.id}}" class="member-modal-btn modal-trigger" data-id="{{ member.id }}" href="javascript:void(0);" data-target="modal-{{member.id}}">
-				<article class="d-f ai-c mb-2">
-					<div class="w-8 h-8 mr-2">
-						<img alt="avatar" src="https://avatars.planningcenteronline.com/uploads/initials/BS.png?background_color=EEE&amp;color=9E9E9E" style="border-radius: 50%; width: 100%; height: 100%; object-fit: cover;">
-					</div>
-					<div class="f-1 d-f jc-sb ai-c">
-						<div class="d-f fd-c ai-fs">
-							<h3 class="lh-1.333 c-tint0 fs-3 fw-600">{{ member.firstname ~ " " ~ member.lastname }}</h3>
-							<span class="fs-13 lh-1.5 c-brand">Member info</span>
-						</div>
-					</div>
-				</article>
-			</a>
-			{% endif %}
-		{% endfor %}
-	</div>
-</div>
-{% for member in members %}
-	<div id="modal-{{ member.id }}" class="modal" data-focus-lock-disabled="false" style="display:none">
-			<div>
-				<div data-reach-alert-dialog-overlay="true" data-reach-dialog-overlay="">
-					<div aria-describedby="alert-dialog-description--{{ member.id }}" aria-labelledby="alert-dialog--{{ member.id }}" aria-modal="true" data-reach-alert-dialog-content="true" data-reach-alert-dialong-content="true" data-reach-dialog-content="" role="alertdialog" tabindex="-1">
-						<div class="mb-1" data-reach-alert-dialog-label="true" id="alert-dialog--{{ member.id }}">
-							<section class="d-f ai-c g-2">
-								<div class="avatar w-8 h-8 mr-2">
-									{{ contactInitials(member.firstname, member.lastname) }}
-								</div>
-								<div>
-									<h1 class="lh-1.333 c-tint0 fs-21 fw-600">{{ member.firstname ~ " " ~ member.lastname }}</h1>
-									<p class="m-0">{{ 'Team Leader' if member.leader else 'Team Member' }}</p>
-								</div>
-							</section>
-						</div>
-						<div data-reach-alert-dialog-description="true" id="alert-dialog-description--{{ member.id }}">
-							<div class="mb-2">
-								<div data-testid="grid" class="grid grid-cols-1 md:grid-cols-2 gap-2 w-100%">
-									<div class="form-field mb-2">
-										<label>First name</label>
-										<input class="form-field__input--full" type="text" name="firstname" value="{{ member.firstname }}" readonly />
-									</div>
-									<div class="form-field mb-2">
-										<label>Last name</label>
-										<input class="form-field__input--full" type="text" name="lastname" value="{{ member.lastname }}" readonly />
-									</div>
-								</div>
-								<div data-testid="grid" class="grid grid-cols-1 w-100%">
-									<div class="form-field mb-2">
-										<label>Email</label>
-										<a href="mailto:{{member.email}}" target="_blank">
-										<input class="form-field__input--full" type="email" name="email" value="{{ member.email }}" readonly />
-										</a>
-									</div>
-								</div>
-								<div data-testid="grid" class="grid grid-cols-1 w-100%">
-									<div class="form-field mb-2">
-										<label>Phone</label>
-										<input class="form-field__input--full" type="text" name="phone" value="{{ member.phone }}" readonly />
-									</div>
-								</div>
-							</div>
-							<div>
-								<div class="d-f jc-fe mt-3">
-									<input type="hidden" name="memberId" value="{{ member.id }}">
-									<input type="hidden" name="memberName" value="{{ member.name }}">
-									<input type="hidden" name="memberUrl" value="http://{{ request.domain }}/my/members/{{ member.dynamic_page_slug }}">
-									<input type="hidden" name="memberBannerUrl" value="{{ member.featured_image }}">
-									<input type="hidden" name="contactId" value="{{ contact_id }}">
-									<input type="hidden" name="firstname" value="{{ contact.firstname }}">
-									<input type="hidden" name="contactEmail" value="{{ contact.email }}">
-									<button class="btn text-btn mr-2 cancel-btn">Close</button>
-								</div>
-							</div>
-						</div>
-					</div>
+	<a href="/my/teams/{{ team.dynamic_page_slug }}">
+		<article class="d-f ai-c mb-2 pb-2 my-member__row">
+			<div class="avatar w-8 h-8 mr-2">
+				[[ getInitials(currentUser.firstname + ' ' + currentUser.lastname) ]]
+			</div>
+			<div class="f-1 d-f jc-sb ai-c">
+				<div class="d-f fd-c ai-fs">
+					<h3 class="lh-1.333 c-tint0 fs-3 fw-600">[[ currentUser.firstname ]] [[ currentUser.lastname ]]</h3>
+					<span class="fs-13 lh-1.5 c-brand">Edit visible info</span>
 				</div>
 			</div>
+		</article>
+	</a>
+	<article
+		class="d-f ai-c mb-2"
+		v-for="member in members"
+	>
+		<div class="avatar w-8 h-8 mr-2">
+			[[ getInitials(member.firstname + ' ' + member.lastname) ]]
 		</div>
-{% endfor %}
+		<div class="f-1 d-f jc-sb ai-c">
+			<div class="d-f fd-c ai-fs">
+				<h3 class="lh-1.333 c-tint0 fs-3 fw-600">
+					[[ member.firstname ]] [[ member.lastname ]]
+				</h3>
+				<span 
+					class="fs-13 lh-1.5 c-brand cursor-pointer"
+					v-if="isAdmin || isLead"
+					@click.prevent="showModal('team_member_modal', member)"
+				>Team Member Profile</span>
+			</div>
+			<div>
+				<span class="badge ml-2">[[ member.role === 'lead' ? 'Team Leader' : 'Team Member' ]]</span>
+			</div>
+		</div>
+	</article>
+	</div>
+</div>
+
+<div
+	:id="modal.id"
+	class="modal--open"
+	v-for="modal in modals"
+	v-if="modal.visible"
+>
+  <div class="modal-layer">
+    <div class="modal">
+      <div class="modal__header">
+        <h1 class="modal-title">[[ modal.title ]]</h1>
+      </div>
+      <div 
+        class="modal__body"
+        :class="{'has-modal-footer': modal.hasFooter}"
+				v-if="modal.id == 'team_member_modal' && currentData"
+      >
+				<div class="mb-2">
+					<section class="d-f ai-c g-2">
+						<div class="avatar w-8 h-8 mr-2">
+							[[getInitials(currentData.firstname + ' ' + currentData.lastname)]]
+						</div>
+						<div>
+						<h1 class="lh-1.333 c-tint0 fs-21 fw-600">[[ currentData.firstname +  ' ' + currentData.lastname ]]</h1>
+						<p class="m-0 fs-18">[[ currentData.role === 'lead' ? 'Team Leader' : 'Team Member' ]]</p>
+						</div>
+					</section>
+				</div>
+				<div>
+					<div class="mb-2">
+						<div
+							data-testid="grid"
+							class="grid grid-cols-1 md:grid-cols-2 gap-2 w-100%"
+						>
+							<div class="form-field mb-2">
+								<label>First name</label>
+								<input class="form-field__input--full" type="text" name="firstname" v-model="currentData.firstname" readonly />
+							</div>
+							<div class="form-field mb-2">
+								<label>Last name</label>
+								<input class="form-field__input--full" type="text" name="lastname" v-model="currentData.lastname" readonly />
+							</div>
+						</div>
+						<div
+							data-testid="grid"
+							class="grid grid-cols-1 md:grid-cols-2 gap-2 w-100%"
+						>
+							<div class="form-field mb-2">
+								<label>Email</label>
+								<input class="form-field__input--full" type="email" name="email" v-model="currentData.email" readonly />
+							</div>
+							<div class="form-field mb-2">
+								<label>Phone</label>
+								<input class="form-field__input--full" type="tel" name="phone" v-model="currentData.phone" readonly />
+							</div>
+						</div>
+						<div data-testid="grid" class="grid grid-cols-1 w-100%">
+							<div class="form-field mb-2">
+								<label>Birthday</label>
+								<input class="form-field__input--full" type="text" name="birthday" v-model="currentData.birthday" readonly />
+							</div>
+						</div>
+						<div data-testid="grid" class="grid grid-cols-1 w-100%">
+							<div class="form-field mb-2">
+								<label>ONE Fam Status</label>
+								<input class="form-field__input--full" type="text" name="completed_one_fam" v-model="currentData.completed_one_fam" readonly />
+							</div>
+						</div>
+						<div data-testid="grid" class="grid grid-cols-1 w-100%">
+							<div class="form-field mb-2">
+								<label>Background Check Status</label>
+								<input class="form-field__input--full" type="text" name="background_check_status" v-model="currentData.background_check_status" readonly />
+							</div>
+						</div>
+					</div>
+				</div>
+      </div>
+      <div class="modal__footer d-f fd-r jc-fe" v-if="modal.hasFooter">
+        <button
+          type="button"
+          :id="button.id"
+          :class="button.class"
+          @click="callDynamicMethod(button.method)"
+          v-for="button in modal.footerActions"
+          :key="button.id"
+        >
+          <span>[[button.label]]</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

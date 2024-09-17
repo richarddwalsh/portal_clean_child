@@ -10,6 +10,10 @@
       "method": "POST",
       "file": "group/getAll.js"
     },
+    "group/getMembers": {
+      "method": "POST",
+      "file": "group/getMembers.js"
+    },
     "group/join": {
       "method": "POST",
       "file": "group/join.js"
@@ -69,6 +73,10 @@
     "addResource": {
       "method": "POST",
       "file": "addResource.js"
+    },
+    "removeResource": {
+      "method": "POST",
+      "file": "removeResource.js"
     },
     "me/update": {
       "method": "POST",

@@ -2,36 +2,9 @@
   templateType: global_partial
   label: team Members Tab
 -->
-{% macro contactInitials(firstname, lastname) %}
-  {% set initials = "" %}
-  {% if firstname|length>0 %}
-    {% set initials = initials ~ truncate(firstname, 1, false, "") %}
-  {% endif %}
-  {% if lastname|length>0 %}
-    {% set initials = initials ~ truncate(lastname, 1, false, "") %}
-  {% endif %}
-  {{ initials }}
-{% endmacro %}
-
-{% set member_fields = "firstname,lastname,email,phone,birthday,completed_one_fam,background_check_status"%}
-{% set team_leaders = crm_associations(team.id, "USER_DEFINED", 345, "", member_fields).results %}
-{% set new_team_leaders = []	%}
-{% for leader in team_leaders %}
-	{% do leader.update({"leader": true, "association": 345}) %}
-{% endfor %}
-{% set team_members = crm_associations(team.id, "USER_DEFINED", 215, "", member_fields).results %}
-{% for member in team_members %}
-	{% if member.id != contact_id %}
-		{% do member.update({"leader": false, "association": 215 }) %}
-	{% else %}
-		{% do team_members.pop(loop.index0)%}
-	{% endif %}
-{% endfor %}
-{% set members = team_leaders|union(team_members)|unique %}
-{% set member_count = members|length %}
 <div class="f-1">
 	<div class="d-f jc-sb mt-1 mb-2">
-		<h1 class="lh-1.333 c-tint0 fs-2 fw-600">{{ member_count }} Members</h1>
+		<h1 class="lh-1.333 c-tint0 fs-2 fw-600">[[ members.length ]] [[ members.length === 1 ? 'Member' : 'Members' ]]</h1>
 		<div class="d-f" style="gap: 0.5rem;">
 		</div>
 	</div>

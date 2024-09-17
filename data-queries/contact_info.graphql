@@ -39,6 +39,32 @@ query contact_info($contact_id: String!) {
       household_contact_type
       using_household_email
       associations {
+        payments: deal_collection__contact_to_deal(
+          filter: { pipeline__eq: "26389519" }
+          orderBy: pushpay_payment_created__desc
+        ) {
+          limit
+          total
+          offset
+          hasMore
+          items {
+            hs_object_id
+            dealname
+            amount
+            closedate
+            dealstage
+            pipeline
+            pushpay_account
+            pushpay_merchant_payment_link
+            pushpay_payment_campus
+            pushpay_payment_created
+            pushpay_payment_currency
+            pushpay_payment_link
+            pushpay_payment_method
+            pushpay_payment_transaction_id
+            pushpay_payment_fund_name
+          }
+        }
         registrations: p_registrations_collection__participant {
           items {
             hs_object_id

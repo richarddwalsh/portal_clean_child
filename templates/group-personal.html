@@ -20,11 +20,6 @@
     {% set contact_id = contact._metadata.id %}
     {% set memberships = request_contact.list_memberships %}
     {% set is_admin = admin_list_id in memberships %}
-    {% set member_fields = "firstname,lastname,email,phone,birthday"%}
-    {% set group_leaders = crm_associations(group.id, "USER_DEFINED", 229, "", member_fields).results %}
-    {% set group_members = crm_associations(group.id, "USER_DEFINED", 305, "", member_fields).results %}
-    {% set members = group_leaders|union(group_members) %}
-    {% set member_count = members|length %}
   {% endif %}
   {% if dynamic_page_crm_object_type_fqn %}
     {% set fields = "name,featured_image,dynamic_page_slug,contact_name,schedule" %}
@@ -56,7 +51,7 @@
         </a>
       </div>
     </nav>
-    <div class="f-1 pb-4 pt-4" id="main_page_content">
+    <div class="f-1 pb-4 pt-4" id="main_page_content" data-is-admin="{{ is_admin }}">
       <script type="application/json" id="json-data">
         {
           "categoryData": {{ group_cagtegory|tojson }},
@@ -280,7 +275,8 @@
           "meetingScheduleFrequencyMonths": {{ crm_property_definition("groups", "meeting_schedule_frequency_month").options|tojson }},
           "meetingScheduleFrequenciesWeekdays": {{ crm_property_definition("groups", "meeting_schedule_frequency_weekday").options|tojson }},
           "meetingScheduleStartTimes": {{ crm_property_definition("groups", "meeting_start_time").options|tojson }},
-          "meetingScheduleEndTimes": {{ crm_property_definition("groups", "meeting_end_time").options|tojson }}
+          "meetingScheduleEndTimes": {{ crm_property_definition("groups", "meeting_end_time").options|tojson }},
+          "eventLocationPreferences": {{ crm_property_definition("events", "location").options|tojson }}
         }
       </script>
       <div class="f-1 container">

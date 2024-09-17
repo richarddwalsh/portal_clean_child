@@ -1,0 +1,187 @@
+<!--
+  templateType: global_partial
+  label: Giving Filter
+-->
+<div data-testid="grid" class="grid grid-cols-1 gap-2">
+  <div>
+    <div
+      data-testid="grid"
+      class="filter-buttons grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 action-drawer"
+    >
+      {# Filter: Transaction Date #}
+      <div class="menu-group" v-if="filters.transactionDate">
+        <button
+          aria-expanded="false"
+          aria-haspopup="true"
+          aria-controls="menu--transactionDate"
+          class="select truncate ta-l"
+          type="button"
+          id="menu-button--menu--transactionDate"
+          @click.prevent="activeMenu = 'transactionDate'"
+        >
+          [[ filterLabels.transactionDate ]]
+        </button>
+        <div 
+          v-if="activeMenu === 'transactionDate'"
+          class="menu-group--flyout"
+        >
+          <div
+            aria-labelledby="menu-button--menu--transactionDate"
+            role="menu"
+            id="menu--transactionDate"
+            data-reach-menu-list=""
+            data-reach-menu-button=""
+            tabindex="-1"
+            style="max-height: 15.5rem; max-width: 13rem; overflow: auto"
+          >
+            <div
+              role="menuitem"
+              class="stripped-btn w-100% ta-l"
+              data-reach-menu-item=""
+              data-valuetext="(any)"
+              tabindex="-1"
+              id="option-0--menu--transactionDate"
+              @click.prevent="applyFilter('transactionDate', '')"
+            >
+              (any)
+            </div>
+            <div
+              role="menuitem"
+              class="stripped-btn w-100% ta-l"
+              data-reach-menu-item=""
+              :data-valuetext="option.value"
+              tabindex="-1"
+              v-for="(option, index) in filters.transactionDate"
+              :key="index"
+              @click.prevent="applyFilter('transactionDate', option.value)"
+            >
+              [[ option.label ]]
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {# Filter: Payment Method #}
+      <div class="menu-group" v-if="filters.paymentMethod">
+        <button
+          aria-expanded="false"
+          aria-haspopup="true"
+          aria-controls="menu--paymentMethod"
+          class="select truncate ta-l"
+          type="button"
+          id="menu-button--menu--paymentMethod"
+          @click.prevent="activeMenu = 'paymentMethod'"
+        >
+          [[ filterLabels.paymentMethod ]]
+        </button>
+        <div 
+          v-if="activeMenu === 'paymentMethod'"
+          class="menu-group--flyout"
+        >
+          <div
+            aria-labelledby="menu-button--menu--paymentMethod"
+            role="menu"
+            id="menu--paymentMethod"
+            data-reach-menu-list=""
+            data-reach-menu-button=""
+            tabindex="-1"
+            style="max-height: 15.5rem; max-width: 13rem; overflow: auto"
+          >
+            <div
+              role="menuitem"
+              class="stripped-btn w-100% ta-l"
+              data-reach-menu-item=""
+              data-valuetext="(any)"
+              tabindex="-1"
+              id="option-0--menu--paymentMethod"
+              @click.prevent="applyFilter('paymentMethod', '')"
+            >
+              (any)
+            </div>
+            <div
+              role="menuitem"
+              class="stripped-btn w-100% ta-l"
+              data-reach-menu-item=""
+              :data-valuetext="option.value"
+              tabindex="-1"
+              v-for="(option, index) in filters.paymentMethod"
+              :key="index"
+              @click.prevent="applyFilter('paymentMethod', option.value)"
+            >
+              [[ option.label ]]
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {# Filter: Payment Status #}
+      <div class="menu-group" v-if="filters.paymentStatus">
+        <button
+          aria-expanded="false"
+          aria-haspopup="true"
+          aria-controls="menu--paymentStatus"
+          class="select truncate ta-l"
+          type="button"
+          id="menu-button--menu--paymentStatus"
+          @click.prevent="activeMenu = 'paymentStatus'"
+        >
+          [[ filterLabels.paymentStatus ]]
+        </button>
+        <div 
+          v-if="activeMenu === 'paymentStatus'"
+          class="menu-group--flyout"
+        >
+          <div
+            aria-labelledby="menu-button--menu--paymentStatus"
+            role="menu"
+            id="menu--paymentStatus"
+            data-reach-menu-list=""
+            data-reach-menu-button=""
+            tabindex="-1"
+            style="max-height: 15.5rem; max-width: 13rem; overflow: auto"
+          >
+            <div
+              role="menuitem"
+              class="stripped-btn w-100% ta-l"
+              data-reach-menu-item=""
+              data-valuetext="(any)"
+              tabindex="-1"
+              id="option-0--menu--paymentStatus"
+              @click.prevent="applyFilter('paymentStatus', '')"
+            >
+              (any)
+            </div>
+            <div
+              role="menuitem"
+              class="stripped-btn w-100% ta-l"
+              data-reach-menu-item=""
+              :data-valuetext="option.value"
+              tabindex="-1"
+              v-for="(option, index) in filters.paymentStatus"
+              :key="index"
+              @click.prevent="applyFilter('paymentStatus', option.value)"
+            >
+              [[ option.label ]]
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {# Sort: Transcation Date #}
+
+      {# Sort: Payment Method #}
+
+      {# Sort: Payment Status #}
+
+      {# Export: Giving Statement #}
+      <button
+        class="btn btn-primary"
+        @click.prevent="exportTransactions"
+        v-if="filteredTransactions.length"
+      >
+        Export Giving Statement
+      </button>
+    </div>
+  </div>
+</div>
+    
