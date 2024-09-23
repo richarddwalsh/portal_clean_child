@@ -223,15 +223,15 @@ new Vue({
         hasFooter: true,
         footerActions: [
           {
-            id: "create_member_modal_cancel",
+            id: "edit_member_modal_cancel",
             label: "Cancel",
             type: "button",
             class: "btn text-btn mr-2",
-            method: "hideModal('create_member_modal')",
+            method: "hideModal('edit_member_modal')",
             disabled: false
           },
           {
-            id: "create_member_modal_save",
+            id: "edit_member_modal_save",
             label: "Save",
             type: "button",
             class: "btn create-btn",
@@ -369,8 +369,12 @@ new Vue({
               visibility: true,
               columns: [
                 {
+                  type: "label",
+                  text: "Member type"
+                },
+                {
                   type: "field",
-                  name: "using_household_email"
+                  name: "member_type"
                 }
               ],
               type: "column"
@@ -379,12 +383,8 @@ new Vue({
               visibility: true,
               columns: [
                 {
-                  type: "label",
-                  text: "Member type"
-                },
-                {
                   type: "field",
-                  name: "member_type"
+                  name: "using_household_email"
                 }
               ],
               type: "column"
@@ -403,13 +403,19 @@ new Vue({
   computed: {
     isAdmin() {
       // console.log("Checking if user is admin")
-      return document.getElementById('main_page_content').getAttribute('data-is-admin');;
+      return document.getElementById('main_page_content').getAttribute('data-is-admin');
     }
   },
   methods: {
     setSelect(fieldName, selectedValue, model) {
+      console.log(`set select ${fieldName} to ${selectedValue}`);
       if (model) {
-        this.$set(this[model], fieldName, selectedValue);
+        console.log(this.dynamicModel[model]);
+        if (this.dynamicModel[model]) {
+          this.$set(this.dynamicModel[model], fieldName, selectedValue);
+        } else {
+          console.warn(`Model ${model} not found in dynamicModel`);
+        }
         return;
       }
       // console.log(`set select ${fieldName} to ${selectedValue}`);
@@ -570,17 +576,16 @@ new Vue({
       this.actionDrawers.primary = false;
       const { editMember } = this.dynamicModel;
 
-      // Need to set the household_contact_type based on the member_type's label
       // eslint-disable-next-line camelcase
-      const household_contact_type = this.lookupField('member_type', 'create_member_modal').options.find(option => option.value === editMember.member_type).label;
+      const household_contact_type = this.lookupField('member_type', 'edit_member_modal').options.find(option => option.value === editMember.member_type).label;
 
-      // Now we can submit to the api to create the contact and add the assiociation.
       const householdId = this.household.hs_object_id;
       const payload = {
+        ...editMember,
         householdId,
         // eslint-disable-next-line camelcase
         household_contact_type,
-        ...editMember
+        hs_object_id: editMember.hs_object_id
       };
 
       const endpoint = `${window.location.origin}/_hcms/api/household/update`;
@@ -595,11 +600,12 @@ new Vue({
           if (response.status === "success") {
             this.hideModal('edit_member_modal');
             const index = this.members.findIndex(member => member.hs_object_id === editMember.hs_object_id);
+            console.log(this.members[index]);
             this.members.splice(index, 1, editMember);
           }
         },
         error: (error) => {
-          console.log(error);
+          console.error(error);
         }
       });
     },

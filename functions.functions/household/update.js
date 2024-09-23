@@ -4,14 +4,15 @@
 const axios = require('axios');
 
 // This function is executed when a request is made to the endpoint associated with this file in the serverless.json file
-exports.main = ({ body }, sendResponse) => {
+exports.main = async ({ body }, sendResponse) => {
   
   if (typeof(body) === "undefined") {
-    sendResponse({ body: { status: "error", error: "No body provided.", step: "validateBody" }, statusCode: 500 });
+    return sendResponse({ body: { status: "error", error: "No body provided.", step: "validateBody" }, statusCode: 400 });
   }
 
   const { 
     householdId,
+    hs_object_id,
     first_name,
     last_name,
     email,
@@ -27,9 +28,8 @@ exports.main = ({ body }, sendResponse) => {
       'Authorization': `Bearer ${process.env.portal_token}`,
       'Content-Type': 'application/json'
     }
-  }
+  };
 
-  // Prepare the data set for creating the contact and setting the household association
   const contactData = {
     firstname: first_name,
     lastname: last_name,
@@ -40,36 +40,47 @@ exports.main = ({ body }, sendResponse) => {
     household_contact_type
   };
 
-  // TODO: Do we need to remove the assocation first?
+  const householdAssociationData = [
+    {
+      associationCategory: "USER_DEFINED",
+      associationTypeId: member_type
+    }
+  ];
 
-  const householdAssociationData = {
-    to: {
-      id: householdId
-    },
-    types: [
-      {
-        associationCategory: "USER_DEFINED",
-        associationTypeId: member_type
-      }
-    ]
-  };
+  try {
+    // First, update the contact properties
+    const updateContactResponse = await axios.patch(
+      `https://api.hubapi.com/crm/v3/objects/contacts/${hs_object_id}`,
+      { properties: contactData },
+      config
+    );
 
-  const data = {
-    properties: contactData,
-    associations: [ householdAssociationData ]
-  };
+    // Then, update the association
+    const updateAssociationResponse = await axios.put(
+      `https://api.hubapi.com/crm/v4/objects/contacts/${hs_object_id}/associations/households/${householdId}`,
+      householdAssociationData,
+      config
+    );
 
-  // sendResponse({ body: { status: "success", response: data, step: "createContact" }, statusCode: 200 });
-
-  // Send the data to the contact api endpoint '/crm/v3/objects/contacts/'
-  const baseEndpoint = "https://api.hubapi.com/crm/v3/objects/contacts/";
-
-  axios
-    .post( baseEndpoint, JSON.stringify(data), config )
-    .then(response => {
-      sendResponse({ body: { status: "success", response: response.data, step: "createContact" }, statusCode: 200 });
-    })
-    .catch(error => {
-      sendResponse({ body: { status: "error", error: error.message, step: "createContact" }, statusCode: 200 });
+    return sendResponse({ 
+      body: { 
+        status: "success",
+        originalData: body, 
+        contactResponse: updateContactResponse.data,
+        associationResponse: updateAssociationResponse.data,
+        step: "updateHousehold" 
+      }, 
+      statusCode: 200 
     });
+  } catch (error) {
+    console.error('Error:', error.response ? error.response.data : error.message);
+    return sendResponse({ 
+      body: { 
+        status: "error", 
+        error: error.response ? error.response.data : error.message, 
+        step: "updateHousehold" 
+      }, 
+      statusCode: error.response ? error.response.status : 500 
+    });
+  }
 };

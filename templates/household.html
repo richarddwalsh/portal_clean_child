@@ -90,7 +90,12 @@
           </div>
         </div>
       </div>
-      <div :id="modal.id" class="modal--open" v-for="modal in modals" v-if="modal.visible">
+      <div
+        :id="modal.id"
+        class="modal--open"
+        v-for="modal in modals"
+        v-if="modal.visible"
+      >
         <div class="modal-layer">
           <div class="modal">
             <div class="modal__header">
