@@ -18,6 +18,8 @@ exports.main = async ({ body }, sendResponse) => {
     email,
     phone,
     birthday,
+    grade,
+    gender,
     member_type,
     using_household_email,
     household_contact_type
@@ -35,6 +37,8 @@ exports.main = async ({ body }, sendResponse) => {
     lastname: last_name,
     email,
     phone,
+    grade,
+    gender,
     birthday,
     using_household_email,
     household_contact_type

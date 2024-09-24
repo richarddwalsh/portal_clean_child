@@ -7,9 +7,6 @@ Vue.config.silent = false;
 const targetData = document.getElementById('json-data');
 const dataset = JSON.parse(targetData.textContent);
 
-console.log("targetData", targetData);
-console.log("dataset", dataset);
-
 new Vue({
   delimiters: ['[[', ']]'],
   el: '#app',
@@ -19,6 +16,7 @@ new Vue({
   },
   data: {
     loading: true,
+    activeButton: undefined,
     attendees: [],
     currentView: dataset.currentView,
     currentUser: dataset.userData,
@@ -58,19 +56,24 @@ new Vue({
       ],
       list: [],
     },
-    showRegConfirmation: false
+    showRegConfirmation: false,
+    registrationStep: 1,
+    numberOfAttendees: 1,
+    registrationStatus: {
+      inProgress: false,
+      completed: false,
+      error: null
+    },
+    registeredAttendees: 0
   },
   created() {
     this.initializeData();
   },
   computed: {
     filteredEvents() {
-      console.log("filtering events");
       let filteredEvents = this.events;
       if (this.activeFilters.length > 0) {
         this.activeFilters.forEach(filter => {
-          console.log(`Filter: ${filter}`);
-          console.log(filter.type);
           filteredEvents = filteredEvents.filter(event => event[filter.type] === filter.value);
         });
       }
@@ -139,6 +142,17 @@ new Vue({
       }
       return 'Registration is closed';
     }, 
+    canProceedToNextStep() {
+      // Check if all required attendees are selected
+      return this.event.selections.every(selection => 
+        selection.attendees && selection.attendees.length === selection.numberOfAttendees
+      );
+    },
+    eligibleMembers() {
+      return this.members.filter(member => 
+        this.event.selections.some(selection => this.isMemberEligible(member, selection))
+      );
+    }
   },
   filters: {  
     formatDate(date, time, format) {
@@ -174,7 +188,6 @@ new Vue({
   },
   methods: {
     initializeData() {
-      console.log(this.currentUser);
       if (Object.prototype.hasOwnProperty.call(this.currentUser, 'hs_object_id')) {
         // Your code goes here
         this.isLoggedIn = true;
@@ -232,14 +245,14 @@ new Vue({
               this.filters.campus = this.filters.campus.sort((a, b) => a.displayOrder - b.displayOrder);
               this.filters.category = this.filters.category.sort((a, b) => a.displayOrder - b.displayOrder);
             } else {
-              console.log(result.error);
+              console.error(result.error);
             }
             setTimeout(() => {
               this.loading = false;
             }, 0)
           },
           error: (error) => {
-            console.log(error);
+            console.error(error);
             setTimeout(() => {
               this.loading = false;
             }, 0)
@@ -247,7 +260,6 @@ new Vue({
         });
       }
       if (this.currentView === 'detail') {
-        console.log("detail view");
         this.event = {
           ...dataset.event,
           selections: dataset.selections,
@@ -257,15 +269,18 @@ new Vue({
           attendees: []
         }
 
+        this.initializeSelections();
+
         // Get the currentUser's households and add them to the members array
         const households = this.currentUser.associations.households.items;
+
+        // eslint-disable-next-line prefer-destructuring
+        this.household = households[0];
+
         households.forEach(household => {
           const members = household.associations.members.items.filter(member => member.hs_object_id !== this.currentUser.hs_object_id);
           this.members = [...this.members, ...members];
         });
-
-        // filter our current user from the members array, we already add them separately
-        this.members = this.members.filter(member => member.email !== this.currentUser.email);
   
         if (this.members) {
           this.event.registrations = this.members
@@ -278,7 +293,6 @@ new Vue({
 
     },
     applyFilter(type, value) {
-      console.log(`Apply filter: ${type} ${value}`);
       // Update the filter label or reset to default if value is empty
       this.filterLabels[type] = value || this.defaultLabels[type];
   
@@ -368,22 +382,170 @@ new Vue({
       const index = this.event.attendees.findIndex(reg => reg.hs_object_id === member.hs_object_id);
       return index > -1;
     },
-    confirmRegistration() {
-      console.log('confirmRegistration');
-      // Loop through attendees
-      // - we need to create a contact for each attendee that is newMember = true
-      // - we need to pass each contact to event register api
-      // Then show success message
-      const {attendees} = this.event;
-      const newAttendees = attendees.filter(reg => reg.newMember);
-      const existingAttendees = attendees.filter(reg => !reg.newMember);
-      console.log("newAttendees", newAttendees);
-      console.log("existingAttendees", existingAttendees);
-      const newContactPromises = [];
-
-    },
     confirmCheckIn() {
 
+    },
+    // checkGradeRequirement(user, rules) {
+    //   if (!rules.gradeRequired) return true;
+      
+    //   // Assuming the user's grade is stored in a property like 'grade' or 'school_grade'
+    //   // You may need to adjust this based on your actual data structure
+    //   const userGrade = user.grade || user.school_grade;
+      
+    //   if (!userGrade) return false;
+
+    //   const gradeOrder = ['Pre-K', 'K', '1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th', '11th', '12th'];
+    //   const userGradeIndex = gradeOrder.indexOf(userGrade);
+    //   const minGradeIndex = gradeOrder.indexOf(rules.minGrade);
+    //   const maxGradeIndex = gradeOrder.indexOf(rules.maxGrade);
+
+    //   return userGradeIndex >= minGradeIndex && userGradeIndex <= maxGradeIndex;
+    // },
+    nextStep() {
+      if (this.registrationStep < 3) {
+        this.registrationStep += 1;
+      }
+    },
+    previousStep() {
+      if (this.registrationStep > 1) {
+        this.registrationStep -= 1;
+      }
+    },
+    incrementAttendees(index) {
+      if (this.event.selections[index].numberOfAttendees < 50) {
+        this.event.selections[index].numberOfAttendees += 1;
+      }
+    },
+    decrementAttendees(index) {
+      if (this.event.selections[index].numberOfAttendees > 0) {
+        this.event.selections[index].numberOfAttendees -= 1;
+      }
+    },
+    initializeSelections() {
+      // This method should be called when the event data is loaded
+      this.event.selections.forEach(selection => {
+        this.$set(selection, 'numberOfAttendees', 1);
+        this.$set(selection, 'attendees', []);
+      });
+    },
+    getSelectionDescription(selection) {
+      if (selection.age_grade_restriction_unit === 'Certain grades') {
+        return `${selection.min_grade} - ${selection.max_grade} grade only`;
+      } if (selection.age_grade_restriction_unit === 'Certain ages') {
+        return `${selection.min_age} - ${selection.max_age} years old by ${this.event.starts_at}`;
+      }
+      return '';
+    },
+    getDefaultAvatar() {
+      return 'https://people.planningcenteronline.com/static/avatar-generic.png?g=200x200';
+    },
+    getAttendeeFullName(attendeeId) {
+      console.log('getAttendeeFullName', attendeeId);
+      const attendee = this.members.find(member => member.hs_object_id === attendeeId);
+      return attendee ? `${attendee.firstname} ${attendee.lastname}` : 'Unknown Attendee';
+    },
+    isMemberEligible(member, selection) {
+      let isEligible = true;
+      
+      if (selection.age_grade_restriction_unit === 'Certain grades') {
+        isEligible = isEligible && this.checkGradeRequirement(member, selection);
+      } else if (selection.age_grade_restriction_unit === 'Certain ages') {
+        isEligible = isEligible && this.checkAgeRequirement(member, selection);
+      }
+
+      if (selection.gender_restriction_unit !== 'All genders') {
+        isEligible = isEligible && member.gender === selection.gender_restriction_unit;
+      }
+
+      return isEligible;
+    },
+    getRestrictionReason(member, selection) {
+      if (selection.age_grade_restriction_unit === 'Certain grades' && !this.checkGradeRequirement(member, selection)) {
+        return 'grade restrictions';
+      } if (selection.age_grade_restriction_unit === 'Certain ages' && !this.checkAgeRequirement(member, selection)) {
+        return 'age restrictions';
+      } if (selection.gender_restriction_unit !== 'All genders' && member.gender !== selection.gender_restriction_unit) {
+        return 'gender restrictions';
+      }
+      return 'restrictions';
+    },
+    checkGradeRequirement(member, selection) {
+      // first we need to check if the member has a grade property
+      if (!member.grade) {
+        return false;
+      }
+      // next we need to check if the grade is in the gradeOrder array
+      const gradeOrder = ['Pre-K', 'K', '1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th', '11th', '12th'];
+      const memberGradeIndex = gradeOrder.indexOf(member.grade.value);
+      const minGradeIndex = gradeOrder.indexOf(selection.min_grade);
+      const maxGradeIndex = gradeOrder.indexOf(selection.max_grade);
+      return memberGradeIndex >= minGradeIndex && memberGradeIndex <= maxGradeIndex;
+    },
+    checkAgeRequirement(member, selection) {
+      // first we need to check if the member has a birthday property
+      if (!member.birthday) {
+        return false;
+      }
+      // if they have a birthday property we need to check if it is a valid date
+      const birthDate = new Date(member.birthday);
+      const eventDate = new Date(this.event.starts_at);
+      const age = eventDate.getFullYear() - birthDate.getFullYear();
+      return age >= selection.min_age && age <= selection.max_age;
+    },
+    confirmRegistration() {
+      console.log('confirmRegistration');
+      this.activeButton = 0;
+      // Loop through attendees from each of the selections for the event
+      // - we need to pass each contact to event register api
+      // Then show success message
+      this.event.selections.forEach(selection => {
+        selection.attendees.forEach(attendee => {
+          this.registerAttendee(selection, attendee);
+        });
+      });
+    },
+    registerAttendee(selection,attendee) {
+      console.log('registerAttendee', attendee);
+      const payload = {
+        eventId: this.event.id,
+        attendeeId: attendee,
+        properties: {
+          contact_name: `${selection.name}: ${this.getAttendeeFullName(attendee)}`,
+          event_id: this.event.id,
+          event_name: this.event.name,
+          event_date: this.event.starts_at, // convert to date
+          household_id: this.household.hs_object_id,
+          household_name: this.household.family_name,
+        }
+      }
+
+      console.log('payload', payload);
+
+      $.ajax({
+        type: 'POST',
+        url: `${window.location.origin}/_hcms/api/event/register`,
+        contentType: 'application/json',
+        data: JSON.stringify(payload),
+        success: (result) => {
+          console.log('registerAttendee success', result);
+          if (result.status === 'success') {
+            this.registeredAttendees += 1;
+            // get count of all selection attendees for this event
+            const totalAttendees = this.event.selections.reduce((acc, s) => acc + s.attendees.length, 0);
+            console.log('totalAttendees', totalAttendees);
+            if (this.registeredAttendees === totalAttendees) {
+              this.activeButton = undefined;
+              this.registeredAttendees = 0;
+              this.toggleModal('event_register_modal');
+            }
+          } else {
+            console.error('registerAttendee error', result.error);
+          }
+        },
+        error: (error) => {
+          console.error('registerAttendee error', error);
+        }
+      });
     }
   }
 });

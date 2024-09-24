@@ -30,7 +30,7 @@ body {
 
 a:focus,
 a:hover {
-    color: var(--color-brand);
+    color: var(--color-emerald);
 }
 
 [data-reach-dialog-overlay] {
@@ -1857,7 +1857,7 @@ strong {
 }
 
 a {
-    color: var(--color-brand);
+    color: var(--color-turquoise);
     cursor: pointer;
     text-decoration: none
 }

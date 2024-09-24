@@ -1,0 +1,494 @@
+<!--
+  templateType: global_partial
+  label: Events Details Registration Bar
+-->
+<div class="mb-3@sm px-2 action-drawer d-f ai-c jc-sb action-bar">
+  <div data-turbolinks="false">
+    <div class="c-tint2 fs-13 f-1 mr-2 lh-1.5">[[ registrationBarText ]]</div>
+    <div class="c-tint2 fs-13 f-1 mr-2 lh-1.5"></div>
+  </div>
+  <div class="ta-r">
+    <div v-if="canCheckIn">
+      <a class="btn" @click.prevent="toggleModal('event_checkin_modal')">Check In</a>
+    </div>
+    <div v-if="canRegister">
+      <a class="btn" @click.prevent="toggleModal('event_register_modal')">Register</a>
+    </div>
+    <div v-if="!currentUser">
+      <a class="btn" href="/_hcms/mem/login">Login to Register</a>
+    </div>
+  </div>
+</div>
+
+<div
+	:id="modal.id"
+	v-for="(modal	, index) in modals.detail"
+	:key="modal.id"
+	class="modal"
+	data-focus-lock-disabled="false"
+	v-if="modal.visible"
+>
+	<div data-reach-alert-dialog-overlay="true" data-reach-dialog-overlay="">
+		<div
+		aria-describedby="alert-dialog-description--1"
+		aria-labelledby="alert-dialog--1"
+		aria-modal="true"
+		data-reach-alert-dialog-content="true"
+		data-reach-alert-dialong-content="true"
+		data-reach-dialog-content=""
+		role="alertdialog"
+		tabindex="-1"
+	>
+		<div
+			class="mb-1"
+			data-reach-alert-dialog-label="true"
+			id="alert-dialog--1"
+		>
+			[[ modal.title + ' ' + event.name ]]
+		</div>
+        <div
+          data-reach-alert-dialog-description="true"
+          id="alert-dialog-description--1"
+        >
+          <div class="mb-2" v-if="modal.id === 'event_register_modal'">
+            <h2 class="lh-1.333 c-tint0 fs-3 fw-600">Select Participants</h2>
+            <form v-if="!showRegConfirmation">
+              <div class="d-f ai-c jc-sb action-drawer mt-2 mb-2">
+                <div class="d-f">
+									<div>
+										<input
+											class="large-checkbox checkbox"
+											type="checkbox"
+											value="1"
+											id="current_user_attending"
+											@change="toggleAttendee(currentUser)"
+											:checked="isAttending(currentUser)"
+										/>
+										<label
+											class="large-checkbox-label checkbox-label"
+											for="current_user_attending"
+										></label>
+									</div>
+                  <div class="ml-1 avatar w-6 h-6 mr-2">[[ getInitials(currentUser.firstname + ' ' + currentUser.lastname) ]]</div>
+                  <div class="d-f fd-c">
+                    <div>[[ currentUser.firstname + ' ' + currentUser.lastname ]]</div>
+                    <div class="fs-13 c-tint2">[[ currentUser.email ]]</div>
+                  </div>
+                </div>
+              </div>
+							<div class="d-f ai-c jc-sb action-drawer mt-2 mb-2" v-for="member in members">
+                <div class="d-f">
+									<div>
+										<input
+											class="large-checkbox checkbox"
+											type="checkbox"
+											value="1"
+											:id='"member_attending_"+member.hs_object_id'
+											@change="toggleAttendee(member)"
+											:checked="isAttending(member)"
+										/>
+										<label
+											class="large-checkbox-label checkbox-label"
+											:for='"member_attending_"+member.hs_object_id'
+										></label>
+									</div>
+                  <div class="avatar w-6 h-6 mr-2">[[ getAvatar(member) ]]</div>
+                  <div class="d-f fd-c">
+                    <div>[[ member.firstname + ' ' + member.lastname ]]</div>
+                    <div class="fs-13 c-tint2">[[ member.email ]]</div>
+                  </div>
+                </div>
+              </div>
+              <div id="participant-container">
+								<div v-for="(attendee, index) in event.attendees">
+									<div class="action-drawer mb-1" v-if="attendee.newMember">
+										<div class="d-f">
+											<div>
+												<input
+													checked
+													class="large-checkbox checkbox"
+													:id="'new_attendee_' + index"
+													:name="'new_attendee_' + index"
+													type="checkbox"
+													value="1"
+													@change="toggleNewAttendee(index)"
+												/>
+												<label
+													class="large-checkbox-label checkbox-label"
+													:for="'new_attendee_' + index"
+												></label>
+											</div>
+											<div class="ml-1 f-1">
+												<div>
+													<div class="d-f@md f_1">
+														<div class="mb-1 mr-4p@md">
+															<input
+																autocomplete="off"
+																class=""
+																placeholder="First name"
+																:id="'new_attendee_firstname_' + index"
+																:name="'new_attendee_firstname_' + index"
+																type="text"
+																v-model="attendee.firstname"
+															/>
+														</div>
+														<div class="mb-1 ml-4p@md">
+															<input
+																autocomplete="off"
+																class=""
+																placeholder="Last name"
+																:id="'new_attendee_lastname_' + index"
+																:name="'new_attendee_lastname_' + index"
+																type="text"
+																v-model="attendee.lastname"
+															/>
+														</div>
+													</div>
+													<div class="mb-1" v-if="event.initialSelection.email != 'hidden'">
+														<input
+															autocomplete="off"
+															class=""
+															:placeholder='"Email address (" + event.initialSelection.email + ")"'
+															:id="'new_attendee_email_' + index"
+															:name="'new_attendee_email_' + index"
+															type="text"
+															value=""
+														/>
+													</div>
+													<div class="collection-js required" v-if="event.initialSelection.address != 'hidden'">
+														<div class="label address-is-required-js">
+															Address <span class="c-ruby">*</span>
+														</div>
+														<div
+															class="mb-1 line-to-hide-js person-address-js"
+														>
+															<div class="mb-1 d-f">
+																<div>
+																	<label
+																		class="screen-reader-text"
+																		:for="'new_attendee_address_location_' + index"
+																		>Location</label
+																	>
+																	<span class="custom-select">
+																		<select
+																			class="select custom-select-js custom-selected-js"
+																			:id="'new_attendee_address_location_' + index"
+																			:name="'new_attendee_address_location_' + index"
+																		>
+																			<option value="Home">Home</option>
+																			<option value="Work">Work</option>
+																			<option value="Other">Other</option>
+																		</select>
+																	</span>
+																</div>
+																<div class="f-1 pl-1">
+																	<label
+																		class="screen-reader-text"
+																		:for="'new_attendee_address' + index"
+																		>Street line 1</label
+																	>
+																	<input
+																		autocomplete="off"
+																		placeholder="street address"
+																		:id="'new_attendee_address' + index"
+																		:name="'new_attendee_address' + index"
+																		type="text"
+																		v-model="attendee.address"
+																	/>
+																</div>
+															</div>
+															<div class="mb-1 d-f">
+																<div class="f-1">
+																	<label
+																		class="screen-reader-text"
+																		:for="'new_attendee_address2' + index"
+																		>Street line 2</label
+																	>
+																	<input
+																		:id="'new_attendee_address2' + index"
+																		:name="'new_attendee_address2' + index"
+																		placeholder="apt/unit/box"
+																		type="text"
+																		v-model="attendee.address2"
+																	/>
+																</div>
+															</div>
+															<div class="d-f@xs">
+																<div>
+																	<label
+																		class="screen-reader-text"
+																		:for="'new_attendee_city_' + index"
+																	>
+																		City
+																	</label>
+																	<input
+																		:id="'new_attendee_city_' + index"
+																		:name="'new_attendee_city_' + index"
+																		placeholder="city"
+																		type="text"
+																		v-model="attendee.city"
+																	/>
+																</div>
+																<div class="my-1 my-0@xs px-1@xs f-1">
+																	<label
+																		class="screen-reader-text"
+																		:for="'new_attendee_state_' + index"
+																	>
+																		State
+																	</label>
+																	<input
+																		:id="'new_attendee_state_' + index"
+																		:name="'new_attendee_state_' + index"
+																		placeholder="state"
+																		type="text"
+																		v-model="attendee.state"
+																	/>
+																</div>
+																<div class="f-1">
+																	<label
+																		class="screen-reader-text"
+																		:for="'new_attendee_zip_' + index"
+																	>
+																		Zip
+																	</label>
+																	<input
+																		:id="'new_attendee_zip_' + index"
+																		:name="'new_attendee_zip_' + index"
+																		placeholder="zip code"
+																		type="text"
+																		v-model="attendee.zip"
+																	/>
+																</div>
+															</div>
+														</div>
+													</div>
+													<div class="label" v-if="event.initialSelection.phone != 'hidden'">
+														Phone number<span class="c-ruby"></span>
+													</div>
+													<div class="mb-1 line-to-hide-js person-phone-number-js">
+														<div class="d-f">
+															<div>
+																<label
+																	class="screen-reader-text"
+																	:for="'new_attendee_phone_location_' + index"
+																>
+																	Location
+																</label>
+																<span class="custom-select">
+																	<select
+																		class="select custom-select-js custom-selected-js"
+																		:id="'new_attendee_phone_location_' + index"
+																		:name="'new_attendee_phone_location_' + index"
+																	>
+																		<option value="Home">Home</option>	
+																		<option value="Mobile">Mobile</option>
+																		<option value="Fax">Fax</option>
+																		<option value="Other">Other</option>
+																	</select>
+																</span>
+															</div>
+															<div class="f-1 pl-1">
+																<label
+																	class="screen-reader-text"
+																	:for="'new_attendee_phone_' + index"
+																>
+																	Number
+																</label>
+																<input
+																	class=""
+																	:id="'new_attendee_phone_' + index"
+																	:name="'new_attendee_phone_' + index"
+																	placeholder="phone number"
+																	type="text"
+																	v-model="attendee.phone"
+																/>
+															</div>
+														</div>
+													</div>
+													<div
+														class="mt-2"
+														:class="{ 'required': event.initialSelection.gender_requied }"
+													>
+														<label 
+															:for="'new_attendee_gender_' + index"
+														>
+															Gender
+															<span class="c-ruby" v-if="event.initialSelection.gender_requied">*</span>
+														</label>
+														<span class="custom-select">
+															<select
+																:id="'new_attendee_gender_' + index"
+																:name="'new_attendee_gender_' + index"
+																class="select custom-select-js custom-selected-js"
+																v-model="attendee.gender"
+															>
+																<option selected="selected" value=""></option>
+																<option value="Male">Male</option>
+																<option value="Female">Female</option>
+															</select>
+														</span>
+													</div>
+													<div>
+														<div class="mb-2">
+															<input
+																class="checkbox"
+																:id="'new_attendee_household_' + index"
+																readonly
+																type="checkbox"
+																v-model="attendee.household"
+															/>
+															<label
+																class="checkbox-label"
+																:for="'new_attendee_household_' + index"
+																style="line-height: 1"
+															>
+																<span class="fs-4"
+																	>This person is in my household</span
+																>
+															</label>
+														</div>
+														<div class="mb-1" v-if="attendee.household">
+															<div>
+																<div>
+																	<label
+																		class="label fw-500"
+																		:for="'new_attendee_relationship_' + index"
+																	>Relationship</label
+																	>
+																	<select
+																		class="select w-a"
+																		:id="'new_attendee_relationship_' + index"
+																		:name="'new_attendee_relationship_' + index"
+																		v-model="attendee.relationship"
+																	>
+																		<option value="" selected></option>
+																		<option value="320">Child</option>
+																		<option value="316">Parent</option>
+																		<option value="318">Guardian</option>
+																		<option value="">Spouse</option>
+																	</select>
+																</div>
+															</div>
+														</div>
+													</div>
+												</div>
+												<div class="css-1qhilh7-TypeSelectionDropdown">
+													<div class="dropdown">
+														<button
+															aria-haspopup="menu"
+															aria-label="menu"
+															class="select ta-l css-1va3n4f-TypeSelectionDropdown"
+															id="type_selection_8500"
+															type="button"
+														>
+															[[ event.initialSelection.name ]]
+														</button>
+														<div
+															aria-labelledby="type_selection_8500"
+															class="dropdown__menu w-100% p-r"
+															role="menu"
+															v-for="selection in event.selections"
+														>
+															<button
+																class="stripped-btn dropdown__item w-100% ta-l is-selected css-1vmyrqy-TypeSelectionDropdown"
+																:value="selection.id"
+															>
+																[[ selection.name ]]
+																<div class="fs-5 c-tint2"></div>
+																<div class="fs-5 c-tint2">
+																	[[ selection.min_grade ]] - [[ selection.max_grade ]] grade only
+																</div>
+																<div class="fs-5 c-tint2"></div>
+															</button>
+														</div>
+													</div>
+												</div>
+												<div class="mt-2">
+													<div 
+														class="d-f ai-fe"
+														v-if="event.initialSelection.grade_required"
+													>
+														<div class="f-1">
+															<label class="label fw-500">Grade</label>
+															<select
+																class="select w-f"
+																id="attendee_type_min_grade"
+																name="attendee_type[min_grade]"
+																v-model="attendee.grade"
+															>
+																<option :value="option.value" v-for="option in event.minGradeOptions">
+																	[[ option.label ]]
+																</option>
+															</select>
+														</div>
+														<em class="fs-13 c-tint2 p-r pl-1 mb-2">
+															[[ event.initialSelection.min_grade ]] - [[ event.initialSelection.max_grade ]] grade only
+														</em>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+              </div>
+              <div>
+                <div>
+                  <div class="ta-c ta-r@md">
+                    <button
+                      type="button"
+                      class="minor-btn secondary-btn btn"
+											@click.prevent="addParticipant"
+                    >
+                      <div style="font-size: 9px; margin-right: 4px">
+                        <svg
+                          id="plus"
+                          viewBox="0 0 16 16"
+                          class="symbol"
+                          role="img"
+                        >
+                          <path
+                            d="M9.143 16H6.857V9.143H0V6.857H6.857V0H9.143V6.857H16V9.143H9.143V16Z"
+                          ></path>
+                        </svg>
+                      </div>
+                      Add someone else
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <button class="btn" type="button" @click="showRegConfirmation = true" :disabled="event.attendees.length <= 0">Next: Details</button>
+            </form>
+						<div v-if="showRegConfirmation">
+							<div class="d-f ai-c jc-sb action-drawer mt-2 mb-2" v-for="attendee in event.attendees">
+								<div class="d-f">
+									<div class="avatar w-6 h-6 mr-2">[[ getAvatar(attendee) ]]</div>
+									<div class="d-f fd-c">
+										<div>[[ attendee.firstname + ' ' + attendee.lastname ]]</div>
+										<div class="fs-13 c-tint2">[[ attendee.email ]]</div>
+									</div>
+								</div>
+							</div>
+							<button class="btn" type="button" @click="showRegConfirmation = false">Back</button>
+							<button class="btn" type="button" @click="confirmRegistration">Confirm Registration</button>
+						</div>
+          </div>
+					<div class="mb-2" v-if="modal.id === 'event_checkin_modal'">
+						<h2 class="lh-1.333 c-tint0 fs-3 fw-600">Check In</h2>
+						<div class="mb-2">
+							<div class="d-f ai-c jc-sb action-drawer mt-2 mb-2" v-for="attendee in event.registrations">
+								<div class="d-f">
+									<div class="avatar w-6 h-6 mr-2">[[ getAvatar(attendee) ]]</div>
+									<div class="d-f fd-c">
+										<div>[[ attendee.firstname + ' ' + attendee.lastname ]]</div>
+										<div class="fs-13 c-tint2">[[ attendee.email ]]</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<button class="btn" type="button" @click="confirmCheckIn">Confirm Check In</button>
+					</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

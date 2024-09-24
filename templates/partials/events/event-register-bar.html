@@ -5,11 +5,11 @@
 <div class="mb-3@sm px-2 action-drawer d-f ai-c jc-sb action-bar">
   <div data-turbolinks="false">
     <div class="c-tint2 fs-13 f-1 mr-2 lh-1.5">[[ registrationBarText ]]</div>
-    <div class="c-tint2 fs-13 f-1 mr-2 lh-1.5"></div>
+    <div class="c-tint2 fs-13 f-1 mr-2 lh-1.5">Register Again</div>
   </div>
   <div class="ta-r">
     <div v-if="canCheckIn">
-      <a class="btn" @click.prevent="toggleModal('event_checkin_modal')">Check In</a>
+      <a class="btn">View registration</a>
     </div>
     <div v-if="canRegister">
       <a class="btn" @click.prevent="toggleModal('event_register_modal')">Register</a>
@@ -35,6 +35,7 @@
 		aria-modal="true"
 		data-reach-alert-dialog-content="true"
 		data-reach-alert-dialong-content="true"
+		style="width: 50vw"
 		data-reach-dialog-content=""
 		role="alertdialog"
 		tabindex="-1"
@@ -51,426 +52,172 @@
           id="alert-dialog-description--1"
         >
           <div class="mb-2" v-if="modal.id === 'event_register_modal'">
-            <h2 class="lh-1.333 c-tint0 fs-3 fw-600">Select Participants</h2>
-            <form v-if="!showRegConfirmation">
-              <div class="d-f ai-c jc-sb action-drawer mt-2 mb-2">
-                <div class="d-f">
-									<div>
-										<input
-											class="large-checkbox checkbox"
-											type="checkbox"
-											value="1"
-											id="current_user_attending"
-											@change="toggleAttendee(currentUser)"
-											:checked="isAttending(currentUser)"
-										/>
-										<label
-											class="large-checkbox-label checkbox-label"
-											for="current_user_attending"
-										></label>
-									</div>
-                  <div class="ml-1 avatar w-6 h-6 mr-2">[[ getInitials(currentUser.firstname + ' ' + currentUser.lastname) ]]</div>
-                  <div class="d-f fd-c">
-                    <div>[[ currentUser.firstname + ' ' + currentUser.lastname ]]</div>
-                    <div class="fs-13 c-tint2">[[ currentUser.email ]]</div>
+            <div class="container">
+              <!-- Step 1: Selections -->
+              <div v-if="registrationStep === 1">
+                <div class="reservation-step mb-4 reservation-step--is-active">
+									<svg role="img" class="symbol reservation-step__status-icon reservation-step__status-icon--editing" aria-label="Current step status icon" aria-hidden="true" viewBox="0 0 16 16">
+										<path d="M16 8C16 9.58225 15.5308 11.129 14.6518 12.4446C13.7727 13.7602 12.5233 14.7855 11.0615 15.391C9.59966 15.9965 7.99113 16.155 6.43928 15.8463C4.88743 15.5376 3.46197 14.7757 2.34315 13.6569C1.22433 12.538 0.462403 11.1126 0.153721 9.56072C-0.15496 8.00887 0.00346625 6.40034 0.608967 4.93853C1.21447 3.47672 2.23985 2.22729 3.55544 1.34824C4.87103 0.469192 6.41775 0 8 0C10.1217 0 12.1566 0.842855 13.6569 2.34315C15.1571 3.84344 16 5.87827 16 8Z"/>
+									</svg>
+                  <div class="d-f ai-c jc-sb mb-2">
+                    <div>
+                      <h2 class="lh-1.333 c-tint0 fs-2 fw-600">Selections</h2>
+                      <p class="c-tint2 mb-0 mt-4p">How many are you registering for?</p>
+                    </div>
                   </div>
-                </div>
-              </div>
-							<div class="d-f ai-c jc-sb action-drawer mt-2 mb-2" v-for="member in members">
-                <div class="d-f">
-									<div>
-										<input
-											class="large-checkbox checkbox"
-											type="checkbox"
-											value="1"
-											:id='"member_attending_"+member.hs_object_id'
-											@change="toggleAttendee(member)"
-											:checked="isAttending(member)"
-										/>
-										<label
-											class="large-checkbox-label checkbox-label"
-											:for='"member_attending_"+member.hs_object_id'
-										></label>
-									</div>
-                  <div class="avatar w-6 h-6 mr-2">[[ getAvatar(member) ]]</div>
-                  <div class="d-f fd-c">
-                    <div>[[ member.firstname + ' ' + member.lastname ]]</div>
-                    <div class="fs-13 c-tint2">[[ member.email ]]</div>
+                  <div class="d-f fd-c g-1">
+                    <div v-for="(selection, index) in event.selections" :key="index" class="action-drawer d-f ai-c@sm jc-sb mb-2">
+                      <div class="mr-2 f-1">
+                        <span class="bw-wb">[[ selection.name ]]</span>
+                        <div class="fs-4 c-tint2">
+                          <span v-if="selection.age_grade_restriction_unit === 'Certain grades'">
+                            [[ selection.min_grade ]] - [[ selection.max_grade ]] grade only
+                          </span>
+                          <span v-else-if="selection.age_grade_restriction_unit === 'Certain ages'">
+                            [[ selection.min_age ]] - [[ selection.max_age ]] years old
+                          </span>
+                          <span v-if="selection.gender_restriction_unit !== 'All genders'">
+                            [[ selection.gender_restriction_unit ]] only
+                          </span>
+                        </div>
+                      </div>
+                      <div class="number-spinner" data-testid="numberSpinner">
+                        <button 
+                          aria-label="decrease quantity" 
+                          class="number-spinner__btn number-spinner__btn-decrement" 
+                          @click="decrementAttendees(index)"
+                        >
+                          <span>-</span>
+                        </button>
+                        <input 
+                          aria-label="quantity" 
+                          class="number-spinner__input" 
+                          max="50" 
+                          min="0" 
+                          name="number-spinner" 
+                          step="1" 
+                          type="number" 
+                          v-model="selection.numberOfAttendees"
+                        >
+                        <button 
+                          aria-label="increase quantity" 
+                          class="number-spinner__btn number-spinner__btn-increment" 
+                          @click="incrementAttendees(index)"
+                        >
+                          <span>+</span>
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-              <div id="participant-container">
-								<div v-for="(attendee, index) in event.attendees">
-									<div class="action-drawer mb-1" v-if="attendee.newMember">
-										<div class="d-f">
-											<div>
-												<input
-													checked
-													class="large-checkbox checkbox"
-													:id="'new_attendee_' + index"
-													:name="'new_attendee_' + index"
-													type="checkbox"
-													value="1"
-													@change="toggleNewAttendee(index)"
-												/>
-												<label
-													class="large-checkbox-label checkbox-label"
-													:for="'new_attendee_' + index"
-												></label>
+                  <div class="mt-3">
+                    <h2 class="lh-1.333 c-tint0 fs-3 fw-600">Contact information</h2>
+                    <p class="c-tint2 mt-4p">All correspondence for this registration will be sent to this person. If any of this information is incorrect, you can <a href="/me/profile/contact-and-info">update your profile</a> before or after you register.</p>
+                    <div class="d-f g-2 action-drawer">
+											<div class="avatar w-8 h-8 mr-2">
+												[[ getInitials(currentUser.firstname + ' ' + currentUser.lastname) ]]
 											</div>
-											<div class="ml-1 f-1">
-												<div>
-													<div class="d-f@md f_1">
-														<div class="mb-1 mr-4p@md">
-															<input
-																autocomplete="off"
-																class=""
-																placeholder="First name"
-																:id="'new_attendee_firstname_' + index"
-																:name="'new_attendee_firstname_' + index"
-																type="text"
-																v-model="attendee.firstname"
-															/>
+                      <div class="w-100% d-f fd-c g-1">
+                        <div class="css-15xvnyj">[[ currentUser.firstname + ' ' + currentUser.lastname ]]</div>
+                        <div>
+                          <div>
+                            <div class="d-f ai-c g-2">
+                              <label class="fs-4 pb-0 fw-600 required-field c-tint2 fg-1 fsh-0 mb-0">Email</label>
+                              <input type="text" id="emailAddress-responsiblePerson" readonly placeholder="Email address" autocomplete="on" class="text-input sm-input pe-n" :value="currentUser.email">
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="my-2">
+                    <button type="button" class="btn lg-btn filled-btn primary-btn" @click="nextStep">Next</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Step 2: Attendees -->
+              <div v-if="registrationStep === 2">
+                <div class="reservation-step mb-4 reservation-step--is-active">
+                  <svg role="img" class="symbol reservation-step__status-icon reservation-step__status-icon--editing" aria-label="Current step status icon" aria-hidden="true" viewBox="0 0 16 16">
+										<path d="M16 8C16 9.58225 15.5308 11.129 14.6518 12.4446C13.7727 13.7602 12.5233 14.7855 11.0615 15.391C9.59966 15.9965 7.99113 16.155 6.43928 15.8463C4.88743 15.5376 3.46197 14.7757 2.34315 13.6569C1.22433 12.538 0.462403 11.1126 0.153721 9.56072C-0.15496 8.00887 0.00346625 6.40034 0.608967 4.93853C1.21447 3.47672 2.23985 2.22729 3.55544 1.34824C4.87103 0.469192 6.41775 0 8 0C10.1217 0 12.1566 0.842855 13.6569 2.34315C15.1571 3.84344 16 5.87827 16 8Z"/>
+									</svg>
+                  <div class="d-f ai-c jc-sb mb-2">
+                    <div>
+                      <h2 class="lh-1.333 c-tint0 fs-2 fw-600">Attendees</h2>
+                    </div>
+                  </div>
+                  <div class="mb-2" v-for="(selection, selectionIndex) in event.selections" :key="selectionIndex">
+                    <div class="mb-1" v-for="n in selection.numberOfAttendees" :key="n">
+                      <label class="label" :for="'attendee-' + selectionIndex + '-' + n">
+                        <div>
+                          <div class="d-f ai-c jc-sb">
+                            <div class="wb-bw">[[ selection.name ]]</div>
+                          </div>
+                        </div>
+                        <div class="fw-400 fs-4 c-tint2">[[ getSelectionDescription(selection) ]]</div>
+                      </label>
+                      <div>
+                        <div class="d-f g-2 action-drawer fd-c">
+                          <div class="d-f g-2 fsh-0">
+                            <img :src="getDefaultAvatar()" class="w-6 h-6 circle d-b" alt="Default Profile">
+                            <select class="select mb-2" :name="'attendee-' + selectionIndex + '-' + n" :id="'attendee-' + selectionIndex + '-' + n" aria-label="select attendee" v-model="selection.attendees[n-1]">
+															<option value="">Select a person</option>
+															<option v-for="member in members" :key="member.hs_object_id" :value="member.hs_object_id" :disabled="!isMemberEligible(member, selection)">
+																[[ member.firstname + ' ' + member.lastname ]] [[ !isMemberEligible(member, selection) ? '(does not meet ' + getRestrictionReason(member, selection) + ')' : '' ]]
+															</option>
+															<option value="new">Add a new person</option>
+														</select>
+                          </div>
+                          <div class="w-100% d-f fd-c g-2">
+                            <!-- Add additional fields here if needed -->
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="my-2">
+                    <button type="button" class="btn lg-btn filled-btn secondary-btn" @click="previousStep">Previous</button>
+                    <button type="button" class="btn lg-btn filled-btn primary-btn" @click="nextStep" :disabled="!canProceedToNextStep">Next</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Step 3: Review -->
+              <div v-if="registrationStep === 3">
+                <div class="reservation-step mb-4 reservation-step--is-active">
+                  <svg role="img" class="symbol reservation-step__status-icon reservation-step__status-icon--editing" aria-label="Current step status icon" aria-hidden="true" viewBox="0 0 16 16">
+										<path d="M16 8C16 9.58225 15.5308 11.129 14.6518 12.4446C13.7727 13.7602 12.5233 14.7855 11.0615 15.391C9.59966 15.9965 7.99113 16.155 6.43928 15.8463C4.88743 15.5376 3.46197 14.7757 2.34315 13.6569C1.22433 12.538 0.462403 11.1126 0.153721 9.56072C-0.15496 8.00887 0.00346625 6.40034 0.608967 4.93853C1.21447 3.47672 2.23985 2.22729 3.55544 1.34824C4.87103 0.469192 6.41775 0 8 0C10.1217 0 12.1566 0.842855 13.6569 2.34315C15.1571 3.84344 16 5.87827 16 8Z"/>
+									</svg>
+                  <div class="d-f ai-c jc-sb mb-2">
+                    <div>
+                      <h2 class="lh-1.333 c-tint0 fs-2 fw-600">Review</h2>
+                    </div>
+                  </div>
+									<div class="css-1ovtb34">
+										<div class="mt-4p">
+											<div v-for="(selection, selectionIndex) in event.selections" :key="selectionIndex">
+												<div v-for="(attendeeId, attendeeIndex) in selection.attendees" :key="attendeeIndex">
+													<div class="d-f ai-c jc-sb">
+														<div class="wb-bw">
+															[[ selection.name ]]: [[ getAttendeeFullName(attendeeId) ]]
 														</div>
-														<div class="mb-1 ml-4p@md">
-															<input
-																autocomplete="off"
-																class=""
-																placeholder="Last name"
-																:id="'new_attendee_lastname_' + index"
-																:name="'new_attendee_lastname_' + index"
-																type="text"
-																v-model="attendee.lastname"
-															/>
-														</div>
-													</div>
-													<div class="mb-1" v-if="event.initialSelection.email != 'hidden'">
-														<input
-															autocomplete="off"
-															class=""
-															:placeholder='"Email address (" + event.initialSelection.email + ")"'
-															:id="'new_attendee_email_' + index"
-															:name="'new_attendee_email_' + index"
-															type="text"
-															value=""
-														/>
-													</div>
-													<div class="collection-js required" v-if="event.initialSelection.address != 'hidden'">
-														<div class="label address-is-required-js">
-															Address <span class="c-ruby">*</span>
-														</div>
-														<div
-															class="mb-1 line-to-hide-js person-address-js"
-														>
-															<div class="mb-1 d-f">
-																<div>
-																	<label
-																		class="screen-reader-text"
-																		:for="'new_attendee_address_location_' + index"
-																		>Location</label
-																	>
-																	<span class="custom-select">
-																		<select
-																			class="select custom-select-js custom-selected-js"
-																			:id="'new_attendee_address_location_' + index"
-																			:name="'new_attendee_address_location_' + index"
-																		>
-																			<option value="Home">Home</option>
-																			<option value="Work">Work</option>
-																			<option value="Other">Other</option>
-																		</select>
-																	</span>
-																</div>
-																<div class="f-1 pl-1">
-																	<label
-																		class="screen-reader-text"
-																		:for="'new_attendee_address' + index"
-																		>Street line 1</label
-																	>
-																	<input
-																		autocomplete="off"
-																		placeholder="street address"
-																		:id="'new_attendee_address' + index"
-																		:name="'new_attendee_address' + index"
-																		type="text"
-																		v-model="attendee.address"
-																	/>
-																</div>
-															</div>
-															<div class="mb-1 d-f">
-																<div class="f-1">
-																	<label
-																		class="screen-reader-text"
-																		:for="'new_attendee_address2' + index"
-																		>Street line 2</label
-																	>
-																	<input
-																		:id="'new_attendee_address2' + index"
-																		:name="'new_attendee_address2' + index"
-																		placeholder="apt/unit/box"
-																		type="text"
-																		v-model="attendee.address2"
-																	/>
-																</div>
-															</div>
-															<div class="d-f@xs">
-																<div>
-																	<label
-																		class="screen-reader-text"
-																		:for="'new_attendee_city_' + index"
-																	>
-																		City
-																	</label>
-																	<input
-																		:id="'new_attendee_city_' + index"
-																		:name="'new_attendee_city_' + index"
-																		placeholder="city"
-																		type="text"
-																		v-model="attendee.city"
-																	/>
-																</div>
-																<div class="my-1 my-0@xs px-1@xs f-1">
-																	<label
-																		class="screen-reader-text"
-																		:for="'new_attendee_state_' + index"
-																	>
-																		State
-																	</label>
-																	<input
-																		:id="'new_attendee_state_' + index"
-																		:name="'new_attendee_state_' + index"
-																		placeholder="state"
-																		type="text"
-																		v-model="attendee.state"
-																	/>
-																</div>
-																<div class="f-1">
-																	<label
-																		class="screen-reader-text"
-																		:for="'new_attendee_zip_' + index"
-																	>
-																		Zip
-																	</label>
-																	<input
-																		:id="'new_attendee_zip_' + index"
-																		:name="'new_attendee_zip_' + index"
-																		placeholder="zip code"
-																		type="text"
-																		v-model="attendee.zip"
-																	/>
-																</div>
-															</div>
-														</div>
-													</div>
-													<div class="label" v-if="event.initialSelection.phone != 'hidden'">
-														Phone number<span class="c-ruby"></span>
-													</div>
-													<div class="mb-1 line-to-hide-js person-phone-number-js">
-														<div class="d-f">
-															<div>
-																<label
-																	class="screen-reader-text"
-																	:for="'new_attendee_phone_location_' + index"
-																>
-																	Location
-																</label>
-																<span class="custom-select">
-																	<select
-																		class="select custom-select-js custom-selected-js"
-																		:id="'new_attendee_phone_location_' + index"
-																		:name="'new_attendee_phone_location_' + index"
-																	>
-																		<option value="Home">Home</option>	
-																		<option value="Mobile">Mobile</option>
-																		<option value="Fax">Fax</option>
-																		<option value="Other">Other</option>
-																	</select>
-																</span>
-															</div>
-															<div class="f-1 pl-1">
-																<label
-																	class="screen-reader-text"
-																	:for="'new_attendee_phone_' + index"
-																>
-																	Number
-																</label>
-																<input
-																	class=""
-																	:id="'new_attendee_phone_' + index"
-																	:name="'new_attendee_phone_' + index"
-																	placeholder="phone number"
-																	type="text"
-																	v-model="attendee.phone"
-																/>
-															</div>
-														</div>
-													</div>
-													<div
-														class="mt-2"
-														:class="{ 'required': event.initialSelection.gender_requied }"
-													>
-														<label 
-															:for="'new_attendee_gender_' + index"
-														>
-															Gender
-															<span class="c-ruby" v-if="event.initialSelection.gender_requied">*</span>
-														</label>
-														<span class="custom-select">
-															<select
-																:id="'new_attendee_gender_' + index"
-																:name="'new_attendee_gender_' + index"
-																class="select custom-select-js custom-selected-js"
-																v-model="attendee.gender"
-															>
-																<option selected="selected" value=""></option>
-																<option value="Male">Male</option>
-																<option value="Female">Female</option>
-															</select>
-														</span>
-													</div>
-													<div>
-														<div class="mb-2">
-															<input
-																class="checkbox"
-																:id="'new_attendee_household_' + index"
-																readonly
-																type="checkbox"
-																v-model="attendee.household"
-															/>
-															<label
-																class="checkbox-label"
-																:for="'new_attendee_household_' + index"
-																style="line-height: 1"
-															>
-																<span class="fs-4"
-																	>This person is in my household</span
-																>
-															</label>
-														</div>
-														<div class="mb-1" v-if="attendee.household">
-															<div>
-																<div>
-																	<label
-																		class="label fw-500"
-																		:for="'new_attendee_relationship_' + index"
-																	>Relationship</label
-																	>
-																	<select
-																		class="select w-a"
-																		:id="'new_attendee_relationship_' + index"
-																		:name="'new_attendee_relationship_' + index"
-																		v-model="attendee.relationship"
-																	>
-																		<option value="" selected></option>
-																		<option value="320">Child</option>
-																		<option value="316">Parent</option>
-																		<option value="318">Guardian</option>
-																		<option value="">Spouse</option>
-																	</select>
-																</div>
-															</div>
-														</div>
-													</div>
-												</div>
-												<div class="css-1qhilh7-TypeSelectionDropdown">
-													<div class="dropdown">
-														<button
-															aria-haspopup="menu"
-															aria-label="menu"
-															class="select ta-l css-1va3n4f-TypeSelectionDropdown"
-															id="type_selection_8500"
-															type="button"
-														>
-															[[ event.initialSelection.name ]]
-														</button>
-														<div
-															aria-labelledby="type_selection_8500"
-															class="dropdown__menu w-100% p-r"
-															role="menu"
-															v-for="selection in event.selections"
-														>
-															<button
-																class="stripped-btn dropdown__item w-100% ta-l is-selected css-1vmyrqy-TypeSelectionDropdown"
-																:value="selection.id"
-															>
-																[[ selection.name ]]
-																<div class="fs-5 c-tint2"></div>
-																<div class="fs-5 c-tint2">
-																	[[ selection.min_grade ]] - [[ selection.max_grade ]] grade only
-																</div>
-																<div class="fs-5 c-tint2"></div>
-															</button>
-														</div>
-													</div>
-												</div>
-												<div class="mt-2">
-													<div 
-														class="d-f ai-fe"
-														v-if="event.initialSelection.grade_required"
-													>
-														<div class="f-1">
-															<label class="label fw-500">Grade</label>
-															<select
-																class="select w-f"
-																id="attendee_type_min_grade"
-																name="attendee_type[min_grade]"
-																v-model="attendee.grade"
-															>
-																<option :value="option.value" v-for="option in event.minGradeOptions">
-																	[[ option.label ]]
-																</option>
-															</select>
-														</div>
-														<em class="fs-13 c-tint2 p-r pl-1 mb-2">
-															[[ event.initialSelection.min_grade ]] - [[ event.initialSelection.max_grade ]] grade only
-														</em>
 													</div>
 												</div>
 											</div>
 										</div>
 									</div>
-								</div>
-              </div>
-              <div>
-                <div>
-                  <div class="ta-c ta-r@md">
-                    <button
-                      type="button"
-                      class="minor-btn secondary-btn btn"
-											@click.prevent="addParticipant"
-                    >
-                      <div style="font-size: 9px; margin-right: 4px">
-                        <svg
-                          id="plus"
-                          viewBox="0 0 16 16"
-                          class="symbol"
-                          role="img"
-                        >
-                          <path
-                            d="M9.143 16H6.857V9.143H0V6.857H6.857V0H9.143V6.857H16V9.143H9.143V16Z"
-                          ></path>
-                        </svg>
-                      </div>
-                      Add someone else
-                    </button>
+                  <div class="my-2">
+                    <button type="button" class="btn lg-btn filled-btn secondary-btn" @click="previousStep">Previous</button>
+                    <button type="button" class="btn lg-btn filled-btn primary-btn" @click="confirmRegistration">
+											<span>Confirm Registration</span>
+											<svg class="progress-circle" height="25" width="25" v-if="activeButton === 0">
+												<circle cx="12.5" cy="12.5" r="6.25"></circle>
+											</svg>
+										</button>
                   </div>
                 </div>
               </div>
-              <button class="btn" type="button" @click="showRegConfirmation = true" :disabled="event.attendees.length <= 0">Next: Details</button>
-            </form>
-						<div v-if="showRegConfirmation">
-							<div class="d-f ai-c jc-sb action-drawer mt-2 mb-2" v-for="attendee in event.attendees">
-								<div class="d-f">
-									<div class="avatar w-6 h-6 mr-2">[[ getAvatar(attendee) ]]</div>
-									<div class="d-f fd-c">
-										<div>[[ attendee.firstname + ' ' + attendee.lastname ]]</div>
-										<div class="fs-13 c-tint2">[[ attendee.email ]]</div>
-									</div>
-								</div>
-							</div>
-							<button class="btn" type="button" @click="showRegConfirmation = false">Back</button>
-							<button class="btn" type="button" @click="confirmRegistration">Confirm Registration</button>
-						</div>
+            </div>
           </div>
 					<div class="mb-2" v-if="modal.id === 'event_checkin_modal'">
 						<h2 class="lh-1.333 c-tint0 fs-3 fw-600">Check In</h2>

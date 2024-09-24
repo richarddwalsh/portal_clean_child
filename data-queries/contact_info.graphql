@@ -38,6 +38,7 @@ query contact_info($contact_id: String!) {
       pushpay_customer_id
       household_contact_type
       using_household_email
+      grade
       associations {
         payments: deal_collection__contact_to_deal(
           filter: { pipeline__eq: "26389519" }
@@ -68,6 +69,39 @@ query contact_info($contact_id: String!) {
         registrations: p_registrations_collection__participant {
           items {
             hs_object_id
+            event_name
+            event_date
+            household_id
+            household_name
+            contact_name
+            associations {
+              contacts:contact_collection__participant {
+                items {
+                  hs_object_id
+                  firstname
+                  lastname
+                  email
+                }
+              }
+              events: p_events_collection__registrations_to_events {
+                items {
+                  hs_object_id
+                  name
+                  banner_image
+                  dynamic_page_slug
+                  associations {
+                    contact_collection__event_to_contact {
+                      items {
+                        hs_object_id
+                        firstname
+                        lastname
+                        email
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         }
         my_groups_lead: p_groups_collection__group_lead {
@@ -126,6 +160,7 @@ query contact_info($contact_id: String!) {
                   lastname
                   email
                   gender
+                  grade
                   birthday
                   email
                   phone

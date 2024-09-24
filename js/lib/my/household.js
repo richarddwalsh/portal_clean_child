@@ -304,6 +304,86 @@ new Vue({
                   value: 320
                 }
               ]
+            },
+            {
+              label: "Gender",
+              name: "gender",
+              property: "gender",
+              type: "select",
+              options: [
+                {
+                  label: "Male",
+                  value: "male"
+                },
+                {
+                  label: "Female",
+                  value: "Female"
+                }
+              ]
+            },
+            {
+              label: "Grade",
+              name: "grade",
+              property: "grade",
+              type: "select",
+              options: [
+                {
+                  label: "Pre-K",
+                  value: "Pre-K"
+                },
+                {
+                  label: "K",
+                  value: "K"
+                },
+                {
+                  label: "1st",
+                  value: "1st"
+                },
+                {
+                  label: "2nd",
+                  value: "2nd"
+                },
+                {
+                  label: "3rd",
+                  value: "3rd"
+                },
+                {
+                  label: "4th",
+                  value: "4th"
+                },
+                {
+                  label: "5th",
+                  value: "5th"
+                },
+                {
+                  label: "6th",
+                  value: "6th"
+                },
+                {
+                  label: "7th",
+                  value: "7th"
+                },
+                {
+                  label: "8th",
+                  value: "8th"
+                },
+                {
+                  label: "9th",
+                  value: "9th"
+                },
+                {
+                  label: "10th",
+                  value: "10th"
+                },
+                {
+                  label: "11th",
+                  value: "11th"
+                },
+                {
+                  label: "12th",
+                  value: "12th"
+                }
+              ]
             }
           ],
           rows: [
@@ -383,6 +463,34 @@ new Vue({
               visibility: true,
               columns: [
                 {
+                  type: "label",
+                  text: "Gender"
+                },
+                {
+                  type: "field",
+                  name: "gender"
+                }
+              ],
+              type: "column"
+            },
+            {
+              visibility: true,
+              columns: [
+                {
+                  type: "label",
+                  text: "Grade"
+                },
+                {
+                  type: "field",
+                  name: "grade"
+                }
+              ],
+              type: "column"
+            },
+            {
+              visibility: true,
+              columns: [
+                {
                   type: "field",
                   name: "using_household_email"
                 }
@@ -410,7 +518,6 @@ new Vue({
     setSelect(fieldName, selectedValue, model) {
       console.log(`set select ${fieldName} to ${selectedValue}`);
       if (model) {
-        console.log(this.dynamicModel[model]);
         if (this.dynamicModel[model]) {
           this.$set(this.dynamicModel[model], fieldName, selectedValue);
         } else {

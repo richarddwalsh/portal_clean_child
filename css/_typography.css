@@ -1,0 +1,332 @@
+body {
+   background-color: #fff;
+   -webkit-font-smoothing: antialiased;
+   -moz-osx-font-smoothing: grayscale;
+ }
+
+p {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+{# Anchor Links #}
+a {
+  text-decoration: none;
+}
+a:hover, a:focus {
+  text-decoration: none;
+}
+
+{# Headings #}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  {% if theme.typography.global_fonts.hyphen_text %}
+    -ms-hyphens: auto;
+    -webkit-hyphens: auto;
+    hyphens: auto;
+  {% endif %}
+}
+
+
+strong {
+  font-weight: bold;
+}
+
+code {
+  vertical-align: bottom;
+}
+
+ul,
+ol {
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+
+ul ul,
+ol ul,
+ul ol,
+ol ol {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+blockquote {
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+  padding-left: 15px;
+}
+
+{# Horizontal Rules #}
+hr {
+  color: #ccc;
+  background-color: #ccc;
+  height: 1px;
+  border: none;
+}
+
+{# TODO #}
+small {
+
+}
+
+{# TODO #}
+mark {
+
+}
+
+sup,
+sub {
+  position: relative;
+  font-size: 75%;
+  line-height: 0;
+  vertical-align: baseline;
+}
+
+sup {
+  top: -0.5em;
+}
+
+sub {
+  bottom: -0.25em;
+}
+
+
+:focus {
+  outline: none;
+}
+
+.user-is-tabbing :focus {
+  -webkit-box-shadow: 0 0 3px 3px rgba(2,114,252,0.7);
+  box-shadow: 0 0 3px 3px rgba(2,114,252,0.7);
+  outline: none;
+}
+
+.disable-focus-styles :focus {
+  outline: none;
+}
+
+
+{###########################################################################}
+{#############################   _typography   #############################}
+{###########################################################################}
+
+html {
+  font-size: {{ theme.typography.p.props.font_style.size.value }}{{ theme.typography.p.props.font_style.size.units }};
+}
+
+body {
+  font-size: {{ theme.typography.p.props.font_style.size.value }}{{ theme.typography.p.props.font_style.size.units }};
+  font-family: {{ theme.global_brand.default_body_font.font }};
+  font-size: {{ theme.typography.p.props.font_style.size.value }}{{ theme.typography.p.props.font_style.size.units }};
+  font-weight: {{ theme.typography.p.props.font_style.styles|attr('font-weight') }};
+}
+
+p {
+  color: {{ theme.typography.p.props.font_style.color }};
+  font-family: {{ theme.typography.p.props.font_style.font }};
+  font-size: {{ theme.typography.p.props.font_style.size.value }}{{ theme.typography.p.props.font_style.size.units }};
+  font-style: {{ theme.typography.p.props.font_style.styles|attr('font-style') }};
+  font-weight: {{ theme.typography.p.props.font_style.styles|attr('font-weight') }};
+  text-decoration: {{ theme.typography.p.props.font_style.styles|attr('text-decoration') }};
+  text-transform: {{ theme.typography.p.props.text_transform }};
+  letter-spacing: {{ theme.typography.p.props.letter_spacing }}px;
+  line-height: {{ theme.typography.p.props.line_height }}em;
+}
+
+@media(max-width: 992px) {
+  p {
+    font-size: {{ theme.typography.p.props.size_mobile }}px;
+  }
+}
+
+li {
+  color: {{ theme.typography.li.props.font_style.color }};
+  font-family: {{ theme.typography.li.props.font_style.font }};
+  font-size: {{ theme.typography.li.props.font_style.size.value }}{{ theme.typography.p.props.font_style.size.units }};
+  font-style: {{ theme.typography.li.props.font_style.styles|attr('font-style') }};
+  font-weight: {{ theme.typography.li.props.font_style.styles|attr('font-weight') }};
+  text-decoration: {{ theme.typography.li.props.font_style.styles|attr('text-decoration') }};
+  text-transform: {{ theme.typography.li.props.text_transform }};
+  letter-spacing: {{ theme.typography.li.props.letter_spacing }}px;
+  line-height: {{ theme.typography.li.props.line_height }}em;
+  margin-bottom: {{ theme.typography.li.props.line_spacing }}px;
+}
+@media(max-width: 992px) {
+  li {
+    font-size: {{ theme.typography.li.props.size_mobile }}px;
+  }
+}
+
+blockquote,
+blockquote p{
+  color: {{ theme.typography.blockquote.props.font_style.color }};
+  font-family: {{ theme.typography.blockquote.props.font_style.font }};
+  font-size: {{ theme.typography.blockquote.props.font_style.size.value }}{{ theme.typography.p.props.font_style.size.units }};
+  font-style: {{ theme.typography.blockquote.props.font_style.styles|attr('font-style') }};
+  font-weight: {{ theme.typography.blockquote.props.font_style.styles|attr('font-weight') }};
+  text-decoration: {{ theme.typography.blockquote.props.font_style.styles|attr('text-decoration') }};
+  text-transform: {{ theme.typography.blockquote.props.text_transform }};
+  letter-spacing: {{ theme.typography.blockquote.props.letter_spacing }}px;
+  line-height: {{ theme.typography.blockquote.props.line_height }}em;
+
+  {% if theme.typography.blockquote.props.show_border_left %}
+    border-left: {{ theme.typography.blockquote.props.border_width }}px solid rgba({{ theme.typography.blockquote.props.border_color.color|convert_rgb }}, {{ theme.typography.blockquote.props.border_color.opacity }});
+    padding-left: {{ theme.typography.blockquote.props.padding_left }}px;
+  {% endif %}
+}
+
+@media(max-width: 992px) {
+  blockquote,
+  blockquote p,{
+    font-size: {{ theme.typography.blockquote.props.size_mobile }}px;
+  }
+}
+
+a {
+  color: {{ theme.typography.global_fonts.body_link_color.color }};
+}
+
+a:hover,
+a:focus {
+  color: {{ theme.typography.global_fonts.body_link_color_hover.color }};
+}
+
+a:active {
+  color: {{ theme.typography.global_fonts.body_link_color.color }};
+}
+
+h1 {
+  color: {{ theme.typography.h1.props.font_style.color }};
+  font-family: {{ theme.typography.h1.props.font_style.font }};
+  font-size: {{ theme.typography.h1.props.font_style.size.value }}{{ theme.typography.h1.props.font_style.size.units }};
+  font-style: {{ theme.typography.h1.props.font_style.styles|attr('font-style') }};
+  font-weight: {{ theme.typography.h1.props.font_style.styles|attr('font-weight') }};
+  text-decoration: {{ theme.typography.h1.props.font_style.styles|attr('text-decoration') }};
+  text-transform: {{ theme.typography.h1.props.text_transform }};
+  letter-spacing: {{ theme.typography.h1.props.letter_spacing }}px;
+  line-height: {{ theme.typography.h1.props.line_height }}em;
+}
+
+@media(max-width: 992px) {
+  h1 {
+    font-size: {{ theme.typography.h1.props.size_mobile }}px;
+  }
+}
+
+h2 {
+  color: {{ theme.typography.h2.props.font_style.color }};
+  font-family: {{ theme.typography.h2.props.font_style.font }};
+  font-size: {{ theme.typography.h2.props.font_style.size.value }}{{ theme.typography.h2.props.font_style.size.units }};
+  font-style: {{ theme.typography.h2.props.font_style.styles|attr('font-style') }};
+  font-weight: {{ theme.typography.h2.props.font_style.styles|attr('font-weight') }};
+  text-decoration: {{ theme.typography.h2.props.font_style.styles|attr('text-decoration') }};
+  text-transform: {{ theme.typography.h2.props.text_transform }};
+  letter-spacing: {{ theme.typography.h2.props.letter_spacing }}px;
+  line-height: {{ theme.typography.h2.props.line_height }}em;
+}
+
+@media(max-width: 992px) {
+  h2 {
+    font-size: {{ theme.typography.h2.props.size_mobile }}px;
+  }
+}
+
+h3 {
+  color: {{ theme.typography.h3.props.font_style.color }};
+  font-family: {{ theme.typography.h3.props.font_style.font }};
+  font-size: {{ theme.typography.h3.props.font_style.size.value }}{{ theme.typography.h3.props.font_style.size.units }};
+  font-style: {{ theme.typography.h3.props.font_style.styles|attr('font-style') }};
+  font-weight: {{ theme.typography.h3.props.font_style.styles|attr('font-weight') }};
+  text-decoration: {{ theme.typography.h3.props.font_style.styles|attr('text-decoration') }};
+  text-transform: {{ theme.typography.h3.props.text_transform }};
+  letter-spacing: {{ theme.typography.h3.props.letter_spacing }}px;
+  line-height: {{ theme.typography.h3.props.line_height }}em;
+}
+
+@media(max-width: 992px) {
+  h3 {
+    font-size: {{ theme.typography.h3.props.size_mobile }}px;
+  }
+}
+
+h4 {
+  color: {{ theme.typography.h4.props.font_style.color }};
+  font-family: {{ theme.typography.h4.props.font_style.font }};
+  font-size: {{ theme.typography.h4.props.font_style.size.value }}{{ theme.typography.h4.props.font_style.size.units }};
+  font-style: {{ theme.typography.h4.props.font_style.styles|attr('font-style') }};
+  font-weight: {{ theme.typography.h4.props.font_style.styles|attr('font-weight') }};
+  text-decoration: {{ theme.typography.h4.props.font_style.styles|attr('text-decoration') }};
+  text-transform: {{ theme.typography.h4.props.text_transform }};
+  letter-spacing: {{ theme.typography.h4.props.letter_spacing }}px;
+  line-height: {{ theme.typography.h4.props.line_height }}em;
+}
+
+@media(max-width: 992px) {
+  h4 {
+    font-size: {{ theme.typography.h4.props.size_mobile }}px;
+  }
+}
+
+h5 {
+  color: {{ theme.typography.h5.props.font_style.color }};
+  font-family: {{ theme.typography.h5.props.font_style.font }};
+  font-size: {{ theme.typography.h5.props.font_style.size.value }}{{ theme.typography.h5.props.font_style.size.units }};
+  font-style: {{ theme.typography.h5.props.font_style.styles|attr('font-style') }};
+  font-weight: {{ theme.typography.h5.props.font_style.styles|attr('font-weight') }};
+  text-decoration: {{ theme.typography.h5.props.font_style.styles|attr('text-decoration') }};
+  text-transform: {{ theme.typography.h5.props.text_transform }};
+  letter-spacing: {{ theme.typography.h5.props.letter_spacing }}px;
+  line-height: {{ theme.typography.h5.props.line_height }}em;
+}
+
+h6 {
+  color: {{ theme.typography.h6.props.font_style.color }};
+  font-family: {{ theme.typography.h6.props.font_style.font }};
+  font-size: {{ theme.typography.h6.props.font_style.size.value }}{{ theme.typography.h6.props.font_style.size.units }};
+  font-style: {{ theme.typography.h6.props.font_style.styles|attr('font-style') }};
+  font-weight: {{ theme.typography.h6.props.font_style.styles|attr('font-weight') }};
+  text-decoration: {{ theme.typography.h6.props.font_style.styles|attr('text-decoration') }};
+  text-transform: {{ theme.typography.h6.props.text_transform }};
+  letter-spacing: {{ theme.typography.h6.props.letter_spacing }}px;
+  line-height: {{ theme.typography.h6.props.line_height }}em;
+}
+
+{###############################   _HEADER    ###############################}
+
+.hhs-lang-switch .lang_list_class li a,
+.hhs-top-bar .hs-menu-wrapper.hs-menu-flow-horizontal>ul li a,
+.hhs-header-menu .hs-menu-wrapper.hs-menu-flow-horizontal>ul li a {
+  font-family: {{ theme.typography.header_nav.props.font_style.font }};
+  font-size: {{ theme.typography.header_nav.props.font_style.size.value }}px;
+  font-style: {{ theme.typography.header_nav.props.font_style.styles|attr('font-style') }};
+  font-weight: {{ theme.typography.header_nav.props.font_style.styles|attr('font-weight') }};
+  text-decoration: {{ theme.typography.header_nav.props.font_style.styles|attr('text-decoration') }};
+  text-transform: {{ theme.typography.header_nav.props.text_transform }};
+  letter-spacing: {{ theme.typography.header_nav.props.letter_spacing }}px;
+}
+
+{###############################   _FOOTER    ###############################}
+
+.hhs-foot-nav-col .hs-menu-wrapper.hs-menu-flow-horizontal > ul li a {
+  font-family: {{ theme.typography.footer_nav.props.font_style.font }};
+  font-size: {{ theme.typography.footer_nav.props.font_style.size.value }}{{ theme.typography.footer_nav.props.font_style.size.units }};
+  font-style: {{ theme.typography.footer_nav.props.font_style.styles|attr('font-style') }};
+  font-weight: {{ theme.typography.footer_nav.props.font_style.styles|attr('font-weight') }};
+  text-decoration: {{ theme.typography.footer_nav.props.font_style.styles|attr('text-decoration') }};
+  text-transform: {{ theme.typography.footer_nav.props.text_transform }};
+  letter-spacing: {{ theme.typography.footer_nav.props.letter_spacing }}px;
+}
+
+.hhs-foot-base-nav .hs-menu-wrapper.hs-menu-flow-horizontal > ul li a,
+.hhs-foot-nav-col .hs-menu-wrapper.hs-menu-flow-horizontal > ul li.hs-item-has-children ul.hs-menu-children-wrapper li a {
+  font-size: {{ theme.typography.footer_nav.props.font_style.size.value * 0.9 }}{{ theme.typography.footer_nav.props.font_style.size.units }} !important;
+}
+
+
