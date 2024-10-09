@@ -37,7 +37,7 @@
 					<span 
 						class="fs-13 lh-1.5 c-brand cursor-pointer"
 						v-if="isAdmin || isLead"
-						@click.prevent="showModal('team_member_modal', member)"
+						@click.prevent="showModal('team_member_modal', member, 'contact.assocations.volunteer_status')"
 					>Team Member Profile</span>
 				</div>
 				<div>
@@ -59,6 +59,95 @@
       <div class="modal__header">
         <h1 class="modal-title">[[ modal.title ]]</h1>
       </div>
+			<div
+				class="modal__body"
+				:class="{'has-modal-footer': modal.hasFooter}"
+				v-if="modal.id != 'team_member_modal'"
+			>
+				<div 
+					class="grid grid-cols-1 gap-2"
+					v-if="modal.form"
+				>
+					<div>
+						<p>[[ modal.message ]]</p>
+					</div>
+					<div
+						class="d-flex gap-2"
+						v-for="row in modal.form.rows"
+						:class="{'fd-c': row.type === 'column', 'fd-r ai-c': row.type === 'row'}"
+					>
+						<div
+							:class="{'f-1': column.type === 'field'}"
+							v-for="column in row.columns"
+						>
+							<label
+								class="mb-0 pb-0"
+								v-if="column.type === 'label'"
+							>
+								[[ column.text ]]
+							</label>
+							<div class="f-1" v-if="column.type === 'field'">
+
+								<input
+									:id="column.name"
+									:name="column.name"
+									v-model="dynamicModel[modal.form.model][column.name]"
+									:type="lookupField(column.name, modal.id).format"
+									:disabled="lookupField(column.name, modal.id).disabled"
+									v-if="lookupField(column.name, modal.id).type === 'input'"
+								>
+
+								<textarea
+									:id="column.name"
+									:name="column.name"
+									v-model="dynamicModel[modal.form.model][column.name]"
+									:type="lookupField(column.name, modal.id).format"
+									:disabled="lookupField(column.name, modal.id).disabled"
+									v-if="lookupField(column.name, modal.id).type === 'textarea'"
+								></textarea>
+
+								<select
+									:id="column.name"
+									:name="column.name"
+									v-model="dynamicModel[modal.form.model][column.name]"
+									@change="setSelect(column.name, $event.target.value, dynamicModel[modal.form.model])"
+									v-if="lookupField(column.name, modal.id).type === 'select'"
+									:disabled="lookupField(column.name, modal.id).disabled"
+								>
+									<option disabled value="" selected>-- Please Select --</option>
+									<option 
+										v-for="option in lookupField(column.name, modal.id).options"
+										:key="option.label"
+										:value="option.value"
+									>[[ option.label ]]</option>
+								</select>
+
+								<!-- Checkbox -->
+								<div v-if="lookupField(column.name, modal.id).type === 'checkbox'">
+									<input
+										type="checkbox"
+										:id="column.name"
+										:name="column.name"
+										class="checkbox"
+										value="1"
+										v-model="dynamicModel[modal.form.model][column.name]"
+										:disabled="lookupField(column.name, modal.id).disabled"
+									>
+									<label
+										:for="column.name"
+										class="checkbox-label"
+									>[[ lookupField(column.name, modal.id).label ]]</label>
+								</div>
+
+								<!-- Get the Notice from the field.notice -->
+								<div class="notice fs-4" v-if="lookupField(column.name, modal.id).notice">
+									<span>[[ lookupField(column.name, modal.id).notice ]]</span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
       <div 
         class="modal__body"
         :class="{'has-modal-footer': modal.hasFooter}"
@@ -76,6 +165,7 @@
 					</section>
 				</div>
 				<div>
+					<pre>[[ currentData ]]</pre>
 					<div class="mb-2">
 						<div
 							data-testid="grid"

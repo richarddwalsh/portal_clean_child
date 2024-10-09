@@ -1,0 +1,158 @@
+<!--
+  templateType: "none"
+  isAvailableForNewContent: false
+-->
+<template v-if="teams.length === 0">
+  <div class="no-teams-message text-center">
+    <p>Get Plugged in and Join a Team - Let's Build Together</p>
+    <a href="https://{{ request.domain }}/volunteer" class="btn btn-primary">Find Your Team</a>
+  </div>
+</template>
+<template v-else>
+  <article
+    class="d-f mb-2"
+    v-for="(team, index) in teams"
+    :key="team.id"
+  >
+    <div class="mr-2">
+      <a :href='"{{ request.path }}/" + team.page_slug'>
+        <div class="profile-item__image">
+          <img :src="team.featured_image || 'https://23169086.fs1.hubspotusercontent-na1.net/hubfs/23169086/Portal%20Assets/one-placeholder.png'" :alt='"Logo for " + team.team_name'>
+        </div>
+      </a>
+    </div>
+    <div class="f-1 d-f@sm jc-sb g-1">
+      <div class="f-1">
+        <div class="lh-1.25">
+          <a :href='"{{ request.path }}/" + team.page_slug' style="color: inherit;">[[ team.team_name ]]</a>
+          <span class="badge ml-4p open-badge tt-c">open</span>
+        </div>
+        <div class="fs-4 lh-1.5 c-tint2">
+          <div>
+            <span class="c-secondary">Leader:&nbsp;</span>[[ getTeamLeaders(index) ]]
+          </div>
+        </div>
+        <div class="fs-4 lh-1.5 c-tint2">
+          <div>Schedule: [[ getServeSchedule(index) ]]</div>
+        </div>
+      </div>
+      <button
+        class="mt-1 mt-0@sm destroy-btn secondary-btn minor-btn btn"
+        @click.prevent='showModal("leave_team_modal", getDataObject(index))'
+      >Leave this team</button>
+    </div>
+  </article>
+</template>
+
+<div
+  :id="modal.id"
+  class="modal--open"
+  v-for="modal in modals"
+  v-if="modal.visible"
+>
+  <div class="modal-layer">
+    <div class="modal">
+      <div class="modal__header">
+        <h1 class="modal-title">[[ modal.title ]]</h1>
+      </div>
+      <div 
+        class="modal__body"
+        :class="{'has-modal-footer': modal.hasFooter}"
+      >
+        <div 
+          class="grid grid-cols-1 gap-2"
+          v-if="modal.form"
+        >
+          <div>
+            <p>[[ modal.message ]]</p>
+          </div>
+          <div
+            class="d-flex gap-2"
+            v-for="row in modal.form.rows"
+            :class="{'fd-c': row.type === 'column', 'fd-r ai-c': row.type === 'row'}"
+          >
+            <div
+              :class="{'f-1': column.type === 'field'}"
+              v-for="column in row.columns"
+            >
+              <label
+                class="mb-0 pb-0"
+                v-if="column.type === 'label'"
+              >[[ column.text ]]</label>
+              <div class="f-1" v-if="column.type === 'field'">
+
+                <input
+                  :id="column.name"
+                  :name="column.name"
+                  v-model="dynamicModel[modal.form.model][column.name]"
+                  :type="lookupField(column.name, modal.id).format"
+                  :disabled="lookupField(column.name, modal.id).disabled"
+                  v-if="lookupField(column.name, modal.id).type === 'input'"
+                >
+
+                <textarea
+                  :id="column.name"
+                  :name="column.name"
+                  v-model="dynamicModel[modal.form.model][column.name]"
+                  :type="lookupField(column.name, modal.id).format"
+                  :disabled="lookupField(column.name, modal.id).disabled"
+                  v-if="lookupField(column.name, modal.id).type === 'textarea'"
+                ></textarea>
+
+                <select
+                  :id="column.name"
+                  :name="column.name"
+                  v-model="dynamicModel[modal.form.model][column.name]"
+                  @change="setSelect(column.name, $event.target.value, dynamicModel[modal.form.model])"
+                  v-if="lookupField(column.name, modal.id).type === 'select'"
+                  :disabled="lookupField(column.name, modal.id).disabled"
+                >
+                  <option disabled value="" selected>-- Please Select --</option>
+                  <option 
+                    v-for="option in lookupField(column.name, modal.id).options"
+                    :key="option.label"
+                    :value="option.value"
+                  >[[ option.label ]]</option>
+                </select>
+
+                <!-- Checkbox -->
+                <div v-if="lookupField(column.name, modal.id).type === 'checkbox'">
+                  <input
+                    type="checkbox"
+                    :id="column.name"
+                    :name="column.name"
+                    class="checkbox"
+                    value="1"
+                    v-model="dynamicModel[modal.form.model][column.name]"
+                    :disabled="lookupField(column.name, modal.id).disabled"
+                  >
+                  <label
+                    :for="column.name"
+                    class="checkbox-label"
+                  >[[ lookupField(column.name, modal.id).label ]]</label>
+                </div>
+
+                <!-- Get the Notice from the field.notice -->
+                <div class="notice fs-4" v-if="lookupField(column.name, modal.id).notice">
+                  <span>[[ lookupField(column.name, modal.id).notice ]]</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal__footer d-f ai-c jc-fe" v-if="modal.hasFooter">
+        <button
+          type="button"
+          :id="button.id"
+          :class="button.class"
+          @click="callDynamicMethod(button.method)"
+          v-for="button in modal.footerActions"
+          :key="button.id"
+        >
+          <span>[[button.label]]</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

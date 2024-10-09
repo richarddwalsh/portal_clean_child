@@ -5,8 +5,7 @@
 <article class="d-b" v-for="team in filteredTeams">
   <a :href='"/volunteer/" + team.page_slug'class="d-b card-list-item__wrapper-link">
     <div class="card-list-item__image">
-      <img :alt='"Logo for " + team.team_name' loading="lazy" :src="team.featured_image" v-if="team.featured_image" />
-      <img :alt='"Logo for " + team.team_name' loading="lazy" src="https://23169086.fs1.hubspotusercontent-na1.net/hubfs/23169086/Portal%20Assets/one-placeholder.png" v-else />
+      <img :alt='"Logo for " + team.team_name' loading="lazy" :src="team.featured_image || 'https://23169086.fs1.hubspotusercontent-na1.net/hubfs/23169086/Portal%20Assets/one-placeholder.png'" />
     </div>
     <div class="d-f jc-sb ai-fs">
       <h1 class="lh-1.333 c-tint0 fs-3 fw-600">[[ team.team_name ]]</h1>

@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 /* eslint-disable no-undef */
 /* eslint-disable no-new */
 Vue.config.devtools = true;
@@ -16,6 +17,7 @@ new Vue({
   },
   data: {
     loading: true,
+    activeButton: undefined,
     attendees: [],
     currentView: dataset.currentView,
     currentCategory: dataset.currentCategory,
@@ -80,6 +82,32 @@ new Vue({
             { label: 'Cancel', action: 'toggleModal' },
             { label: 'Submit', action: 'sendMessage' }
           ]
+        },
+        {
+          id:"leave_group_modal",
+          visibile: false,
+          title: "Leave [[group_name]]",
+          message: "Are you sure you would like to leave [[group_name]]?",
+          form: {},
+          hasFooter: true,
+          footerActions: [
+            {
+              id: "leave_team_modal_cancel",
+              label: "Cancel",
+              type: "button",
+              class: "btn text-btn mr-2",
+              method: "hideModal('leave_group_modal')",
+              disabled: false,
+            },
+            {
+              id: "leave_team_modal_confirm",
+              label: "Yes, leave group",
+              type: "button",
+              class: "btn create-btn",
+              method: "leaveGroup('')",
+              disabled: false
+            }
+          ]
         }
       ],
       list: []
@@ -92,8 +120,7 @@ new Vue({
   computed: {
     contactInitials() {
       let initials = '';
-      let firstname = this.currentUser.firstname;
-      let lastname = this.currentUser.lastname;
+      const {firstname, lastname} = this.currentUser;
       if (firstname) initials += firstname.charAt(0);
       if (lastname) initials += lastname.charAt(0);
       return initials.toUpperCase();
@@ -155,9 +182,12 @@ new Vue({
   },
   methods: {
     initializeData() {
-      if (Object.prototype.hasOwnProperty.call(this.currentUser, 'hs_object_id')) {
-        // Your code goes here
-        this.isLoggedIn = true;
+      
+      // eslint-disable-next-line no-underscore-dangle
+      if (this.currentUser._metadata && Object.prototype.hasOwnProperty.call(this.currentUser._metadata, 'id')) {
+        if (this.currentUser._metadata.id !== "NOT FOUND") {
+          this.isLoggedIn = true;
+        }
       }
       
       if (this.currentView === 'list') {
@@ -355,6 +385,7 @@ new Vue({
     },
     joinGroup() {
       console.log("joinGroup triggered");
+      this.activeButton = 0;
       
       const data = {
         groupId: this.group.id,
@@ -374,7 +405,8 @@ new Vue({
           data: JSON.stringify(data),
           success: (result) => {
             if (result.status === "success") {
-              this.group.currentlyEnrolled = true; 
+              this.group.currentlyEnrolled = true;
+              this.activeButton = undefined; 
               this.toggleModal('group_join_modal');
             }
           },
@@ -382,7 +414,6 @@ new Vue({
             console.error(error);
           }
         });
-             
     },
     sendMessage() {
       console.log("sendMessage triggered");

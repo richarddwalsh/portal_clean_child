@@ -17,7 +17,18 @@
           "userData": {{ contact|tojson }}
         }
       </script>
-      <div class="f-1 container">
+      <div 
+        class="f-1 container"
+        v-if="!household || household.length === 0" 
+      >
+        <h2>Create a New Household</h2>
+        <p>To manage your family members, you need to create a new household.</p>
+        <button @click="showModal('create_household_modal')" class="btn btn-primary">Create Household</button>
+      </div>
+      <div 
+        class="f-1 container"
+        v-else  
+      >
         <div tabindex="-1" style="outline: none;">
           <div tabindex="-1" style="outline: none;">
             <div class="d-f ai-c">
@@ -54,7 +65,9 @@
             </div>
             <div
               class="d-f ai-c pt-4"
-              v-for="member in members"
+              tabindex="-1"
+              style="outline: none;"
+              v-for="(member, index) in members"
               :key="member.hs_object_id"
             >
               <div class="f-1 d-f">

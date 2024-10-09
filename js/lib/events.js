@@ -44,7 +44,9 @@ new Vue({
           title: "Register for ",
           visible: false,
           hasFooterAction: true,
-          footerActions: []
+          footerActions: [
+            { label: 'Cancel', action: 'toggleModal' }
+          ]
         },
         {
           id: "event_checkin_modal",
@@ -188,9 +190,11 @@ new Vue({
   },
   methods: {
     initializeData() {
-      if (Object.prototype.hasOwnProperty.call(this.currentUser, 'hs_object_id')) {
-        // Your code goes here
-        this.isLoggedIn = true;
+      // eslint-disable-next-line no-underscore-dangle
+      if (this.currentUser._metadata && Object.prototype.hasOwnProperty.call(this.currentUser._metadata, 'id')) {
+        if (this.currentUser._metadata.id !== "NOT FOUND") {
+          this.isLoggedIn = true;
+        }
       }
   
       if (this.currentView === 'list') {

@@ -499,7 +499,59 @@ new Vue({
             }
           ]
         }
-      }
+      },
+      {
+        id:"create_household_modal",
+        visible: false,
+        title: "New Household",
+        hasFooter: true,
+        footerActions: [
+          {
+            id: "create_household_modal_cancel",
+            label: "Cancel",
+            type: "button",
+            class: "btn text-btn mr-2",
+            method: "hideModal('create_household_modal')",
+            disabled: false
+          },
+          {
+            id: "create_household_modal_save",
+            label: "Save",
+            type: "button",
+            class: "btn create-btn",
+            method: "addHousehold('')",
+            disabled: false
+          }
+        ],
+        form: {
+          model: "newMember",
+          fields: [
+            {
+              label: "Family Name",
+              name: "first_name",
+              property: "firstname",
+              type: "input",
+              format: "text"
+            }
+          ],
+          rows: [
+            {
+              visibility: true,
+              columns: [
+                {
+                  type: "label",
+                  text: "Family Name"
+                },
+                {
+                  type: "field",
+                  name: "familyname"
+                }
+              ],
+              type: "row"
+            }
+          ]
+        }
+      },
     ],
     actionDrawers: {
       primary: false

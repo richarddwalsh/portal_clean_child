@@ -114,6 +114,35 @@ query contact_info($contact_id: String!) {
           items {
             hs_object_id
             name
+            featured_image
+            dynamic_page_slug
+            schedule
+            associations {
+              leaders:contact_collection__group_lead {
+                items {
+                  hs_object_id
+                  firstname
+                  lastname
+                  email
+                }
+              }
+              volunteer_leads: contact_collection__volunteer_lead {
+                items {
+                  hs_object_id
+                  firstname
+                  lastname
+                  email
+                }
+              }
+              members:contact_collection__volunteer {
+                items {
+                  hs_object_id
+                  firstname
+                  lastname
+                  email
+                }
+              }
+            }
           }
         }
         my_groups_volunteed_lead: p_groups_collection__volunteer_lead {
@@ -140,6 +169,41 @@ query contact_info($contact_id: String!) {
             hs_object_id
             team_name
 						featured_image
+            page_slug
+            primary_team_lead
+            serve_schedule
+            application_form_link
+            associations {
+              leaders:contact_collection__team_lead {
+                items {
+                  hs_object_id
+                  firstname
+                  lastname
+                  email
+                }
+              }
+              members: contact_collection__team_member {
+                items {
+                  hs_object_id
+                  firstname
+                  lastname
+                  email
+                }
+              }
+            }
+          }
+        }
+        volunteer_activity :p_volunteer_activities_collection__volunteer_activity_to_contact {
+          items {
+            hs_object_id
+            name
+            location
+            note
+            schedule_preference
+            team_name
+            hs_pipeline
+            hs_pipeline_stage
+            status
           }
         }
         events: p_events_collection__event_to_contact {

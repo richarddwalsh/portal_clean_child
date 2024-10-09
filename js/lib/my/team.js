@@ -466,6 +466,32 @@ new Vue({
           }
         ],
         data: undefined
+      },
+      {
+        id:"leave_team_modal",
+        visibile: false,
+        title: "Leave [[team_name]]",
+        message: "Are you sure you would like to leave [[team_name]]?",
+        form: {},
+        hasFooter: true,
+        footerActions: [
+          {
+            id: "leave_team_modal_cancel",
+            label: "Cancel",
+            type: "button",
+            class: "btn text-btn mr-2",
+            method: "hideModal('leave_team_modal')",
+            disabled: false,
+          },
+          {
+            id: "leave_team_modal_confirm",
+            label: "Yes, leave team",
+            type: "button",
+            class: "btn create-btn",
+            method: "leaveTeam('')",
+            disabled: false
+          }
+        ]
       }
     ],
   },
@@ -534,7 +560,15 @@ new Vue({
     }
   },
   methods: {
+    redirectIfNotMember() {
+      const enrolledTeamIds = this.currentUser.associations.my_teams.items.map(item => item.hs_object_id);
+      const isMember = enrolledTeamIds.includes(this.team.id);
+      if (!isMember) {
+        window.location.href = `${window.location.origin}/my/teams`;
+      }
+    },
     initializeData() {
+      this.redirectIfNotMember();
       this.editing = false;
       this.team = dataset.teamData;
       this.currentUser = dataset.userData;
@@ -740,6 +774,53 @@ new Vue({
           }, 0)
         }
       });
+    },
+    leaveTeam() {
+      console.log("leaveTeam");
+      const payload = {
+        teamId: this.currentData.hs_object_id,
+        teamName: this.currentData.team_name,
+        teamUrl: this.currentData.page_slug,
+        teamBannerUrl: this.currentData.featured_image,
+        // eslint-disable-next-line dot-notation
+        contactId: this.currentUser['_metadata'].id,
+        firstname: this.currentUser.firstname,
+        contactEmail: this.currentUser.email
+      }
+
+      $.ajax({
+        url: `https://${window.location.hostname}/_hcms/api/team/leave`,
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(payload),
+        success: (response) => {
+          console.log('Successfully left the team:', response);
+          if (response.status === 'success') {
+            window.location.href = `https://${window.location.hostname}/my/teams`
+          }
+        },
+        error: (error) => {
+          console.error('Error leaving the team:', error);
+          const activeModal = Object.keys(this.modals).find(modal => this.modals[modal].visible);
+          if (activeModal) {
+            this.modals[activeModal].error = true;
+            this.modals[activeModal].errorMessage = error.responseJSON ? error.responseJSON.message : 'An unexpected error occurred.';
+          }
+        }
+      });
+    },
+    getTeamLeaders(i) {
+      const team = this.teams[i]
+      const leaders = team.associations.leaders.items.map(leader => `${leader.firstname} ${leader.lastname}`);
+      return leaders.join(", ");
+    },
+    getServeSchedule(i) {
+      const team = this.teams[i];
+      const schedule = team.serve_schedule.map(item => item.label);
+      return schedule.join(", ");
+    },
+    getDataObject(data) {
+      return JSON.stringify(data);
     }
   }
 });

@@ -49,7 +49,7 @@ v-if="!group.currentlyEnrolled"
   </div>
   <div>
     <div v-if="group.enrollment_open">
-      <div v-if="currentUser">
+      <div v-if="isLoggedIn">
         <button
           class="btn modal-trigger"
           data-target="join-modal"
@@ -60,7 +60,7 @@ v-if="!group.currentlyEnrolled"
       </div>
       <div v-else>
         <a
-          href="/_hcms/mem/login"
+          :href="`/_hcms/mem/login?redirect_url=${encodeURIComponent(`https://{{request.domain}}{{ request.path }}`)}`"
           class="btn"
         >
           Join
@@ -115,7 +115,7 @@ v-if="!group.currentlyEnrolled"
             <button class="btn text-btn mr-2" @click="toggleModal('group_join_modal')">Cancel</button>
             <button class="btn" type="button" @click="joinGroup()">
               <span>Join group</span>
-              <svg class="progress-circle" height="25" width="25">
+              <svg class="progress-circle" height="25" width="25" v-if="activeButton === 0">
                 <circle cx="12.5" cy="12.5" r="6.25"></circle>
               </svg>
             </button>

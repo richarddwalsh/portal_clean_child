@@ -29,7 +29,7 @@ exports.main = ({ body }, sendResponse) => {
     })
     .then(() => {
       const data = {
-        "emailId": 136441277755,
+        "emailId": 180563590000,
         "message": {
           "to": `${contactEmail}`,
           "bcc": [
@@ -50,9 +50,9 @@ exports.main = ({ body }, sendResponse) => {
       return axios.post( emailEndpoint, data, config );
     })
     .catch((error) => {
-      sendResponse({ body: { status: "error", error: error.message, step: "sendEmail" }, statusCode: 200 });
+      sendResponse({ body: { status: "error", error: error.message, step: "sendEmail Catch" }, statusCode: 200 });
     })
     .then(response => {
-      sendResponse({ body: { status: "success", response: response.data, step: "sendEmail" }, statusCode: 200 });
+      sendResponse({ body: { status: "success", response: response.data, step: "sendEmail Then" }, statusCode: 200 });
     })  
 };

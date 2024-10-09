@@ -1011,6 +1011,32 @@ new Vue({
           }
         ],
         data: undefined
+      },
+      {
+        id:"leave_group_modal",
+        visibile: false,
+        title: "Leave [[name]]",
+        message: "Are you sure you would like to leave [[name]]?",
+        form: {},
+        hasFooter: true,
+        footerActions: [
+          {
+            id: "leave_team_modal_cancel",
+            label: "Cancel",
+            type: "button",
+            class: "btn text-btn mr-2",
+            method: "hideModal('leave_group_modal')",
+            disabled: false,
+          },
+          {
+            id: "leave_team_modal_confirm",
+            label: "Yes, leave group",
+            type: "button",
+            class: "btn create-btn",
+            method: "leaveGroup('')",
+            disabled: false
+          }
+        ]
       }
     ],
   },
@@ -1226,10 +1252,39 @@ new Vue({
     openEnrollment() {
       console.log("opening enrollment")
     },
-    leaveGroup(groupId, userId) {
-      console.log(`leaving group ${groupId}`)
-      const url = `/api/groups/${groupId}/members/${userId}`;
-      console.log(groupId, userId, url);
+    leaveGroup() {
+      console.log("leaveGroup");
+      const payload = {
+        groupId: this.currentData.hs_object_id,
+        groupName: this.currentData.name,
+        groupUrl: this.currentData.dynamic_page_slug,
+        groupBannerUrl: this.currentData.featured_image,
+        // eslint-disable-next-line dot-notation
+        contactId: this.currentUser['_metadata'].id,
+        firstname: this.currentUser.firstname,
+        contactEmail: this.currentUser.email
+      }
+
+      $.ajax({
+        url: `https://${window.location.hostname}/_hcms/api/group/leave`,
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(payload),
+        success: (response) => {
+          console.log('Successfully left the group:', response);
+          if (response.status === 'success') {
+            window.location.href = `https://${window.location.hostname}/my/groups`
+          }
+        },
+        error: (error) => {
+          console.error('Error leaving the group:', error);
+          const activeModal = Object.keys(this.modals).find(modal => this.modals[modal].visible);
+          if (activeModal) {
+            this.modals[activeModal].error = true;
+            this.modals[activeModal].errorMessage = error.responseJSON ? error.responseJSON.message : 'An unexpected error occurred.';
+          }
+        }
+      });
     },
     addImage() {
       console.log("adding image")
@@ -1333,5 +1388,8 @@ new Vue({
         }
       });
     },
+    getDataObject(data) {
+      return JSON.stringify(data);
+    }
   }
 });

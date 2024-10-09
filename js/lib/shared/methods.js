@@ -58,27 +58,95 @@ window.sharedMethods = {
       }
       return true;
     },
-    showModal(modalId, data) {
+    showModal(modalId, data, fetch = null) {
       this.currentData = null;
       if (data) {
-        this.currentData = data;
+        try {
+          this.currentData = typeof data === 'string' ? JSON.parse(data) : data;
+        } catch (e) {
+          console.error('Invalid JSON string:', e);
+          this.currentData = null;
+        }
       }
+
+      console.log("fetch", fetch);
+      if (fetch) {
+        const parts = fetch.split('.');
+        const object = parts[0];
+        const subDataQuery = parts[1];
+        const queryName = parts[2];
+
+        if (object) {
+          console.log(`Fetching object: ${object}`);
+          if (subDataQuery && queryName) {
+            console.log(`Sub Data Query: ${subDataQuery}`);
+            console.log(`Query Name: ${queryName}`);
+            
+            const fetchString = `${object}.${subDataQuery}.${queryName}`;
+            switch (fetchString) {
+              case 'contact.assocations.volunteer_status':
+                $.ajax({
+                  type: 'GET',
+                  url: 'https://google.com',
+                  success: (response) => {
+                    console.log('Fetch successful:', response);
+                  },
+                  error: (error) => {
+                    console.error('Fetch error:', error);
+                  }
+                });
+                break;
+              // Add more cases as needed
+              default:
+                console.log('No matching fetch case found.');
+            }
+          }
+        } else {
+          console.error('Invalid fetch format. Expected format: object or object.subDataQuery.queryName');
+        }
+      }
+
+      console.log("modal data", data);
       // console.log(`showing modal ${modalId}`, data, this.currentData);
       this.modals = this.modals.map(modal => {
         if (modal.id === modalId) {
-          return { ...modal, visible: true, data };
+          const updatedModal = { ...modal, visible: true, data };
+
+          if (updatedModal.title) {
+            updatedModal.title = this.replacePlaceholders(updatedModal.title, this.currentData);
+          }
+          if (updatedModal.message) {
+            updatedModal.message = this.replacePlaceholders(updatedModal.message, this.currentData);
+          }
+
+          console.log(updatedModal);
+
+          return updatedModal;
         } 
         return { ...modal, visible: false, data };
       });
     },
     hideModal(modalId) {
-      // console.log(`hiding modal ${modalId}`);
+      console.log(`hiding modal ${modalId}`);
       this.modals = this.modals.map(modal => {
         if (modal.id === modalId) {
           return { ...modal, visible: false };
         } 
         return modal;
       });
+    },
+    replacePlaceholders(template, data) {
+      return template.replace(/\[\[([^}]+)\]\]/g, (match, key) => {
+        const trimmedKey = key.trim();
+        // eslint-disable-next-line no-shadow
+        const value = trimmedKey.split('.').reduce((obj, key) => obj && obj[key], data);
+        return value !== undefined ? value : match;
+      });
+    },
+    handleClickOutside() {
+      this.modals = this.modals.detail.map(modal => (
+        { ...modal, visible: false }
+      ));
     },
     evaluateCondition(condition) {
       // console.log(`evaluating condition ${condition}`)

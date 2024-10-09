@@ -5,8 +5,7 @@
 <article class="d-b" v-for="group in filteredGroups">
   <a :href='"/group/" + group.dynamic_page_slug' class="d-b">
     <div class="card-list-item__image">
-      <img :alt='"Logo for " + group.name' loading="lazy" :src="group.featured_image" v-if="group.featured_image" />
-      <img :alt='"Logo for " + group.name' loading="lazy" src="https://23169086.fs1.hubspotusercontent-na1.net/hubfs/23169086/Portal%20Assets/one-placeholder.png" v-else />
+      <img :alt='"Logo for " + group.name' loading="lazy" :src="group.featured_image  || 'https://23169086.fs1.hubspotusercontent-na1.net/hubfs/23169086/Portal%20Assets/one-placeholder.png'" />
     </div>
     <div class="d-f jc-sb ai-fs">
       <h1 class="lh-1.333 c-tint0 fs-3 fw-600">[[ group.name ]]</h1>

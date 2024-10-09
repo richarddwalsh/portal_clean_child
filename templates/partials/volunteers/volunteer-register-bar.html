@@ -10,8 +10,34 @@
 		<div class="c-tint2 fs-13 f-1 mr-2 lh-1.5"></div>
 	</div>
 	<div class="ta-r">
-		<a v-if="team.currentlyEnrolled" class="btn" target="_blank" :href="`${team.leave_url}?team_name=${team.team_name}`">Leave Team</a>
-		<a v-else-if="isLoggedIn" class="btn" target="_blank" :href="`${team.registration_url}?team_name=${team.team_name}`" :disabled="!team.active">Apply</a>
-		<a v-else class="btn" target="_blank" :href="`${team.registration_url}?email=${currentUser.email}&firstname=${currentUser.firstname}&lastname=${currentUser.lastname}&phone=${currentUser.phone}&team_name=${team.team_name}`" :disabled="!team.active">Apply</a>
+		<a
+			v-if="team.currentlyEnrolled && isLoggedIn"
+			class="btn"
+			:href='"https://{{ request.domain }}/my/teams/" + team.page_slug'
+		>
+			View Team
+		</a>
+		<a 
+			v-else-if="isLoggedIn" 
+			class="btn" 
+			target="_blank" 
+			:href="`${team.registration_url}?team_name=${team.team_name}`" 
+			@click.prevent="!team.active"
+			:class="{ 'disabled-link': !team.active }"
+			:disabled="!team.active"
+		>
+			Apply
+		</a>
+		<a
+			v-else
+			class="btn"
+			target="_blank"
+			:href="`/_hcms/mem/login?redirect_url=${encodeURIComponent(`${team.registration_url}?email=${currentUser.email}&firstname=${currentUser.firstname}&lastname=${currentUser.lastname}&phone=${currentUser.phone}&team_name=${team.team_name}`)}`"
+			@click.prevent="!team.active"
+			:class="{ 'disabled-link': !team.active }"
+			:disabled="!team.active"
+		>
+			Apply
+		</a>
 	</div>
 </div>

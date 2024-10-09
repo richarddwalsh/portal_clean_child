@@ -686,7 +686,7 @@
           {% endif %}
           <li data-label="{{ link.label }}" class="hs-menu-item hs-menu-depth-{{depth}} {{'hs-item-has-children' if link.children}} {{'active' if link.activeNode}} {{'sub-active' if sublink.activeNode}} {{'active-branch' if link.activeBranch}}" {{'aria-haspopup="true"' if link.children}}>
             {% if link.label == "Login" && request_contact.is_logged_in %}
-              <a href="/_hcms/mem/logout" target="{{link.linkTarget}}">
+              <a href="https://{{ request.domain }}/_hcms/mem/logout" target="{{link.linkTarget}}">
                 Logout
               </a>
             {% else %}

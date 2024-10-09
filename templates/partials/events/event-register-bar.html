@@ -5,17 +5,29 @@
 <div class="mb-3@sm px-2 action-drawer d-f ai-c jc-sb action-bar">
   <div data-turbolinks="false">
     <div class="c-tint2 fs-13 f-1 mr-2 lh-1.5">[[ registrationBarText ]]</div>
-    <div class="c-tint2 fs-13 f-1 mr-2 lh-1.5">Register Again</div>
+    {# <div class="c-tint2 fs-13 f-1 mr-2 lh-1.5">Register Again</div> #}
   </div>
   <div class="ta-r">
-    <div v-if="canCheckIn">
-      <a class="btn">View registration</a>
-    </div>
-    <div v-if="canRegister">
-      <a class="btn" @click.prevent="toggleModal('event_register_modal')">Register</a>
-    </div>
-    <div v-if="!currentUser">
-      <a class="btn" href="/_hcms/mem/login">Login to Register</a>
+    <a
+      class="btn"
+      v-if="canCheckIn"
+    >
+      View registration
+    </a>
+    <a
+      v-else-if="isLoggedIn && canRegister"
+      class="btn"
+      @click.prevent="toggleModal('event_register_modal')"
+    >
+      Register
+    </a>
+    <a
+      v-else
+      class="btn"
+      :href="`/_hcms/mem/login?redirect_url=${encodeURIComponent(`https://{{request.domain}}{{ request.path }}`)}`"
+    >
+      Login to Register
+    </a>
     </div>
   </div>
 </div>
@@ -27,6 +39,8 @@
 	class="modal"
 	data-focus-lock-disabled="false"
 	v-if="modal.visible"
+  ref="modalOverlay"
+	@click="handleClickOutside"
 >
 	<div data-reach-alert-dialog-overlay="true" data-reach-dialog-overlay="">
 		<div
@@ -217,6 +231,9 @@
                   </div>
                 </div>
               </div>
+            </div>
+            <div class="container">
+              <button type="button" class="btn lg-btn filled-btn secondary-btn" @click="toggleModal('event_register_modal')">Cancel</button>
             </div>
           </div>
 					<div class="mb-2" v-if="modal.id === 'event_checkin_modal'">
