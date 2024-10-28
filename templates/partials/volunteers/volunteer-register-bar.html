@@ -31,11 +31,10 @@
 		<a
 			v-else
 			class="btn"
-			target="_blank"
 			:href="`/_hcms/mem/login?redirect_url=${encodeURIComponent(`${team.registration_url}?email=${currentUser.email}&firstname=${currentUser.firstname}&lastname=${currentUser.lastname}&phone=${currentUser.phone}&team_name=${team.team_name}`)}`"
-			@click.prevent="!team.active"
 			:class="{ 'disabled-link': !team.active }"
 			:disabled="!team.active"
+			{# @click.prevent="!team.active" #}
 		>
 			Apply
 		</a>

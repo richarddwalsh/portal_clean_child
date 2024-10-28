@@ -26,6 +26,8 @@ window.sharedMethods = {
   data: {
     currentData: null
   },
+  computed: {
+  },
   methods: {
     closeActionDrawer() {
       Object.keys(this.actionDrawers).forEach(key => {
@@ -410,9 +412,10 @@ window.sharedMethods = {
       ].join('\n');
     },
     convertTimestampToDate(timestamp, time) {
+      console.log("timestamp", timestamp, time);
       // Convert timestamp to Date object
       const date = new Date(timestamp);
-
+      
       // Extract year, month, and day
       const year = date.getFullYear();
       const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Month is 0-indexed
@@ -432,12 +435,32 @@ window.sharedMethods = {
       return `${year}-${month}-${day}T${hour.padStart(2, '0')}:${minute.padStart(2, '0')}`;
     },
     convertToISO8601(date, time) {
-      // Assuming date format is 'MM/DD/YY' and time is 'HH:MM AM/PM'
-      const [month, day, year] = date.split('/');
+      console.log('convertToISO8601', date, time);
+      
+      let year, month, day;
+      
+      // Check date format and parse accordingly
+      if (date.includes('/')) {
+        // Format: MM/DD/YY
+        [month, day, year] = date.split('/');
+        year = `20${year}`; // Prefix with '20' for YY format
+      } else if (date.includes('-')) {
+        // Format: YYYY-MM-DD
+        [year, month, day] = date.split('-');
+      } else {
+        console.error('Unsupported date format:', date);
+        return null;
+      }
+
+      // Parse time
+      if (!time) {
+        console.error('Time is required');
+        return null;
+      }
+
       const [hourMin, period] = time.split(' ');
-      // eslint-disable-next-line prefer-const
       let [hour, minute] = hourMin.split(':');
-    
+
       if (period === 'PM' && hour !== '12') {
         hour = (parseInt(hour, 10) + 12).toString();
       } else if (period === 'AM' && hour === '12') {
@@ -445,11 +468,12 @@ window.sharedMethods = {
       } else {
         hour = hour.toString();
       }
-    
-      // Convert to 'YYYYMMDDTHHmmss' format for iCalendar
-      return `20${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T${hour.padStart(2, '0')}:${minute.padStart(2, '0')}`;
+
+      // Convert to ISO format
+      return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T${hour.padStart(2, '0')}:${minute.padStart(2, '0')}`;
     },
     convertToICSDateTime(date, time) {
+      console.log('convertToICSDateTime', date, time);
       // Assuming date format is 'MM/DD/YY' and time is 'HH:MM AM/PM'
       const [month, day, year] = date.split('/');
       const [hourMin, period] = time.split(' ');
@@ -550,6 +574,29 @@ window.sharedMethods = {
     },
     archiveObject(objectType, objectId) {
       console.log(`Archiving ${objectType} ${objectId}...`)
+    },
+    getFile(file, array, index) {
+      const fallbackFile = "https://23169086.fs1.hubspotusercontent-na1.net/hubfs/23169086/Portal%20Assets/one-placeholder.png"
+      if (!file.startsWith("http")) {
+        $.ajax({
+          type: 'GET',
+          url: `${window.location.origin}/_hcms/api/getFile?fileId=${file}`,
+          contentType: 'application/json',
+          success: (result) => {
+            console.log(result);
+            if (result.status === 'success') {
+              console.log(this[array][index])
+              this.$set(this[array][index], 'banner_image', result.fileUrl);
+            } else {
+              this.$set(this[array][index], 'banner_image', fallbackFile);
+            }
+          },
+          error: (error) => {
+            console.error(error);
+            this.$set(this[array][index], 'banner_image', fallbackFile);
+          }
+        });
+      }
     }
   }
 }

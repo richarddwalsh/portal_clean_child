@@ -256,7 +256,7 @@ new Vue({
             label: "Save",
             type: "button",
             class: "btn create-btn",
-            method: "save('')",
+            method: "createEvent('')",
             disabled: false
           }
         ],
@@ -430,7 +430,7 @@ new Vue({
               label: "Location",
               name: "location",
               type: "select",
-              options: [],
+              options: dataset.options.event_locations,
               disabled: false
             },
             {
@@ -568,6 +568,7 @@ new Vue({
       }
     },
     initializeData() {
+      console.log('dataset', dataset.options.location);
       this.redirectIfNotMember();
       this.editing = false;
       this.team = dataset.teamData;
@@ -693,6 +694,12 @@ new Vue({
       // close all modals if open
       this.modals = this.modals.map(modal => ({ ...modal, visible: false }));
 
+      // we need to know which modal is open to know which data to save
+      const activeModal = Object.keys(this.modals).find(modal => this.modals[modal].visible);
+      if (activeModal === 'team_modal') {
+        console.log('saving team data', activeModal);
+      }
+
       // Call the update team function
       console.log(`saving data for team ${this.team.id}`);
       console.log(this.form.team);
@@ -776,6 +783,7 @@ new Vue({
       });
     },
     leaveTeam() {
+      this.activeButton = 'leave_team_modal_confirm'
       console.log("leaveTeam");
       const payload = {
         teamId: this.currentData.hs_object_id,
@@ -794,12 +802,14 @@ new Vue({
         contentType: 'application/json',
         data: JSON.stringify(payload),
         success: (response) => {
+          this.activeButton = undefined;
           console.log('Successfully left the team:', response);
           if (response.status === 'success') {
             window.location.href = `https://${window.location.hostname}/my/teams`
           }
         },
         error: (error) => {
+          this.activeButton = undefined;
           console.error('Error leaving the team:', error);
           const activeModal = Object.keys(this.modals).find(modal => this.modals[modal].visible);
           if (activeModal) {

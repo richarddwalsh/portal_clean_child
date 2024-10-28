@@ -178,12 +178,20 @@ new Vue({
     },
     applyFilter(type, value) {
       console.log(`Apply filter: ${type} ${value}`);
-      // Update the filter label or reset to default if value is empty
-      this.filterLabels[type] = value || this.defaultLabels[type];
-  
+      
+      // Special handling for boolean filters
+      if (type === 'requires_experience' || type === 'require_background_check') {
+        // eslint-disable-next-line no-nested-ternary
+        const label = value === 'true' ? 'Yes' : value === 'false' ? 'No' : value;
+        this.filterLabels[type] = value ? label : this.defaultLabels[type];
+      } else {
+        // Update the filter label or reset to default if value is empty
+        this.filterLabels[type] = value || this.defaultLabels[type];
+      }
+    
       // Find the filter index just once
       const index = this.activeFilters.findIndex(filter => filter.type === type);
-  
+    
       if (value) {
         // If there's a value, either update the existing filter or add a new one
         if (index > -1) {
@@ -201,7 +209,7 @@ new Vue({
         // Reset the filter label to default
         this.filterLabels[type] = this.defaultLabels[type];
       }
-  
+    
       // Reset the active menu
       this.activeMenu = '';
     },

@@ -15,6 +15,7 @@ new Vue({
     'click-outside': window.clickOutsideDirective,
   },
   data: {
+    activeButton: undefined,
     loading: true,
     currentUser: dataset.userData,
     teams: dataset.userData.associations.my_teams.items,
@@ -69,6 +70,7 @@ new Vue({
   methods: {
     leaveTeam() {
       console.log("leaveTeam");
+      this.activeButton = 'leave_team_modal_confirm'
       const payload = {
         teamId: this.currentData.hs_object_id,
         teamName: this.currentData.team_name,
@@ -86,6 +88,7 @@ new Vue({
         contentType: 'application/json',
         data: JSON.stringify(payload),
         success: (response) => {
+          this.activeButton = undefined;
           console.log('Successfully left the team:', response);
           if (response.status === 'success') {
             this.hideModal('leave_team_modal');
@@ -97,6 +100,7 @@ new Vue({
         },
         error: (error) => {
           console.error('Error leaving the team:', error);
+          this.activeButton = undefined;
           const activeModal = Object.keys(this.modals).find(modal => this.modals[modal].visible);
           if (activeModal) {
             this.modals[activeModal].error = true;

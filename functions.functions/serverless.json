@@ -58,6 +58,10 @@
       "method": "POST",
       "file": "household/update.js"
     },
+    "getFile": {
+      "method": "GET",
+      "file": "getFile.js"
+    },
     "getAdministrators": {
       "method": "POST",
       "file": "getAdministrators.js"

@@ -85,7 +85,12 @@
                       :value="option.value"
                     >[[ option.label ]]</option>
                   </select>
-
+                  <span 
+                    class="c-tint-9"
+                    v-if="field.multiple && field.type === 'select'"
+                  >
+                    Hold Shift to select multiple options.
+                  </span>
                   <!-- Checkbox -->
                   <div v-if="field.type === 'checkbox'">
                     <input

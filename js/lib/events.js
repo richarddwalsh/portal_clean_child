@@ -20,7 +20,7 @@ new Vue({
     attendees: [],
     currentView: dataset.currentView,
     currentUser: dataset.userData,
-    isLoggedIn: false,
+    isLoggedIn: dataset.isLoggedIn,
     household: {},
     members: [],
     events: [],
@@ -93,33 +93,45 @@ new Vue({
       return false;
     },
     canRegister() {
-      // Can Register if:
-      // - registration_status is open, or
-      // - registration_open_date is today or the future, or
-      // - registration_close_date is less than today
       if (this.currentView === 'detail') {
         moment.tz.add('America/Los_Angeles|PST PDT|80 70|0101|1Lzm0 1zb0 Op0');
         const now = moment();
 
-        const registrationOpenDate = moment(this.convertTimestampToDate(this.event.registration_open_date, this.event.registration_open_time));
-        const registrationCloseDate = moment(this.convertTimestampToDate(this.event.close_registration_date, this.event.close_registration_time));
-        
-        // if registrationOpenDate && registrationOpenDate are set use them
-        // if not use registration status
-        if (registrationOpenDate && registrationCloseDate) {
-          return this.event.registration_status === 'open' || registrationOpenDate.isSameOrBefore(now) || registrationCloseDate.isBefore(now);
+        // Handle explicit open/closed states first
+        if (this.event.registration_status === 'Open') return true;
+        if (this.event.registration_status === 'Closed') return false;
+
+        // Only check dates for scheduled states
+        if (this.event.registration_status === 'Scheduled to open' || 
+            this.event.registration_status === 'Scheduled to close') {
+          
+          // Validate required fields
+          if (!this.event.registration_open_date || !this.event.registration_open_time) {
+            console.error('registration_open_date and registration_open_time are not set for event', this.event.id);
+            return false;
+          }
+
+          const registrationOpenDate = moment(this.convertTimestampToDate(this.event.registration_open_date, this.event.registration_open_time));
+          const registrationCloseDate = moment(this.convertTimestampToDate(this.event.close_registration_date, this.event.close_registration_time));
+
+          if (registrationOpenDate && registrationCloseDate) {
+            return registrationOpenDate.isSameOrBefore(now) && registrationCloseDate.isAfter(now);
+          }
         }
-        return this.event.registration_status === 'open';
       }
-      return false
+      return false;
     },
     canCheckIn() {
-      // Can Check In If:
-      //  - this.isRegisteredForEvent is true, and
-      // - the event ends in the future (or is ongoing)
       if (this.currentView === 'detail' && this.isLoggedIn) {
         moment.tz.add('America/Los_Angeles|PST PDT|80 70|0101|1Lzm0 1zb0 Op0');
         const now = moment();
+
+        // Check if we have valid end date and time
+        if (!this.event.ends_at || !this.event.ends_at_time) {
+          console.error('ends_at and ends_at_time are not set for event', this.event.id);
+          return false;
+        }
+
         const endTime = moment(this.convertTimestampToDate(this.event.ends_at, this.event.ends_at_time));
         return this.isRegisteredForEvent && endTime.isSameOrAfter(now);
       }
@@ -191,11 +203,12 @@ new Vue({
   methods: {
     initializeData() {
       // eslint-disable-next-line no-underscore-dangle
-      if (this.currentUser._metadata && Object.prototype.hasOwnProperty.call(this.currentUser._metadata, 'id')) {
-        if (this.currentUser._metadata.id !== "NOT FOUND") {
-          this.isLoggedIn = true;
-        }
-      }
+      // if (this.currentUser._metadata && Object.prototype.hasOwnProperty.call(this.currentUser._metadata, 'id')) {
+      //   if (this.currentUser._metadata.id !== "NOT FOUND") {
+      //     this.isLoggedIn = true;
+      //   }
+      // }
+      console.log('isLoggedIn', dataset.isLoggedIn);
   
       if (this.currentView === 'list') {
         const data = {
@@ -239,11 +252,12 @@ new Vue({
           data: JSON.stringify(data),
           success: (result) => {
             if (result.status === 'success') {
-              result.response.results.forEach(event => {
+              result.response.results.forEach((event, i) => {
                 const newEvent = {
                   id: event.id,
                   ...event.properties
                 }
+                this.getFile(newEvent.banner_image, 'events', i);
                 this.events.push(newEvent)
               });
               this.filters.campus = this.filters.campus.sort((a, b) => a.displayOrder - b.displayOrder);
@@ -553,3 +567,4 @@ new Vue({
     }
   }
 });
+

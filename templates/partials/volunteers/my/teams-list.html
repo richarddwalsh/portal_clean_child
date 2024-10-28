@@ -151,6 +151,9 @@
           :key="button.id"
         >
           <span>[[button.label]]</span>
+          <svg class="progress-circle" height="25" width="25" v-if="activeButton === button.id">
+            <circle cx="12.5" cy="12.5" r="6.25"></circle>
+          </svg>
         </button>
       </div>
     </div>

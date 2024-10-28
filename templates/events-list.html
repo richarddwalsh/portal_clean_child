@@ -8,15 +8,17 @@
 {% extends "./layouts/base-portal.html" %}
 
 {% block body %}
+  {% set logged_in = request_contact.is_logged_in %}
+  {% if request_contact.is_logged_in %}
+    {% set contact = data_query.data.CRM.contact %}
+    {% set contact_id = contact._metadata.id %}
+  {% endif %}
   {% if dynamic_page_crm_object_type_fqn %}
-    {% if request_contact.is_logged_in %}
-      {% set contact = data_query.data.CRM.contact %}
-      {% set contact_id = contact._metadata.id %}
-    {% endif %}
     {% set campus_filter = crm_property_definition(dynamic_page_crm_object_type_fqn, "campus").options %}
     {% set category_filter = crm_property_definition(dynamic_page_crm_object_type_fqn, "category").options %}
     <script type="application/json" id="json-data">
       {
+        "isLoggedIn": {{ logged_in }},
         "currentView": "list",
         "filters": {
           "campus": {{ campus_filter|tojson }},
@@ -63,6 +65,7 @@
     {% set max_grade_options = crm_property_definition("selection_types", "max_grade").options %}
     <script type="application/json" id="json-data">
       {
+        "isLoggedIn": {{ logged_in }},
         "currentView": "detail",
         "userData": {{ contact|tojson }},
         "event": {{ event|tojson }},

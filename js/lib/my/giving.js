@@ -109,8 +109,8 @@ new Vue({
       this.editing = false;
       this.currentUser = dataset.userData;
 
-      this.loading = false;
-      this.applyFilter('transactionDate', 'last365days');
+      this.loading = true;
+      // this.applyFilter('transactionDate', 'last365days');
     },
     applyFilter(type, value) {
       console.log(`Apply filter: ${type} ${value}`);

@@ -59,10 +59,15 @@
             <div data-testid="grid" class="grid grid-cols-1 gap-3" style="">
               {% include "./group-filter.html" %}
               <div
-                   class="fs-3 ta-c c-tint2"
-                   v-if="loading"
-                   >
-                <p>Loading...</p>
+                class="fs-3 ta-c c-tint2"
+                v-if="loading"
+              >
+                <div class="d-f ai-c jc-c">
+                  <svg class="progress-circle" height="25" width="25">
+                    <circle cx="12.5" cy="12.5" r="6.25"></circle>
+                  </svg>
+                  <span>Loading...</span>
+                </div>
               </div>
               <div v-else>
                 <section data-testid="grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3 md:gap-4">

@@ -2,11 +2,20 @@
   templateType: global_partial
   label: Event Card
 -->
-<article class="d-b" v-for="event in filteredEvents">
+<article class="d-b" v-for="(event, index) in filteredEvents">
 	<a class="card-list-item__wrapper-link" :href='"/registrations/" + event.id'>
-    <div class="card-list-item__image">
-      <img :alt='event.name + " logo"' loading="lazy" :src="event.banner_image || 'https://23169086.fs1.hubspotusercontent-na1.net/hubfs/23169086/Portal%20Assets/one-placeholder.png'">
-    </div>    
+    <div class="card-list-item__image bg-">
+      <img 
+        :alt='event.name + " logo"'
+        :src="event.banner_image"
+        v-if="event.banner_image.startsWith('http')"
+      />
+      <img 
+        :alt='event.name + " logo"'
+        :src="event.banner_image || 'https://23169086.fs1.hubspotusercontent-na1.net/hubfs/23169086/Portal%20Assets/one-placeholder.png'"
+        v-else
+      />
+    </div>
     <div class="card-list-item__content">
       <div class="card-list-item__title d-f ai-fs">
         <h2 class="lh-1.333 c-tint0 fs-3 fw-600">[[ event.name ]]</h2>

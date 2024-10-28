@@ -2741,12 +2741,14 @@ button[disabled],button.disabled-btn,input[type=submit][disabled],input.disabled
 
 .card-list-item__image {
     margin-bottom: 12px
+    background-color: var(--color-tint5)
 }
 
 .card-list-item__image img {
     border-radius: 4px;
     display: block;
-    width: 100%
+    width: 100%;
+    background-color: var(--color-tint5)
 }
 
 .card-list-item__wrapper-link {
