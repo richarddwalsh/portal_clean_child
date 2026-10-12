@@ -16,8 +16,8 @@ new Vue({
   data: {
     loading: true,
     currentUser: dataset.userData,
-    household: dataset.userData.associations.households.items[0],
-    members: dataset.userData.associations.households.items[0].associations.members.items,
+    household: dataset.userData.associations?.households?.items[0],
+    members: dataset.userData.associations?.households?.items[0]?.associations?.members?.items,
     dynamicModel:{
       newMember: {
         first_name: '',
@@ -37,6 +37,9 @@ new Vue({
         birthday: '',
         member_type: '',
         using_household_email: false
+      },
+      newHousehold: {
+        family_name: ''
       }
     },
     modals: [
@@ -524,12 +527,12 @@ new Vue({
           }
         ],
         form: {
-          model: "newMember",
+          model: "newHousehold",
           fields: [
             {
               label: "Family Name",
-              name: "first_name",
-              property: "firstname",
+              name: "family_name",
+              property: "family_name",
               type: "input",
               format: "text"
             }
@@ -544,7 +547,7 @@ new Vue({
                 },
                 {
                   type: "field",
-                  name: "familyname"
+                  name: "family_name"
                 }
               ],
               type: "row"
@@ -768,5 +771,35 @@ new Vue({
         }
       });
     },
+    addHousehold() {
+      console.log("Adding household");
+      this.actionDrawers.primary = false;
+      const { newHousehold } = this.dynamicModel;
+      console.log(newHousehold);
+      const endpoint = `${window.location.origin}/_hcms/api/household/create`;
+      const familyName = `${newHousehold.family_name  } Household`;
+      const payload = {
+        family_name: familyName,
+        contact_id: this.currentUser._metadata.id
+      };
+
+      $.ajax({
+        type: 'POST',
+        url: endpoint,
+        contentType: 'application/json',
+        data: JSON.stringify(payload),
+        success: (response) => {
+          console.log(response);
+          if (response.status === "success") {
+            this.household = response.response.properties;
+            this.members = [this.currentUser];
+            this.hideModal('create_household_modal');
+          }
+        },
+        error: (error) => {
+          console.error(error);
+        }
+      });
+    } 
   }
 });

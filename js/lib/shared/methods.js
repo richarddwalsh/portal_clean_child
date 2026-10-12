@@ -61,6 +61,7 @@ window.sharedMethods = {
       return true;
     },
     showModal(modalId, data, fetch = null) {
+      console.log('showModal', modalId, data, fetch);
       this.currentData = null;
       if (data) {
         try {

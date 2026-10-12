@@ -25,19 +25,8 @@ new Vue({
       phoneTypes: ["Home", "Work", "Mobile", "Fax", "Other"],
       emailAddresses: [],
       phoneNumbers: [],
-      maritalStatuses: [
-        { "text": "Single", "value": "Single" },
-        { "text": "Married", "value": "Married" },
-        { "text": "Divorced", "value": "Divorced" },
-        { "text": "Widowed", "value": "Widowed" },
-        { "text": "Separated", "value": "Separated" },
-        { "text": "Engaged", "value": "Engaged" },
-        { "text": "Other", "value": "Other" },
-      ],
-      genders: [
-        { "text": "Male", "value": "Male" },
-        { "text": "Female", "value": "Female" },
-      ]
+      maritalStatuses: dataset.options.maritalStatuses,
+      genders: dataset.options.genders
     },
     form: {
       firstname: "",
@@ -51,13 +40,13 @@ new Vue({
       primary_select_phone: "",
       location_select_address: "Home",
       medical_notes: "",
-      marital_status__new_: "",
+      marital_status__new_: {},
       birthday: {
         month: "",
         day: "",
         year: ""
       },
-      gender: "",
+      gender: {},
       anniversary: {
         month: "",
         day: "",
@@ -120,16 +109,16 @@ new Vue({
       };
       this.form.emails.push(email);
       
-      if (this.currentUser.hs_additional_emails) {
-        this.currentUser.hs_additional_emails.split(',').forEach(e => {
-          const additionalEmail = {
-            address: e.trim()
-          };
-          console.log(e);
-          this.form.emails.push(additionalEmail);
-        });
-      };
-      this.options.emailAddresses = this.form.emails;
+      // if (this.currentUser.hs_additional_emails) {
+      //   this.currentUser.hs_additional_emails.split(',').forEach(e => {
+      //     const additionalEmail = {
+      //       address: e.trim()
+      //     };
+      //     console.log(e);
+      //     this.form.emails.push(additionalEmail);
+      //   });
+      // };
+      // this.options.emailAddresses = this.form.emails;
       this.form.primary_select_email = this.currentUser.email;
       this.form.location_select_email = "Home";
       
@@ -161,15 +150,15 @@ new Vue({
       this.form.primary_select_phone = this.currentUser.phone;
       
       this.form.gender = this.currentUser.gender;
+      // eslint-disable-next-line dot-notation
+      this.form['marital_status__new_'] = this.currentUser['marital_status__new_'];
+
       // split this.currentUser.birthday into day, month, year using momentjs
       this.form.birthday.month = moment(this.currentUser.birthday).format('M');
       this.form.birthday.day = moment(this.currentUser.birthday).format('D');
       this.form.birthday.year = moment(this.currentUser.birthday).format('YYYY');
 
       this.form.medical_notes = this.currentUser.medical_notes;
-      // eslint-disable-next-line dot-notation
-      this.form['marital_status__new_'] = this.currentUser['marital_status__new_'];
-
     }
   },
   computed: {
@@ -291,19 +280,27 @@ new Vue({
       this.form.addresses.splice(index, 1);
     },
     saveChanges() {
+      console.log('saveChanges');
       this.processing = true;
       const data = {
-        // eslint-disable-next-line dot-notation
-        id: this.currentUser.hs_object_id,
+        // eslint-disable-next-line dot-notation, no-underscore-dangle
+        id: this.currentUser._metadata.id,
         properties: this.form
       }
 
+      // data.properties.gender = this.form.gender.value;
+      // eslint-disable-next-line dot-notation, no-underscore-dangle
+      // data.properties.marital_status__new_ = this.form['marital_status__new_'].value;
+
+      delete data.properties.emails;
       delete data.properties.location_select_email;
       delete data.properties.location_select_phone;
       delete data.properties.location_select_address;
       delete data.properties.primary_select_email;
       delete data.properties.primary_select_phone;
       delete data.properties.primary_select_address;
+
+      console.log(data);
       
       $.ajax({
         type: 'POST',

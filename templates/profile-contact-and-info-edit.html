@@ -5,10 +5,16 @@
   dataQueryPath: ../data-queries/contact_info
 -->
 {% extends "./layouts/base-portal.html" %} {% block body %}
+{% set contact = data_query.data.CRM.contact %}
+{% set contact_id = contact._metadata.id %}
 <main id="app" class="body-container-wrapper profile-template" v-cloak>
   <script type="application/json" id="json-data">
     {
-      "userData": {{ contact|tojson }}
+      "userData": {{ contact|tojson }},
+      "options": {
+        "maritalStatuses": {{ crm_property_definition("contact", "marital_status__new_").options|tojson }},
+        "genders": {{ crm_property_definition("contact", "gender").options|tojson }}
+      }
     }
   </script>
   <nav aria-label="Breadcrumb" class="breadcrumbs">
@@ -78,11 +84,6 @@
                 <div class="avatar w-100% h-100%">
                   [[ getInitials(currentUser.firstname + ' ' + currentUser.lastname) ]]
                 </div>
-                <div class="d-f ai-c jc-c p-a b-0 r-0 w-3 h-3 c-tint1 css-1xi1s4b">
-                  <svg role="img" class="symbol d-b">
-                    <path d="M15.711 3.75901C15.7921 3.67819 15.8564 3.58218 15.9002 3.47648C15.9441 3.37077 15.9667 3.25745 15.9667 3.14301C15.9667 3.02856 15.9441 2.91524 15.9002 2.80954C15.8564 2.70384 15.7921 2.60782 15.711 2.52701L13.665 0.481008C13.5842 0.399976 13.4882 0.335685 13.3825 0.291819C13.2768 0.247952 13.1635 0.225372 13.049 0.225372C12.9346 0.225372 12.8213 0.247952 12.7156 0.291819C12.6099 0.335685 12.5138 0.399976 12.433 0.481008L10.833 2.08101L14.111 5.35901L15.711 3.75901ZM0.228027 12.686V15.964H3.50603L12.469 7.00001L9.19003 3.72301L0.228027 12.686Z"></path>
-                  </svg>
-                </div>
               </button>
               <input
                 id="avatarUpload"
@@ -95,6 +96,7 @@
               [[ currentUser.firstname + ' ' + currentUser.lastname ]]
             </h1>
           </div>
+          <pre>[[currentUser]]</pre>
           <form>
             <div class="action-drawer mb-1 mt-2">
               <div>
@@ -394,7 +396,7 @@
                         :key="option.value"
                         :value="option.value"
                       >
-                        [[ option.text ]]
+                        [[ option.label ]]
                       </option>
                     </select>
                 </div>
@@ -453,13 +455,15 @@
                   </div>
                 </div>
               </div>
+              [[currentUser.marital_status__new_]]
+              [[form.marital_status__new_]]
               <div class="d-f@sm f_1 mb-2">
                 <div class="mb-1">
-                  <label for="marital_status">Marital status</label>
+                  <label for="marital_status__new_">Marital status</label>
                   <select
                     class="select"
-                    id="marital_status"
-                    name="marital_status"
+                    id="marital_status__new_"
+                    name="marital_status__new_"
                     v-model="form.marital_status__new_"
                   >
                     <option
@@ -467,7 +471,7 @@
                       :key="option.value"
                       :value="option.value"
                     >
-                      [[ option.text ]]
+                      [[ option.label ]]
                     </option>
                   </select>
                 </div>

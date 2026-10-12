@@ -15,7 +15,7 @@ exports.main = ({ body }, sendResponse) => {
       firstname: properties.firstname,
       lastname: properties.lastname,
       email: properties.email,
-      hs_additional_emails: '',
+      // hs_additional_emails: '',
       phone: '',
       mobilephone: '',
       fax: '',
@@ -33,7 +33,6 @@ exports.main = ({ body }, sendResponse) => {
       other_address_2: '',
       other_city: '',
       other_state: '',
-      other_zip: '',
       birthday: '',
       gender: '',
       anniversary: '',
@@ -77,22 +76,22 @@ exports.main = ({ body }, sendResponse) => {
     }
   });
 
-  const additionalEmails = []; // Array to hold additional emails
+  // const additionalEmails = []; // Array to hold additional emails
 
-  properties.emails.forEach((email) => {
-    // if email.primary === true use property email
-    // if email.primary === false use property hs_additional_emails as comma separated string
-    if (email.primary) {
-      data.properties.email = email.address;
-    } else if (!data.properties.hs_additional_emails.includes(email.address)) {
-      // Do not include the primary email in the additional emails,
-      // do not include duplicates
-      additionalEmails.push(email.address);
-    }
-  });
+  // properties.emails.forEach((email) => {
+  //   // if email.primary === true use property email
+  //   // if email.primary === false use property hs_additional_emails as comma separated string
+  //   if (email.primary) {
+  //     data.properties.email = email.address;
+  //   } else if (!data.properties.hs_additional_emails.includes(email.address)) {
+  //     // Do not include the primary email in the additional emails,
+  //     // do not include duplicates
+  //     additionalEmails.push(email.address);
+  //   }
+  // });
 
-  // Join the array into a string with commas and no trailing comma
-  data.properties.hs_additional_emails = additionalEmails.join(', ');
+  // // Join the array into a string with commas and no trailing comma
+  // data.properties.hs_additional_emails = additionalEmails.join(', ');
 
   // Format the birthday and anniversary dates
   // object { year: 1990, month: 1, day: 1 } render as 1990-01-01
@@ -120,13 +119,13 @@ exports.main = ({ body }, sendResponse) => {
   }
 
   const endpoint = `https://api.hubapi.com/crm/v3/objects/contacts/${id}`;
-  sendResponse({ body: { status: "success", response: data, endpoint, step: "patch" }, statusCode: 200 });
-  // axios
-  //   .patch(endpoint, JSON.stringify(data), config)
-  //   .catch(error => {
-  //     sendResponse({ body: { status: "error", error: error.message, step: "patch" }, statusCode: 200 });
-  //   })
-  //   .then((response) => {
-  //     sendResponse({ body: { status: "success", response: response.data, step: "patch" }, statusCode: 200 });
-  //   });
+  // sendResponse({ body: { status: "success", response: data, endpoint, step: "patch" }, statusCode: 200 });
+  axios
+    .patch(endpoint, JSON.stringify(data), config)
+    .catch(error => {
+      sendResponse({ body: { status: "error", error: error.message, step: "patch" }, statusCode: 200 });
+    })
+    .then((response) => {
+      sendResponse({ body: { status: "success", response: response.data, step: "patch" }, statusCode: 200 });
+    });
 };

@@ -46,6 +46,10 @@
       "method": "POST",
       "file": "team/demoteMember.js"
     },
+    "household/create": {
+      "method": "POST",
+      "file": "household/create.js"
+    },
     "household/add": {
       "method": "POST",
       "file": "household/add.js"
